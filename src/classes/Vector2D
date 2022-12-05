@@ -57,3 +57,12 @@ class Vector2D:
     def __abs__(self) -> number_types:
         """Absolute value (length) of the vector."""
         return math.sqrt(self.x**2 + self.y**2)
+
+
+    def distance_to(self, other : "Vector2D") -> number_types:
+        """The distance between vectors self and other."""
+        return abs(self - other)
+
+    def to_polar(self) -> tuple[number_types, number_types]:
+        """Return the vector's components in polar coordinates."""
+        return self.__abs__(), math.atan2(self.y, self.x)
