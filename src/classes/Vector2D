@@ -49,3 +49,11 @@ class Vector2D:
         """Right multiplication of scalar or vectors"""
         self = self.__mul__(other)
         return self
+
+    def __neg__(self) -> "Vector2D":
+        """Negation of the vector."""
+        return Vector2D(-self.x, -self.y)
+
+    def __abs__(self) -> number_types:
+        """Absolute value (length) of the vector."""
+        return math.sqrt(self.x**2 + self.y**2)
