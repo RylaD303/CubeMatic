@@ -1,9 +1,12 @@
 from typing import Union
+import math
 
 number_types = Union[int, float, complex]
 
 class Vector2D:
+    """A two-dimensional vector with Cartesian coordinates."""
     def __init__(self, x : number_types, y : number_types) -> None:
+        """Initialisation of a Vector2D."""
         self.x = x
         self.y = y
 
@@ -16,25 +19,33 @@ class Vector2D:
         return  f"{self._x, self._y}"
 
     def __add__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
+        """Vector addition."""
         if other is int or other is float or other is complex:
             return Vector2D(self._x + other, self._y + other)
-        else:
-            return Vector2D(self._x + other._x, self._y+other._y)
-
-    def __radd__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
-        if other is int or other is float or other is complex:
-            return Vector2D(self._x + other, self._y + other)
-        else:
-            return Vector2D(self._x + other._x, self._y+other._y)
-
-    def __iadd__(self, other : "Vector2D") -> "Vector2D":
-        self._x+=other._x
-        self._y+=other._y
-        return self
-
+        return Vector2D(self._x + other._x, self._y+other._y)
 
     def __mul__(self, other : Union[number_types, "Vector2D"]) -> Union[number_types,"Vector2D"]:
+        """Multiplication of scalar or vectors"""
         if other is int or other is float or other is complex:
             return Vector2D(self._x*other, self._y*other)
-        else:
-            return self._x*other._x + self._y*other._y
+        return self._x*other._x + self._y*other._y
+
+
+
+    def __radd__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
+        """Right vector addition."""
+        return self.__add__(other)
+
+    def __iadd__(self, other : "Vector2D") -> "Vector2D":
+        """Addittion to self."""
+        self = self.__add__(other)
+        return self
+
+    def __rmul__(self, other : Union[number_types, "Vector2D"]) -> Union[number_types,"Vector2D"]:
+        """Right multiplication of scalar or vectors"""
+        return self.__mul__(other)
+
+    def __imul__(self, other : Union[number_types, "Vector2D"]) -> Union[number_types,"Vector2D"]:
+        """Right multiplication of scalar or vectors"""
+        self = self.__mul__(other)
+        return self
