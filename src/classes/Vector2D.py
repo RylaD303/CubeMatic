@@ -8,28 +8,28 @@ class Vector2D:
     """A two-dimensional vector with Cartesian coordinates."""
     def __init__(self, x : number_types, y : number_types) -> "Vector2D":
         """Initialisation of a Vector2D."""
-        self._x = x
-        self._y = y
+        self.x = x
+        self.y = y
 
     def __repr__(self) -> str:
         """returns: Unambiguous string representation of the vector."""
-        return f"Vector2D({self._x, self._y})"
+        return f"Vector2D({self.x, self.y})"
 
     def __str__(self) -> str:
         """returns: string representation of the vector."""
-        return  f"{self._x, self._y}"
+        return  f"{self.x, self.y}"
 
     def __add__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
         """Vector addition."""
         if other is int or other is float or other is complex:
-            return Vector2D(self._x + other, self._y + other)
-        return Vector2D(self._x + other._x, self._y+other._y)
+            return Vector2D(self.x + other, self.y + other)
+        return Vector2D(self.x + other.x, self.y+other.y)
 
     def __mul__(self, other : Union[number_types, "Vector2D"]) -> Union[number_types,"Vector2D"]:
         """Multiplication of scalar or vectors"""
         if other is int or other is float or other is complex:
-            return Vector2D(self._x*other, self._y*other)
-        return self._x*other._x + self._y*other._y
+            return Vector2D(self.x*other, self.y*other)
+        return self.x*other.x + self.y*other.y
 
 
 
@@ -53,11 +53,11 @@ class Vector2D:
 
     def __neg__(self) -> "Vector2D":
         """Negation of the vector."""
-        return Vector2D(-self._x, -self._y)
+        return Vector2D(-self.x, -self.y)
 
     def __abs__(self) -> number_types:
         """Absolute value (length) of the vector."""
-        return math.sqrt(self._x**2 + self._y**2)
+        return math.sqrt(self.x**2 + self.y**2)
 
 
     def distance_to(self, other : "Vector2D") -> number_types:
@@ -66,4 +66,4 @@ class Vector2D:
 
     def to_polar(self) -> tuple[number_types, number_types]:
         """Return the vector's components in polar coordinates."""
-        return self.__abs__(), math.atan2(self._y, self._x)
+        return self.__abs__(), math.atan2(self.y, self.x)
