@@ -59,6 +59,11 @@ class Vector2D:
         """Absolute value (length) of the vector."""
         return math.sqrt(self.x**2 + self.y**2)
 
+    def __eq__(self, other : "Vector2D") -> bool:
+        """Compares 2 vectors,
+        returns: bool -
+        true if they have equal coorinates false otherwise"""
+        return self.x, self.y == other.x, other.y
 
     def distance_to(self, other : "Vector2D") -> number_types:
         """The distance between vectors self and other."""
