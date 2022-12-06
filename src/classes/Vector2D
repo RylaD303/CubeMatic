@@ -5,10 +5,10 @@ number_types = Union[int, float, complex]
 
 class Vector2D:
     """A two-dimensional vector with Cartesian coordinates."""
-    def __init__(self, x : number_types, y : number_types) -> None:
+    def __init__(self, x : number_types, y : number_types) -> "Vector2D":
         """Initialisation of a Vector2D."""
-        self.x = x
-        self.y = y
+        self._x = x
+        self._y = y
 
     def __repr__(self) -> str:
         """returns: Unambiguous string representation of the vector."""
@@ -52,11 +52,11 @@ class Vector2D:
 
     def __neg__(self) -> "Vector2D":
         """Negation of the vector."""
-        return Vector2D(-self.x, -self.y)
+        return Vector2D(-self._x, -self._y)
 
     def __abs__(self) -> number_types:
         """Absolute value (length) of the vector."""
-        return math.sqrt(self.x**2 + self.y**2)
+        return math.sqrt(self._x**2 + self._y**2)
 
 
     def distance_to(self, other : "Vector2D") -> number_types:
@@ -65,4 +65,4 @@ class Vector2D:
 
     def to_polar(self) -> tuple[number_types, number_types]:
         """Return the vector's components in polar coordinates."""
-        return self.__abs__(), math.atan2(self.y, self.x)
+        return self.__abs__(), math.atan2(self._y, self._x)
