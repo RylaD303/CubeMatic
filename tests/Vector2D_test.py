@@ -21,12 +21,14 @@ class TestingVector(unittest.TestCase):
         vector1 = Vector2D(1,-1)
         vector2 = Vector2D(1, -1)
         self.assertEqual(vector1, Vector2D(1, -1))
+        self.assertEqual(vector1, (1, -1))
         self.assertEqual(vector1, vector1)
         self.assertEqual(vector1, vector2)
 
         vector3 = Vector2D(1,-2)
         self.assertNotEqual(vector1, vector3)
         self.assertNotEqual(vector2, vector3)
+        self.assertNotEqual(vector3, (-2, 1))
 
         vector3.y +=1
         self.assertEqual(vector1, vector3)
@@ -46,6 +48,18 @@ class TestingVector(unittest.TestCase):
 
         self.assertNotEqual(vector3 + vector1 + vector1, vector3)
         self.assertNotEqual(vector3 + vector1, vector1 + Vector2D(1, -1) + vector1)
+
+    def test_multiplicating_vectors(self):
+        vector1 = Vector2D(3,-4)
+        vector2 = Vector2D(1, -1)
+        self.assertEqual(vector1*vector2, 7)
+        self.assertEqual(vector2*vector2, 2)
+        self.assertEqual(vector1*Vector2D(2, 2), -2)
+        self.assertEqual(vector2*Vector2D(2, -2), 4)
+
+        self.assertEqual(vector1*2, (6, -8))
+        self.assertEqual(vector1*-2, (-6, 8))
+        self.assertEqual(vector2*vector2*vector2, (2, -2))
 
 if __name__ == '__main__':
     unittest.main()
