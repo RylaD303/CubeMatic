@@ -21,17 +21,21 @@ class Vector2D:
 
     def __add__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
         """Vector addition."""
-        if other is int or other is float or other is complex:
+        if type(other) in [int, float, complex]:
             return Vector2D(self.x + other, self.y + other)
         return Vector2D(self.x + other.x, self.y+other.y)
 
     def __mul__(self, other : Union[number_types, "Vector2D"]) -> Union[number_types,"Vector2D"]:
         """Multiplication of scalar or vectors"""
-        if other is int or other is float or other is complex:
+        if type(other) in [int, float, complex]:
             return Vector2D(self.x*other, self.y*other)
         return self.x*other.x + self.y*other.y
 
-
+    def __sub__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
+        """Vector subtraction."""
+        if type(other) in [int, float, complex]:
+            return Vector2D(self.x - other, self.y - other)
+        return Vector2D(self.x - other.x, self.y - other.y)
 
     def __radd__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
         """Right vector addition."""
@@ -47,8 +51,17 @@ class Vector2D:
         return self.__mul__(other)
 
     def __imul__(self, other : Union[number_types, "Vector2D"]) -> Union[number_types,"Vector2D"]:
-        """Right multiplication of scalar or vectors"""
+        """Self multiplication of scalar or vectors"""
         self = self.__mul__(other)
+        return self
+
+    def __rsub__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
+        """Right vector subtraction."""
+        return self.__sub__(other)
+
+    def __isub__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
+        """Self vector subtraction."""
+        self = self.__sub__(other)
         return self
 
     def __neg__(self) -> "Vector2D":
@@ -63,9 +76,15 @@ class Vector2D:
         """Compares 2 vectors or vector and tuple of (number , number),
         returns: bool -
         true if they have equal coorinates false otherwise"""
-        if other is tuple:
-            return self.x, self.y == other
-        return self.x, self.y == other.x, other.y
+        if type(other) is tuple:
+            return (self.x, self.y) == other
+        return (self.x, self.y) == (other.x, other.y)
+
+    def __neq__(self, other : Union["Vector2D", tuple[number_types, number_types]]) -> bool:
+        """Compares 2 vectors or vector and tuple of (number , number),
+        returns: bool -
+        true if they don't have equal coorinates false otherwise"""
+        return not self==other
 
     def distance_to(self, other : "Vector2D") -> number_types:
         """The distance between vectors self and other."""
