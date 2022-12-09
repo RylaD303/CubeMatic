@@ -1,11 +1,11 @@
 from typing import Union
-from classes.Vector2D import Vector2D
+from classes.Vector2D import Vector2D, number_types
 from classes.GameObject import GameObject
 import pygame
 
 
 class Bullet(GameObject):
-    def __init__(self, raduis, speed, direction):
+    def __init__(self, raduis : number_types, speed : number_types, direction : "Vector2D"):
         self.speed = speed
         self.raduis = raduis
         self.direction = direction
