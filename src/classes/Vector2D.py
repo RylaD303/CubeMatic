@@ -1,6 +1,6 @@
 
 from typing import Union
-import math
+from math import atan2, sqrt
 
 number_types = Union[int, float, complex]
 
@@ -70,7 +70,7 @@ class Vector2D:
 
     def __abs__(self) -> number_types:
         """Absolute value (length) of the vector."""
-        return math.sqrt(self.x**2 + self.y**2)
+        return sqrt(self.x**2 + self.y**2)
 
     def __eq__(self, other : Union["Vector2D", tuple[number_types, number_types]]) -> bool:
         """Compares 2 vectors or vector and tuple of (number , number),
@@ -92,4 +92,4 @@ class Vector2D:
 
     def to_polar(self) -> tuple[number_types, number_types]:
         """Return the vector's components in polar coordinates."""
-        return self.__abs__(), math.atan2(self.y, self.x)
+        return self.__abs__(), atan2(self.y, self.x)
