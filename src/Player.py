@@ -28,6 +28,8 @@ class Player(GameObject):
         if player_movement[3] :
             movement.y += 1
 
-        self.position += self.speed*movement/abs(movement)
+        scaling = abs(movement)
+        if scaling > 0:
+            self.position += self.speed*movement/scaling
 
 
