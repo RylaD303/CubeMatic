@@ -5,5 +5,5 @@ import pygame
 
 
 class GameObject():
-    def __init__(self, x: number_types, y: number_types) -> "GameObject":
-        self.position = Vector2D(x,y)
+    def __init__(self, position : "Vector2D") -> "GameObject":
+        self.position = position

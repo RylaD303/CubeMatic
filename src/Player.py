@@ -5,7 +5,10 @@ import pygame
 
 
 class Player(GameObject):
-    def __init__(self, health_points : number_types, speed : number_types, width : number_types = 200, height : number_types = 200) -> "Player":
+    def __init__(self, position : "Vector2D", health_points : number_types = 1,
+    speed : number_types = 5, width : number_types = 20, height : number_types = 20) -> "Player":
+
+        super().__init__(position)
         self.health_points = health_points
         self.speed = speed
         self.width = width
