@@ -2,8 +2,8 @@ import pygame, sys
 from pygame.locals import *
 from src import Bullet, Player
 
-
 pygame.init()
+clock = pygame.time.Clock()
 
 WINDOW_SIZE =(400,400)
 
@@ -14,4 +14,7 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
+
     pygame.display.update()
+    clock.tick(60)
