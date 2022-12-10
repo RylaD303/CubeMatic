@@ -37,6 +37,10 @@ class Vector2D:
             return Vector2D(self.x - other, self.y - other)
         return Vector2D(self.x - other.x, self.y - other.y)
 
+    def __truediv__(self, other : number_types) -> "Vector2D":
+        """Vector division."""
+        return Vector2D(self.x/other, self.y/other)
+
     def __radd__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
         """Right vector addition."""
         return self.__add__(other)
@@ -62,6 +66,11 @@ class Vector2D:
     def __isub__(self, other : Union[number_types, "Vector2D"]) -> "Vector2D":
         """Self vector subtraction."""
         self = self.__sub__(other)
+        return self
+
+    def __itruediv__(self, other : number_types) -> "Vector2D":
+        """Self vector division."""
+        self = self.__truediv__(other)
         return self
 
     def __neg__(self) -> "Vector2D":
