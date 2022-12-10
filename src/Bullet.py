@@ -1,6 +1,6 @@
 from typing import Union
-from classes.Vector2D import Vector2D, number_types
-from classes.GameObject import GameObject
+from src.classes.Vector2D import Vector2D, number_types
+from src.classes.GameObject import GameObject
 import pygame
 
 

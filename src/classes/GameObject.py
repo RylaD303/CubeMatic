@@ -1,5 +1,5 @@
 from typing import Union
-from Vector2D import Vector2D, number_types
+from src.classes.Vector2D import Vector2D, number_types
 import pygame
 
 

@@ -1,4 +1,4 @@
-from tests.Vector2D_test import TestingVector
+from tests.Vector2D_test import *
 import unittest
 
 
