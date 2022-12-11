@@ -7,9 +7,14 @@ import pygame
 
 class Player(GameObject):
     """The Player Game object. Can move around"""
-    def __init__(self, position : "Vector2D", speed : number_types = 5,
-    width : number_types = 20, height : number_types = 20) -> "Player":
+    def __init__(
+        self,
+        position : "Vector2D",
+        speed : number_types = 5,
+        width : number_types = 20,
+        height : number_types = 20) -> "None":
         """Initialisation of Player object."""
+
         super().__init__(position)
         self.speed = speed
         self.__width = width

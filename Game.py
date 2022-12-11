@@ -55,9 +55,9 @@ while True:
                 pass
 
         if event.type == pygame.MOUSEBUTTONUP :
-            if event.button == 1:              #left mouse click
+            if event.button == 1:
                 player_firing = False
-            if event.button == 2:              #right mouse click
+            if event.button == 2:
                 pass
 
 
