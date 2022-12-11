@@ -14,6 +14,7 @@ WINDOW_SIZE =(800,400)
 
 player = Player(PLAYER_START, PLAYER_SPEED)
 player_movement = [False,False,False,False]
+player_firing = False
 
 bullets_fired : set[Bullet] = set()
 
@@ -49,13 +50,23 @@ while True:
 
         if event.type == pygame.MOUSEBUTTONDOWN :
             if event.button == 1:              #left mouse click
-                bullets_fired.add(Bullet(player.position, Vector2D(*pygame.mouse.get_pos())))
+                player_firing = True
+            if event.button == 2:              #right mouse click
+                pass
+
+        if event.type == pygame.MOUSEBUTTONUP :
+            if event.button == 1:              #left mouse click
+                player_firing = False
             if event.button == 2:              #right mouse click
                 pass
 
 
+    if player_firing:
+        bullets_fired.add(Bullet(player.position, Vector2D(*pygame.mouse.get_pos())))
     player.main(screen, player_movement)
     for bullet in bullets_fired:
         bullet.main(screen)
+
     pygame.display.update()
+
     clock.tick(60)
