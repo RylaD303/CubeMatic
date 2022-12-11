@@ -16,3 +16,16 @@ class Bullet(GameObject):
         self.speed = speed
         self.direction = direction
         self.radius = radius
+
+        if self.position == self.direction :
+            self.direction+=1
+
+        self.movement =  speed*(self.direction - self.position)/abs(self.direction - self.position)
+
+    def main(self, display):
+        """Displays bullet on screen and moves it."""
+        self.__move()
+        pygame.draw.circle(display, (0, 255, 0), (self.position.x, self.position.y), self.radius)
+
+    def __move(self):
+        self.position += self.movement

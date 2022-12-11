@@ -12,11 +12,15 @@ PLAYER_SPEED = 4
 
 WINDOW_SIZE =(800,400)
 
+START_OF_MAP = Vector2D(0,0)
+END_OF_MAP = Vector2D(*WINDOW_SIZE)
+
+
 player = Player(PLAYER_START, PLAYER_SPEED)
 player_movement = [False,False,False,False]
 player_firing = False
 
-bullets_fired : set[Bullet] = set()
+bullets_fired: set[Bullet] = set()
 
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
 
@@ -64,8 +68,19 @@ while True:
     if player_firing:
         bullets_fired.add(Bullet(player.position, Vector2D(*pygame.mouse.get_pos())))
     player.main(screen, player_movement)
+
+
+    bullets_to_remove: set[Bullet]= set()
     for bullet in bullets_fired:
         bullet.main(screen)
+        if  bullet.position.x <= START_OF_MAP.x or\
+            bullet.position.x >= END_OF_MAP.x or\
+            bullet.position.y <= START_OF_MAP.y or\
+            bullet.position.y >= END_OF_MAP.y:
+            bullets_to_remove.add(bullet)
+
+    for bullet in bullets_to_remove:
+        bullets_fired.remove(bullet)
 
     pygame.display.update()
 
