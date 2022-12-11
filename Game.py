@@ -8,10 +8,14 @@ pygame.init()
 clock = pygame.time.Clock()
 
 PLAYER_START = Vector2D(20,20)
-PLAYER_SPEED = 5
+PLAYER_SPEED = 4
+
+WINDOW_SIZE =(800,400)
+
 player = Player(PLAYER_START, PLAYER_SPEED)
 player_movement = [False,False,False,False]
-WINDOW_SIZE =(800,400)
+
+bullets_fired : set[Bullet] = set()
 
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
 
@@ -43,6 +47,15 @@ while True:
             if event.key == pygame.K_DOWN or event.key == ord('s'):
                 player_movement[3] = False
 
+        if event.type == pygame.MOUSEBUTTONDOWN :
+            if event.button == 1:              #left mouse click
+                bullets_fired.add(Bullet(player.position, Vector2D(*pygame.mouse.get_pos())))
+            if event.button == 2:              #right mouse click
+                pass
+
+
     player.main(screen, player_movement)
+    for bullet in bullets_fired:
+        bullet.main(screen)
     pygame.display.update()
     clock.tick(60)

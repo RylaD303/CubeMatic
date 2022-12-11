@@ -102,3 +102,9 @@ class Vector2D:
     def to_polar(self) -> tuple[number_types, number_types]:
         """Return the vector's components in polar coordinates."""
         return self.__abs__(), atan2(self.y, self.x)
+
+    def blend(self, other : "Vector2D", scale : number_types) -> "Vector2D":
+        """Blends two vectors into self.
+        scale = 0 : returns self, scale = 1 : returns other"""
+        self = (1-scale)*self + scale*other
+        return self

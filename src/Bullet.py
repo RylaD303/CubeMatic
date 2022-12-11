@@ -5,10 +5,16 @@ import pygame
 
 
 class Bullet(GameObject):
-    def __init__(self, raduis : number_types, speed : number_types, direction : "Vector2D"):
+    def __init__(self,
+                starting_position: "Vector2D",
+                direction: "Vector2D",
+                radius: number_types = 1,
+                speed : number_types = 6):
+
         self.speed = speed
-        self.raduis = raduis
+        self.position = starting_position
+        self.radius = radius
         self.direction = direction
 
     def main(self, display):
-        pygame.draw.circle(display, (0, 255, 0), (self.position.x, self.position.y, self.radius))
+        pygame.draw.circle(display, (0, 255, 0), (self.position.x, self.position.y), self.radius)

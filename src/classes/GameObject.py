@@ -9,5 +9,4 @@ class GameObject():
 
     def __init__(self, position : "Vector2D") -> "GameObject":
         """Initialises Game object. Sets position."""
-
         self.position = position
