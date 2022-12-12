@@ -95,6 +95,12 @@ class Vector2D:
         true if they don't have equal coorinates false otherwise"""
         return not self==other
 
+    def __iter__(self):
+        """Returns an iterablue of the Vector2D"""
+        yield self.x
+        yield self.y
+
+
     def distance_to(self, other : "Vector2D") -> number_types:
         """The distance between vectors self and other."""
         return abs(self - other)
