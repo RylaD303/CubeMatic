@@ -9,23 +9,23 @@ class Player(GameObject):
     """The Player Game object. Can move around"""
     def __init__(
         self,
-        position : "Vector2D",
-        speed : number_types = 5,
-        width : number_types = 32,
-        height : number_types = 32) -> "None":
+        position: "Vector2D",
+        speed: number_types,
+        player_sprite: "pygame.Surface",
+        width: number_types = 32,
+        height: number_types = 32) -> "None":
         """Initialisation of Player object."""
 
         super().__init__(position)
         self.speed = speed
-        self.__width = width
-        self.__height = height
+        self.sprite = pygame.transform.scale(player_sprite, (width, height))
         self.movement = Vector2D(0,0)
 
     def main(self, display, player_movement : list[bool]) -> None:
         """Draws the player on the screen.
         Recieve the player_movement to call on __move function."""
         self.__move(player_movement)
-        pygame.draw.rect(display, (0, 255, 0), (self.position.x, self.position.y, self.__width, self.__height))
+        display.blit(self.sprite, self.position)
 
     def __move(self, player_movement : list[bool]):
         """Changes the Players position based on the player_movement vector.

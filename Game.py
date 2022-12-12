@@ -16,7 +16,7 @@ START_OF_MAP = Vector2D(0,0)
 END_OF_MAP = Vector2D(*WINDOW_SIZE)
 
 
-player = Player(PLAYER_START, PLAYER_SPEED)
+player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'))
 player_movement = [False,False,False,False]
 player_firing = False
 
@@ -93,4 +93,4 @@ while game_running:
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()
 
-    #clock.tick(60)
+    clock.tick(60)
