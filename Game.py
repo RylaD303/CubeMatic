@@ -8,7 +8,8 @@ pygame.init()
 clock = pygame.time.Clock()
 
 PLAYER_START = Vector2D(20,20)
-PLAYER_SPEED = 4
+PLAYER_SPEED = 8
+PLAYER_SCALE = Vector2D(32, 32)
 
 WINDOW_SIZE =(1200,600)
 
@@ -16,7 +17,7 @@ START_OF_MAP = Vector2D(0,0)
 END_OF_MAP = Vector2D(*WINDOW_SIZE)
 
 
-player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'))
+player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))
 player_movement = [False,False,False,False]
 player_firing = False
 
@@ -74,7 +75,7 @@ while game_running:
 
 
     if player_firing:
-        bullets_fired.add(Bullet(player.position, Vector2D(*pygame.mouse.get_pos())/screen_scaling))
+        bullets_fired.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling))
     player.main(screen, player_movement)
 
 

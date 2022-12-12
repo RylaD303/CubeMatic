@@ -18,14 +18,17 @@ class Player(GameObject):
 
         super().__init__(position)
         self.speed = speed
-        self.sprite = pygame.transform.scale(player_sprite, (width, height))
+        self.__width = width
+        self.__height = height
+        self.sprite = pygame.transform.scale(player_sprite, (self.__width, self.__height))
+        #self.sprite = player_sprite            #the sprite is 32 by 32 pixels anyway
         self.movement = Vector2D(0,0)
 
     def main(self, display, player_movement : list[bool]) -> None:
         """Draws the player on the screen.
         Recieve the player_movement to call on __move function."""
         self.__move(player_movement)
-        display.blit(self.sprite, self.position)
+        display.blit(self.sprite, tuple(self.position))
 
     def __move(self, player_movement : list[bool]):
         """Changes the Players position based on the player_movement vector.
