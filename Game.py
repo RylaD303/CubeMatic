@@ -21,18 +21,26 @@ player_movement = [False,False,False,False]
 player_firing = False
 
 bullets_fired: set[Bullet] = set()
+resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
+screen = resizable_screen.copy()
+screen_scaling = 1
 
-screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
+game_running = True
 
-while True:
+while game_running:
     screen.fill((0,0,0))
 
     for event in pygame.event.get():
         if event.type == QUIT:
+            game_running = False
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.KEYDOWN:
+        elif event.type == VIDEORESIZE:
+            resizable_screen = pygame.display.set_mode((event.size[0],event.size[0]/2), RESIZABLE)
+            screen_scaling = event.size[0]/WINDOW_SIZE[0]
+
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT or event.key == ord('a'):
                 player_movement[0] = True
             if event.key == pygame.K_RIGHT or event.key == ord('d'):
@@ -42,7 +50,7 @@ while True:
             if event.key == pygame.K_DOWN or event.key == ord('s'):
                 player_movement[3] = True
 
-        if event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == ord('a'):
                 player_movement[0] = False
             if event.key == pygame.K_RIGHT or event.key == ord('d'):
@@ -52,13 +60,13 @@ while True:
             if event.key == pygame.K_DOWN or event.key == ord('s'):
                 player_movement[3] = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN :
+        elif event.type == pygame.MOUSEBUTTONDOWN :
             if event.button == 1:              #left mouse click
                 player_firing = True
             if event.button == 2:              #right mouse click
                 pass
 
-        if event.type == pygame.MOUSEBUTTONUP :
+        elif event.type == pygame.MOUSEBUTTONUP :
             if event.button == 1:
                 player_firing = False
             if event.button == 2:
@@ -66,7 +74,7 @@ while True:
 
 
     if player_firing:
-        bullets_fired.add(Bullet(player.position, Vector2D(*pygame.mouse.get_pos())))
+        bullets_fired.add(Bullet(player.position, Vector2D(*pygame.mouse.get_pos())/screen_scaling))
     player.main(screen, player_movement)
 
 
@@ -82,6 +90,7 @@ while True:
     for bullet in bullets_to_remove:
         bullets_fired.remove(bullet)
 
-    pygame.display.update()
+    resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
+    pygame.display.flip()
 
-    clock.tick(60)
+    #clock.tick(60)
