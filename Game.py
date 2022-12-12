@@ -10,7 +10,7 @@ clock = pygame.time.Clock()
 PLAYER_START = Vector2D(20,20)
 PLAYER_SPEED = 4
 
-WINDOW_SIZE =(800,400)
+WINDOW_SIZE =(1200,600)
 
 START_OF_MAP = Vector2D(0,0)
 END_OF_MAP = Vector2D(*WINDOW_SIZE)

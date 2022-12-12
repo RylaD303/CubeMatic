@@ -9,7 +9,7 @@ class Bullet(GameObject):
         self,
         starting_position: "Vector2D",
         direction: "Vector2D",
-        radius: number_types = 1,
+        radius: number_types = 2,
         speed : number_types = 6) -> "None":
         """Initialises bullet."""
         super().__init__(starting_position)
