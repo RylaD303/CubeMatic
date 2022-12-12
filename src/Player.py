@@ -12,8 +12,8 @@ class Player(GameObject):
         position: "Vector2D",
         speed: number_types,
         player_sprite: "pygame.Surface",
-        width: number_types = 32,
-        height: number_types = 32) -> "None":
+        width: number_types = 64,
+        height: number_types = 64) -> "None":
         """Initialisation of Player object."""
 
         super().__init__(position)
@@ -46,7 +46,7 @@ class Player(GameObject):
 
         movement_scaling = abs(self.movement)
         if movement_scaling > 0:
-            self.rotation+=2
+            self.rotation+=5
             self.rotation%=90
             self.position += self.speed*self.movement/movement_scaling
 
