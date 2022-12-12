@@ -11,8 +11,8 @@ class Player(GameObject):
         self,
         position : "Vector2D",
         speed : number_types = 5,
-        width : number_types = 30,
-        height : number_types = 30) -> "None":
+        width : number_types = 32,
+        height : number_types = 32) -> "None":
         """Initialisation of Player object."""
 
         super().__init__(position)
