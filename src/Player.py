@@ -24,7 +24,7 @@ class Player(GameObject):
         self.movement = Vector2D(0,0)
         self.rotation = 0
 
-    def main(self, display, player_movement : list[bool]) -> None:
+    def main(self, display: "pygame.Surface", player_movement : list[bool]) -> None:
         """Draws the player on the screen.
         Recieve the player_movement to call on __move function."""
         self.__move(player_movement)
@@ -34,7 +34,7 @@ class Player(GameObject):
             (self.position.x - (rotated_sprite.get_width() - self.sprite.get_width())/2,
             self.position.y - (rotated_sprite.get_height() - self.sprite.get_height())/2))
 
-    def __move(self, player_movement : list[bool]):
+    def __move(self, player_movement : list[bool])-> None:
         """Changes the Players position based on the player_movement vector.
         Vector scales with self.speed so palyer doesn't move faster diagonally"""
 

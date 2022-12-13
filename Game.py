@@ -2,6 +2,7 @@ import pygame, sys
 from pygame.locals import *
 from src.Player import Player
 from src.Bullet import Bullet
+from src.Teleport import Teleport
 from src.classes.Vector2D import Vector2D
 
 pygame.init()
@@ -22,6 +23,7 @@ END_OF_MAP = Vector2D(*WINDOW_SIZE)
 player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))
 player_movement = [False,False,False,False]
 player_firing = False
+teleportation_device: "Teleport" = None
 
 bullets_fired: set[Bullet] = set()
 resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
@@ -66,18 +68,20 @@ while game_running:
         elif event.type == pygame.MOUSEBUTTONDOWN :
             if event.button == 1:              #left mouse click
                 player_firing = True
-            if event.button == 2:              #right mouse click
-                pass
+            if event.button == 3:              #right mouse click
+                if not teleportation_device:
+                    teleportation_device = Teleport(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED)
+
 
         elif event.type == pygame.MOUSEBUTTONUP :
             if event.button == 1:
                 player_firing = False
-            if event.button == 2:
-                pass
 
 
     if player_firing:
         bullets_fired.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED))
+
+
     player.main(screen, player_movement)
 
 
@@ -92,6 +96,9 @@ while game_running:
 
     for bullet in bullets_to_remove:
         bullets_fired.remove(bullet)
+
+    if teleportation_device:
+        teleportation_device.main(screen, player)
 
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()
