@@ -71,7 +71,9 @@ while game_running:
             if event.button == 3:              #right mouse click
                 if not teleportation_device:
                     teleportation_device = Teleport(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED)
-
+                else:
+                    teleportation_device.teleport_player(player)
+                    teleportation_device = None
 
         elif event.type == pygame.MOUSEBUTTONUP :
             if event.button == 1:
