@@ -101,6 +101,9 @@ while game_running:
 
     if teleportation_device:
         teleportation_device.main(screen, player)
+        if teleportation_device.time_remaining == 0:
+            teleportation_device.teleport_player(player)
+            teleportation_device = None
 
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()

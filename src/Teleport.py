@@ -1,6 +1,7 @@
 from typing import Union
 from src.classes.Vector2D import Vector2D, number_types
 from src.classes.GameObject import GameObject
+from src.Player import Player
 import pygame
 
 MAX_HOLD_TIME = 300
@@ -27,10 +28,11 @@ class Teleport(GameObject):
         if self.time_remaining>MAX_HOLD_TIME/2:
             self.__move()
         self.time_remaining -= 1
-        if self.time_remaining==0:
+        if self.time_remaining<=0:
             self.teleport_player(player)
-        color = (255 - self.time_remaining*255/MAX_HOLD_TIME, 255, self.time_remaining*255/MAX_HOLD_TIME)
-        pygame.draw.circle(display, color, (self.position.x, self.position.y), self.radius)
+        else:
+            color = (255 - self.time_remaining*255/MAX_HOLD_TIME, 255, self.time_remaining*255/MAX_HOLD_TIME)
+            pygame.draw.circle(display, color, (self.position.x, self.position.y), self.radius)
 
     def __move(self):
         """Moves the teleportation device by it's movement vector.
@@ -39,5 +41,5 @@ class Teleport(GameObject):
         self.position += self.movement*(speed_scaling)
         print(self.position)
 
-    def teleport_player(self, player):
-        player.position = self.position
+    def teleport_player(self, player: "Player"):
+        player.position = self.position - Vector2D(player.width/2, player.height/2)
