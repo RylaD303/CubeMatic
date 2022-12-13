@@ -21,7 +21,6 @@ class Player(GameObject):
         self.__width = width
         self.__height = height
         self.sprite = pygame.transform.scale(player_sprite, (self.__width, self.__height))
-        #self.sprite = player_sprite            #the sprite is 32 by 32 pixels anyway
         self.movement = Vector2D(0,0)
         self.rotation = 0
 
@@ -29,7 +28,11 @@ class Player(GameObject):
         """Draws the player on the screen.
         Recieve the player_movement to call on __move function."""
         self.__move(player_movement)
-        display.blit(pygame.transform.rotate(self.sprite, self.rotation), tuple(self.position))
+        rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
+        display.blit(\
+            rotated_sprite,
+            (self.position.x - (rotated_sprite.get_width() - self.sprite.get_width())/2,
+            self.position.y - (rotated_sprite.get_height() - self.sprite.get_height())/2))
 
     def __move(self, player_movement : list[bool]):
         """Changes the Players position based on the player_movement vector.
@@ -46,7 +49,7 @@ class Player(GameObject):
 
         movement_scaling = abs(self.movement)
         if movement_scaling > 0:
-            self.rotation+=5
+            self.rotation+=7
             self.rotation%=90
             self.position += self.speed*self.movement/movement_scaling
 

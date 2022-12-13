@@ -9,8 +9,8 @@ class Bullet(GameObject):
         self,
         starting_position: "Vector2D",
         direction: "Vector2D",
-        radius: number_types = 2,
-        speed : number_types = 6) -> "None":
+        speed : number_types = 6,
+        radius: number_types = 2) -> "None":
         """Initialises bullet."""
         super().__init__(starting_position)
         self.speed = speed
@@ -28,4 +28,5 @@ class Bullet(GameObject):
         pygame.draw.circle(display, (0, 255, 0), (self.position.x, self.position.y), self.radius)
 
     def __move(self):
+        """Moves the bullet by it's movement vector."""
         self.position += self.movement

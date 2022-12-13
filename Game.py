@@ -6,11 +6,13 @@ from src.classes.Vector2D import Vector2D
 
 pygame.init()
 clock = pygame.time.Clock()
+clock.tick()
 
 PLAYER_START = Vector2D(20,20)
 PLAYER_SPEED = 8
 PLAYER_SCALE = Vector2D(32, 32)
 
+PLAYER_BULLET_SPEED = 10
 WINDOW_SIZE =(1400,700)
 
 START_OF_MAP = Vector2D(0,0)
@@ -75,7 +77,7 @@ while game_running:
 
 
     if player_firing:
-        bullets_fired.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling))
+        bullets_fired.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED))
     player.main(screen, player_movement)
 
 
