@@ -96,7 +96,7 @@ class Vector2D:
         return not self==other
 
     def __iter__(self):
-        """Returns an iterablue of the Vector2D"""
+        """Returns an iterable of the Vector2D"""
         yield self.x
         yield self.y
 

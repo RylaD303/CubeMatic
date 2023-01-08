@@ -5,7 +5,7 @@ import pygame
 
 
 class GameObject():
-    """Base calss for every object in the game. Contatins position"""
+    """Base calss for every object in the game."""
 
     def __init__(self, position : "Vector2D") -> "None":
         """Initialises Game object. Sets position."""
