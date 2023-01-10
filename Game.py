@@ -3,6 +3,7 @@ from pygame.locals import *
 from src.Player import Player
 from src.Bullet import Bullet
 from src.Teleport import Teleport
+from src.Tiles import MapTile
 from src.classes.Vector2D import Vector2D
 
 pygame.init()
@@ -19,12 +20,25 @@ PLAYER_SPEED = 7
 PLAYER_SCALE = Vector2D(48, 48)
 
 PLAYER_BULLET_SPEED = 20
-WINDOW_SIZE =(1400,700)
+WINDOW_SIZE = (1400,700)
+MAP_TILE_SIZE = (64, 64)
+
 
 START_OF_MAP = Vector2D(0,0)
 END_OF_MAP = Vector2D(*WINDOW_SIZE)
+#Tile map creation
+map_tile_sprite = pygame.image.load('src\sprites\Tile_map_sprite.png')
+map_tiles = []
+start_pos_x = (END_OF_MAP.x%MAP_TILE_SIZE[0])/2
+start_pos_y = (END_OF_MAP.y%MAP_TILE_SIZE[1])/2
 
+for i in range(END_OF_MAP.x//MAP_TILE_SIZE[0]):
+    map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], 0), map_tile_sprite, 0, *MAP_TILE_SIZE))
+    map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], END_OF_MAP.y - MAP_TILE_SIZE[1]), map_tile_sprite, 180, *MAP_TILE_SIZE))
 
+for i in range(END_OF_MAP.y//MAP_TILE_SIZE[1]):
+    map_tiles.append(MapTile(Vector2D(0, start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 90, *MAP_TILE_SIZE))
+    map_tiles.append(MapTile(Vector2D(END_OF_MAP.x - MAP_TILE_SIZE[0], start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 270, *MAP_TILE_SIZE))
 
 #Player creation
 player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))

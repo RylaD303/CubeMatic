@@ -10,3 +10,4 @@ class GameObject():
     def __init__(self, position : "Vector2D") -> "None":
         """Initialises Game object. Sets position."""
         self.position = position
+        self.visible = True
