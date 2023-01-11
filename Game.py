@@ -7,20 +7,15 @@ from src.Tiles import MapTile
 from src.classes.Vector2D import Vector2D
 
 
-def collision_test_circle(sprite: "pygame.Surface", objects: list["pygame.Surface"]):
-    hit_list = []
-    for object in objects:
-        if sprite.colliderect(object):
-            hit_list.append(object)
+def collision_test(sprite: "pygame.Rect", objects: list["MapTile"]):
+    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
     return hit_list
 
 
-def handle_collisions(player: "Player", map_tiles: list["pygame.Surface"], player_bullets: list["pygame.Surface"], teleport: "pygame.Surface"):
-    player_tile_collision_list = collision_test(player, map_tiles)
+def handle_collisions(player: "Player", player_bullets: list["Bullet"], teleport: "Teleport"):
+    pass
 
-    for tile_collided in player_tile_collision_list:
-        if player.movement.x > 0:
-            player.sprite.right = tile_collided.left
+
 
 pygame.init()
 
@@ -44,6 +39,7 @@ START_OF_MAP = Vector2D(0,0)
 END_OF_MAP = Vector2D(*WINDOW_SIZE)
 #Tile map creation
 map_tile_sprite = pygame.image.load('src\sprites\Tile_map_sprite.png')
+map_tile_sprite.set_colorkey(255,255,255)
 map_tiles = []
 start_pos_x = 0 #(END_OF_MAP.x%MAP_TILE_SIZE[0])/2
 start_pos_y = 0 #(END_OF_MAP.y%MAP_TILE_SIZE[1])/2
