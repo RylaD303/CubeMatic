@@ -13,7 +13,19 @@ def collision_test(sprite: "pygame.Rect", objects: list["MapTile"]):
 
 
 def handle_collisions(player: "Player", player_bullets: list["Bullet"], teleport: "Teleport"):
-    pass
+    if player.position.x < START_OF_MAP.x+MAP_TILE_SIZE[0]:
+        player.position.x = START_OF_MAP.x+MAP_TILE_SIZE[0]
+
+    if player.position.x > END_OF_MAP.x-MAP_TILE_SIZE[0]-PLAYER_SCALE.x:
+        player.position.x = END_OF_MAP.x-MAP_TILE_SIZE[0]-PLAYER_SCALE.x
+
+    if player.position.y < START_OF_MAP.y+MAP_TILE_SIZE[1]:
+        player.position.y = START_OF_MAP.y+MAP_TILE_SIZE[1]
+
+    if player.position.y > END_OF_MAP.y-MAP_TILE_SIZE[1]-PLAYER_SCALE.y:
+        player.position.y = END_OF_MAP.y-MAP_TILE_SIZE[1]-PLAYER_SCALE.y
+
+
 
 
 
@@ -39,7 +51,7 @@ START_OF_MAP = Vector2D(0,0)
 END_OF_MAP = Vector2D(*WINDOW_SIZE)
 #Tile map creation
 map_tile_sprite = pygame.image.load('src\sprites\Tile_map_sprite.png')
-map_tile_sprite.set_colorkey(255,255,255)
+map_tile_sprite.set_colorkey((255,255,255))
 map_tiles = []
 start_pos_x = 0 #(END_OF_MAP.x%MAP_TILE_SIZE[0])/2
 start_pos_y = 0 #(END_OF_MAP.y%MAP_TILE_SIZE[1])/2
@@ -134,7 +146,7 @@ while game_running:
         player_bullets.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED))
 
     #Collision handling
-    handle_collisions(player, map_tiles, player_bullets, teleportation_device)
+    handle_collisions(player, player_bullets, teleportation_device)
 
     #Rendering tile_map
     for map_tile in map_tiles:
@@ -143,20 +155,9 @@ while game_running:
     #Rendering player on screen
     player.main(screen, player_movement)
 
-    #Rendering bullets and looking at which ones to remove from set if any
-    bullets_to_remove: set[Bullet]= set()
+    #Rendering bullets
     for bullet in player_bullets:
-        if  bullet.position.x <= START_OF_MAP.x or\
-            bullet.position.x >= END_OF_MAP.x or\
-            bullet.position.y <= START_OF_MAP.y or\
-            bullet.position.y >= END_OF_MAP.y:
-            bullets_to_remove.add(bullet)
-        else:
-            bullet.main(screen)
-
-    #Removing here, because we cannot change object while being iterated if any
-    for bullet in bullets_to_remove:
-        player_bullets.remove(bullet)
+        bullet.main(screen)
 
     #Rendering teleportation device if any
     if teleportation_device:
