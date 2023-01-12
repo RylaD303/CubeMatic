@@ -25,7 +25,19 @@ def handle_collisions(player: "Player", player_bullets: list["Bullet"], teleport
     if player.position.y > END_OF_MAP.y-MAP_TILE_SIZE[1]-PLAYER_SCALE.y:
         player.position.y = END_OF_MAP.y-MAP_TILE_SIZE[1]-PLAYER_SCALE.y
 
+    #Getting care of which bullets to remove
+    bullets_to_remove: set[Bullet]= set()
+    for bullet in player_bullets:
+        if  bullet.position.x <=  START_OF_MAP.x+MAP_TILE_SIZE[0] or\
+            bullet.position.x >= END_OF_MAP.x-MAP_TILE_SIZE[0] or\
+            bullet.position.y <= START_OF_MAP.y+MAP_TILE_SIZE[1] or\
+            bullet.position.y >= END_OF_MAP.y-MAP_TILE_SIZE[1]:
 
+            bullets_to_remove.add(bullet)
+
+    #Removing here, because we cannot change object while being iterated if any
+    for bullet in bullets_to_remove:
+        player_bullets.remove(bullet)
 
 
 
