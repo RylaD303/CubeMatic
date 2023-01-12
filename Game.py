@@ -54,7 +54,7 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
         map_tile.main(screen)
 
     #Rendering player on screen
-    player.render(screen, player_movement)
+    player.render(screen)
 
     #Rendering bullets
     for bullet in player_bullets:
@@ -62,7 +62,7 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
 
     #Rendering teleportation device if any
     if teleportation_device:
-        teleportation_device.render(screen, player)
+        teleportation_device.render(screen)
 
     #Rendering screen
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
@@ -190,8 +190,8 @@ while game_running:
     #Collision handling
     handle_collisions(player, player_bullets, teleportation_device)
 
-   #Rendering on the display 
-    handle_rendering(screen, map_tiles, player, player_bullets, teleport_device)
+   #Rendering on the display
+    handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device)
 
     #Setting FPS
     clock.tick(60)
