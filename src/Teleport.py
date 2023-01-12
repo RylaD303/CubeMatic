@@ -23,16 +23,13 @@ class Teleport(GameObject):
             self.direction+=1
         self.movement =  speed*(self.direction - self.position)/abs(self.direction - self.position)
 
-    def main(self, display, player):
+    def main(self, player):
         """Displays the teleportation device on screen and moves it."""
         if self.time_remaining>MAX_HOLD_TIME/2:
             self.__move()
         self.time_remaining -= 1
         if self.time_remaining<=0:
             self.teleport_player(player)
-        else:
-            color = (255 - self.time_remaining*255/MAX_HOLD_TIME, 255, self.time_remaining*255/MAX_HOLD_TIME)
-            pygame.draw.circle(display, color, (self.position.x, self.position.y), self.radius+2*((MAX_HOLD_TIME/self.time_remaining)/100))
 
     def __move(self):
         """Moves the teleportation device by it's movement vector.
@@ -42,3 +39,7 @@ class Teleport(GameObject):
 
     def teleport_player(self, player: "Player"):
         player.position = self.position - Vector2D(player.width/2, player.height/2)
+
+    def render(self, display):
+        color = (255 - self.time_remaining*255/MAX_HOLD_TIME, 255, self.time_remaining*255/MAX_HOLD_TIME)
+        pygame.draw.circle(display, color, (self.position.x, self.position.y), self.radius+2*((MAX_HOLD_TIME/self.time_remaining)/100))

@@ -40,6 +40,11 @@ def handle_collisions(player: "Player", player_bullets: list["Bullet"], teleport
         player_bullets.remove(bullet)
 
 
+def handle_moving(player: "Player", player_bullets: list["Bullet"], teleport: "Teleport" ):
+    player.main(player_movement)
+    for bullet in player_bullets:
+        bullet.main()
+    teleport.main()
 
 pygame.init()
 

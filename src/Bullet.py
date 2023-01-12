@@ -22,11 +22,14 @@ class Bullet(GameObject):
 
         self.movement =  speed*(self.direction - self.position)/abs(self.direction - self.position)
 
-    def main(self, display : "pygame.Surface") -> None:
-        """Displays bullet on screen and moves it."""
+    def main(self) -> None:
+        """Handles the bullet frame by frame"""
         self.__move()
-        pygame.draw.circle(display, (0, 255, 0), (self.position.x, self.position.y), self.radius)
 
     def __move(self) -> None:
         """Moves the bullet by it's movement vector."""
         self.position += self.movement
+
+    def render(self, display : "pygame.Surface"):
+        """Displays bullet on screen"""
+        pygame.draw.circle(display, (0, 255, 0), (self.position.x, self.position.y), self.radius)
