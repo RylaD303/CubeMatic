@@ -40,11 +40,33 @@ def handle_collisions(player: "Player", player_bullets: list["Bullet"], teleport
         player_bullets.remove(bullet)
 
 
-def handle_moving(player: "Player", player_bullets: list["Bullet"], teleport: "Teleport" ):
+def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport" ):
     player.main(player_movement)
     for bullet in player_bullets:
         bullet.main()
-    teleport.main()
+    if teleportation_device and teleportation_device.time_remaining == 0:
+            teleportation_device.teleport_player(player)
+            teleportation_device = None
+
+def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleport_device: "Teleport"):
+    #Rendering tile_map
+    for map_tile in map_tiles:
+        map_tile.main(screen)
+
+    #Rendering player on screen
+    player.render(screen, player_movement)
+
+    #Rendering bullets
+    for bullet in player_bullets:
+        bullet.render(screen)
+
+    #Rendering teleportation device if any
+    if teleportation_device:
+        teleportation_device.render(screen, player)
+
+    #Rendering screen
+    resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
+    pygame.display.flip()
 
 pygame.init()
 
@@ -162,30 +184,14 @@ while game_running:
     if player_firing:
         player_bullets.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED))
 
+    #Handle moving and frame by frame stuff
+    handle_main(player, player_bullets, teleportation_device)
+
     #Collision handling
     handle_collisions(player, player_bullets, teleportation_device)
 
-    #Rendering tile_map
-    for map_tile in map_tiles:
-        map_tile.main(screen)
-
-    #Rendering player on screen
-    player.main(screen, player_movement)
-
-    #Rendering bullets
-    for bullet in player_bullets:
-        bullet.main(screen)
-
-    #Rendering teleportation device if any
-    if teleportation_device:
-        teleportation_device.main(screen, player)
-        if teleportation_device.time_remaining == 0:
-            teleportation_device.teleport_player(player)
-            teleportation_device = None
-
-    #Rendering screen
-    resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
-    pygame.display.flip()
+   #Rendering on the display 
+    handle_rendering(screen, map_tiles, player, player_bullets, teleport_device)
 
     #Setting FPS
     clock.tick(60)
