@@ -60,7 +60,6 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
         teleportation_device.main(player)
         if teleportation_device.time_remaining == 0:
             teleportation_device.teleport_player(player)
-            teleportation_device = None
 
 def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleport_device: "Teleport"):
     #Rendering tile_map
@@ -204,6 +203,8 @@ while game_running:
 
     #Handle moving and frame by frame stuff
     handle_main(player, player_bullets, teleportation_device)
+    if teleportation_device and teleportation_device.time_remaining==0:
+        teleportation_device = None
 
     #Collision handling
     handle_collisions(player, player_bullets, teleportation_device)
