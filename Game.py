@@ -90,7 +90,7 @@ START_OF_MAP = Vector2D(0,0)
 END_OF_MAP = Vector2D(*WINDOW_SIZE)
 #Tile map creation
 map_tile_sprite = pygame.image.load('src\sprites\Tile_map_sprite.png')
-map_tile_sprite.set_colorkey((255,255,255))
+map_tile_sprite.set_colorkey(map_tile_sprite.get_at((0,0)))
 map_tiles = []
 start_pos_x = 0 #(END_OF_MAP.x%MAP_TILE_SIZE[0])/2
 start_pos_y = 0 #(END_OF_MAP.y%MAP_TILE_SIZE[1])/2
