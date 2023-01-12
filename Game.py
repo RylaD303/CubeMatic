@@ -198,14 +198,15 @@ while game_running:
     if player_firing:
         player_bullets.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED))
 
+     #Rendering on the display
+    handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device)
+
+
     #Handle moving and frame by frame stuff
     handle_main(player, player_bullets, teleportation_device)
 
     #Collision handling
     handle_collisions(player, player_bullets, teleportation_device)
-
-   #Rendering on the display
-    handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device)
 
     #Setting FPS
     clock.tick(60)
