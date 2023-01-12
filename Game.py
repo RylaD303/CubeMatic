@@ -39,12 +39,26 @@ def handle_collisions(player: "Player", player_bullets: list["Bullet"], teleport
     for bullet in bullets_to_remove:
         player_bullets.remove(bullet)
 
+    if teleportation_device:
+        if teleportation_device.position.x < START_OF_MAP.x+MAP_TILE_SIZE[0]:
+            teleportation_device.movement.x = abs(teleportation_device.movement.x)
+
+        if teleportation_device.position.x > END_OF_MAP.x-MAP_TILE_SIZE[0]:
+            teleportation_device.movement.x = -abs(teleportation_device.movement.x)
+
+        if teleportation_device.position.y < START_OF_MAP.y+MAP_TILE_SIZE[1]:
+            teleportation_device.movement.y = abs(teleportation_device.movement.y)
+
+        if teleportation_device.position.y > END_OF_MAP.y-MAP_TILE_SIZE[1]:
+            teleportation_device.movement.y = -abs(teleportation_device.movement.y)
 
 def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport" ):
     player.main(player_movement)
     for bullet in player_bullets:
         bullet.main()
-    if teleportation_device and teleportation_device.time_remaining == 0:
+    if teleportation_device:
+        teleportation_device.main(player)
+        if teleportation_device.time_remaining == 0:
             teleportation_device.teleport_player(player)
             teleportation_device = None
 
