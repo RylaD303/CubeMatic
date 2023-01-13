@@ -4,53 +4,16 @@ from src.Player import Player
 from src.Bullet import Bullet
 from src.Teleport import Teleport
 from src.Tiles import MapTile
+from src.CollisionHandler import CollisionHandler
 from src.classes.Vector2D import Vector2D
+from src.GameValues import *
+
+#def collision_test(sprite: "pygame.Rect", objects: list["MapTile"]):
+#    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
+#    return hit_list
 
 
-def collision_test(sprite: "pygame.Rect", objects: list["MapTile"]):
-    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
-    return hit_list
-
-
-def handle_collisions(player: "Player", player_bullets: list["Bullet"], teleport: "Teleport"):
-    if player.position.x < START_OF_MAP.x+MAP_TILE_SIZE[0]:
-        player.position.x = START_OF_MAP.x+MAP_TILE_SIZE[0]
-
-    if player.position.x > END_OF_MAP.x-MAP_TILE_SIZE[0]-PLAYER_SCALE.x:
-        player.position.x = END_OF_MAP.x-MAP_TILE_SIZE[0]-PLAYER_SCALE.x
-
-    if player.position.y < START_OF_MAP.y+MAP_TILE_SIZE[1]:
-        player.position.y = START_OF_MAP.y+MAP_TILE_SIZE[1]
-
-    if player.position.y > END_OF_MAP.y-MAP_TILE_SIZE[1]-PLAYER_SCALE.y:
-        player.position.y = END_OF_MAP.y-MAP_TILE_SIZE[1]-PLAYER_SCALE.y
-
-    #Getting care of which bullets to remove
-    bullets_to_remove: set[Bullet]= set()
-    for bullet in player_bullets:
-        if  bullet.position.x <=  START_OF_MAP.x+MAP_TILE_SIZE[0] or\
-            bullet.position.x >= END_OF_MAP.x-MAP_TILE_SIZE[0] or\
-            bullet.position.y <= START_OF_MAP.y+MAP_TILE_SIZE[1] or\
-            bullet.position.y >= END_OF_MAP.y-MAP_TILE_SIZE[1]:
-
-            bullets_to_remove.add(bullet)
-
-    #Removing here, because we cannot change object while being iterated if any
-    for bullet in bullets_to_remove:
-        player_bullets.remove(bullet)
-
-    if teleportation_device:
-        if teleportation_device.position.x < START_OF_MAP.x+MAP_TILE_SIZE[0]:
-            teleportation_device.movement.x = abs(teleportation_device.movement.x)
-
-        if teleportation_device.position.x > END_OF_MAP.x-MAP_TILE_SIZE[0]:
-            teleportation_device.movement.x = -abs(teleportation_device.movement.x)
-
-        if teleportation_device.position.y < START_OF_MAP.y+MAP_TILE_SIZE[1]:
-            teleportation_device.movement.y = abs(teleportation_device.movement.y)
-
-        if teleportation_device.position.y > END_OF_MAP.y-MAP_TILE_SIZE[1]:
-            teleportation_device.movement.y = -abs(teleportation_device.movement.y)
+handle_collisions = CollisionHandler()
 
 def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport" ):
     player.main(player_movement)
@@ -88,19 +51,6 @@ pygame.init()
 clock = pygame.time.Clock()
 clock.tick()
 
-
-#Constants for the game
-PLAYER_START = Vector2D(20,20)
-PLAYER_SPEED = 7
-PLAYER_SCALE = Vector2D(48, 48)
-
-PLAYER_BULLET_SPEED = 20
-WINDOW_SIZE = (1400,700)
-MAP_TILE_SIZE = (64, 64)
-
-
-START_OF_MAP = Vector2D(0,0)
-END_OF_MAP = Vector2D(*WINDOW_SIZE)
 #Tile map creation
 map_tile_sprite = pygame.image.load('src\sprites\Tile_map_sprite.png')
 map_tile_sprite.set_colorkey(map_tile_sprite.get_at((0,0)))
@@ -110,11 +60,11 @@ start_pos_y = 0 #(END_OF_MAP.y%MAP_TILE_SIZE[1])/2
 
 for i in range(1, END_OF_MAP.y//MAP_TILE_SIZE[1]):
     map_tiles.append(MapTile(Vector2D(0, start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 90, *MAP_TILE_SIZE))
-    map_tiles.append(MapTile(Vector2D(END_OF_MAP.x - MAP_TILE_SIZE[0], start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 270, *MAP_TILE_SIZE))
+    map_tiles.append(MapTile(Vector2D(END_OF_MAP.x - MAP_TILE_SIZE[0] + END_OF_MAP.x%MAP_TILE_SIZE[0], start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 270, *MAP_TILE_SIZE))
 
 for i in range(1, END_OF_MAP.x//MAP_TILE_SIZE[0]):
     map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], 0), map_tile_sprite, 0, *MAP_TILE_SIZE))
-    map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], END_OF_MAP.y - MAP_TILE_SIZE[1]), map_tile_sprite, 180, *MAP_TILE_SIZE))
+    map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], END_OF_MAP.y - MAP_TILE_SIZE[1] + END_OF_MAP.y%MAP_TILE_SIZE[1]), map_tile_sprite, 180, *MAP_TILE_SIZE))
 
 #Player creation
 player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))
