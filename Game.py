@@ -60,11 +60,11 @@ start_pos_y = 0 #(END_OF_MAP.y%MAP_TILE_SIZE[1])/2
 
 for i in range(1, END_OF_MAP.y//MAP_TILE_SIZE[1]):
     map_tiles.append(MapTile(Vector2D(0, start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 90, *MAP_TILE_SIZE))
-    map_tiles.append(MapTile(Vector2D(END_OF_MAP.x - MAP_TILE_SIZE[0] + END_OF_MAP.x%MAP_TILE_SIZE[0], start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 270, *MAP_TILE_SIZE))
+    map_tiles.append(MapTile(Vector2D(END_OF_MAP.x - MAP_TILE_SIZE[0] + (MAP_TILE_SIZE[0] - END_OF_MAP.x%MAP_TILE_SIZE[0]), start_pos_y + i*MAP_TILE_SIZE[1]), map_tile_sprite, 270, *MAP_TILE_SIZE))
 
 for i in range(1, END_OF_MAP.x//MAP_TILE_SIZE[0]):
     map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], 0), map_tile_sprite, 0, *MAP_TILE_SIZE))
-    map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], END_OF_MAP.y - MAP_TILE_SIZE[1] + END_OF_MAP.y%MAP_TILE_SIZE[1]), map_tile_sprite, 180, *MAP_TILE_SIZE))
+    map_tiles.append(MapTile(Vector2D(start_pos_x + i*MAP_TILE_SIZE[0], END_OF_MAP.y - MAP_TILE_SIZE[1] + (MAP_TILE_SIZE[1] - END_OF_MAP.y%MAP_TILE_SIZE[1])), map_tile_sprite, 180, *MAP_TILE_SIZE))
 
 #Player creation
 player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))
