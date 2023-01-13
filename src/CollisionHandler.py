@@ -33,7 +33,7 @@ class CollisionHandler():
         for bullet in bullets_to_remove:
             player_bullets.remove(bullet)
 
-        if teleportation_device:
+        if teleportation_device.active:
             if teleportation_device.position.x < START_OF_MAP.x+MAP_TILE_SIZE[0]:
                 teleportation_device.movement.x = abs(teleportation_device.movement.x)
 

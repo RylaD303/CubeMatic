@@ -21,7 +21,7 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
         bullet.main()
     if teleportation_device:
         teleportation_device.main(player)
-        if teleportation_device.time_remaining == 0:
+        if teleportation_device.time_remaining == 0 and teleportation_device.active:
             teleportation_device.teleport_player(player)
 
 def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleport_device: "Teleport"):
@@ -70,7 +70,7 @@ for i in range(1, END_OF_MAP.x//MAP_TILE_SIZE[0]):
 player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))
 player_movement = [False,False,False,False]
 player_firing = False
-teleportation_device: "Teleport" = None
+teleportation_device: "Teleport" = Teleport(PLAYER_BULLET_SPEED)
 
 
 #Other
@@ -132,11 +132,10 @@ while game_running:
 
             #Teleporting
             if event.button == 3:              #right mouse click
-                if not teleportation_device:
-                    teleportation_device = Teleport(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED)
+                if not teleportation_device.active:
+                    teleportation_device.activate(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling)
                 else:
                     teleportation_device.teleport_player(player)
-                    teleportation_device = None
 
         #Player stop firing
         elif event.type == pygame.MOUSEBUTTONUP :
@@ -153,8 +152,6 @@ while game_running:
 
     #Handle moving and frame by frame stuff
     handle_main(player, player_bullets, teleportation_device)
-    if teleportation_device and teleportation_device.time_remaining==0:
-        teleportation_device = None
 
     #Collision handling
     handle_collisions(player, player_bullets, teleportation_device)
