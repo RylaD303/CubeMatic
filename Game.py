@@ -24,7 +24,7 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
         if teleportation_device.time_remaining == 0 and teleportation_device.active:
             teleportation_device.teleport_player(player)
 
-def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleport_device: "Teleport"):
+def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport"):
     #Rendering tile_map
     for map_tile in map_tiles:
         map_tile.main(screen)
@@ -36,9 +36,8 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
     for bullet in player_bullets:
         bullet.render(screen)
 
-    #Rendering teleportation device if any
-    if teleportation_device:
-        teleportation_device.render(screen)
+    #Rendering teleportation device
+    teleportation_device.render(screen)
 
     #Rendering screen
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
@@ -70,7 +69,7 @@ for i in range(1, END_OF_MAP.x//MAP_TILE_SIZE[0]):
 player = Player(PLAYER_START, PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))
 player_movement = [False,False,False,False]
 player_firing = False
-teleportation_device: "Teleport" = Teleport(PLAYER_BULLET_SPEED)
+teleportation_device: "Teleport" = Teleport(PLAYER_TELEPORT_SPEED)
 
 
 #Other
