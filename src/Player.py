@@ -1,7 +1,7 @@
-from typing import Union
-from math import sin
 from src.classes.Vector2D import Vector2D, number_types
 from src.classes.GameObject import GameObject
+from src.Bullet import Bullet
+from src.GameValues import *
 import pygame
 
 
@@ -23,10 +23,13 @@ class Player(GameObject):
         self.sprite = pygame.transform.scale(player_sprite, (self.width, self.height))
         self.movement = Vector2D(0,0)
         self.rotation = 0
+        self.fire_cooldown = 0
 
-    def main(self, player_movement : list[bool]) -> None:
+    def main(self, player_movement : list[bool], clock: "pygame.time.Clock") -> None:
         """Handles player frame by frame
         Recieve the player_movement to call on __move function."""
+        if self.fire_cooldown > 0:
+            self.fire_cooldown -= clock.get_time()
         self.__move(player_movement)
 
     def __move(self, player_movement : list[bool])-> None:
@@ -50,6 +53,11 @@ class Player(GameObject):
 
         self.movement.x = 0
         self.movement.y = 0
+    def fire(self, player_bullets: list["Bullet"], fire_to_position: "Vector2D"):
+        """Fires bullet to target location only if cooldown for firing is 0."""
+        if self.fire_cooldown <=0:
+            player_bullets.add(Bullet(self.position + PLAYER_SCALE/2, fire_to_position, PLAYER_BULLET_SPEED))
+            self.fire_cooldown = PLAYER_SHOOT_COOLDOWN
 
     def render(self, display: "pygame.Surface"):
         rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)

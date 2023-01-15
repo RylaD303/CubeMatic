@@ -12,17 +12,22 @@ from src.GameValues import *
 #    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
 #    return hit_list
 
+pygame.init()
+
+
+#Clock
+clock = pygame.time.Clock()
+clock.tick()
 
 handle_collisions = CollisionHandler()
 
 def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport" ):
-    player.main(player_movement)
+    player.main(player_movement, clock)
     for bullet in player_bullets:
         bullet.main()
-    if teleportation_device:
-        teleportation_device.main(player)
-        if teleportation_device.time_remaining == 0 and teleportation_device.active:
-            teleportation_device.teleport_player(player)
+    teleportation_device.main(player)
+    if teleportation_device.time_remaining == 0 and teleportation_device.active:
+        teleportation_device.teleport_player(player)
 
 def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport"):
     #Rendering tile_map
@@ -42,13 +47,6 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
     #Rendering screen
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()
-
-pygame.init()
-
-
-#Clock
-clock = pygame.time.Clock()
-clock.tick()
 
 #Tile map creation
 map_tile_sprite = pygame.image.load('src\sprites\Tile_map_sprite.png')
@@ -141,11 +139,11 @@ while game_running:
             if event.button == 1:
                 player_firing = False
 
-    #Creating bullets if player is firing
+    #Check if mouse button is held down
     if player_firing:
-        player_bullets.add(Bullet(player.position + PLAYER_SCALE/2, Vector2D(*pygame.mouse.get_pos())/screen_scaling, PLAYER_BULLET_SPEED))
+        player.fire(player_bullets, Vector2D(*pygame.mouse.get_pos())/screen_scaling)
 
-     #Rendering on the display
+    #Rendering on the display
     handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device)
 
 
