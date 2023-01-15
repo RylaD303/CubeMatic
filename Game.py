@@ -25,7 +25,7 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
     player.main(player_movement, clock)
     for bullet in player_bullets:
         bullet.main()
-    teleportation_device.main(player)
+    teleportation_device.main(player, clock)
     if teleportation_device.time_remaining == 0 and teleportation_device.active:
         teleportation_device.teleport_player(player)
 

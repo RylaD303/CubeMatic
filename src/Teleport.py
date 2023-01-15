@@ -19,12 +19,12 @@ class Teleport(GameObject):
         self.active = False
 
 
-    def main(self, player):
+    def main(self, player: "Player", clock: "pygame.time.Clock"):
         """Handles teleportation device remaining time and teleportation."""
         if self.active:
             if self.time_remaining>MAX_HOLD_TIME/3*2:
                 self.__move()
-            self.time_remaining -= 1
+            self.time_remaining -= clock.get_time()
             if self.time_remaining<=0:
                 self.teleport_player(player)
 
@@ -51,7 +51,7 @@ class Teleport(GameObject):
         self.starting_position = starting_position
         self.direction = direction
         self.position = starting_position
-        self.time_remaining = MAX_HOLD_TIME #in frames
+        self.time_remaining = MAX_HOLD_TIME
         if self.position == self.direction :
             self.direction+=1
         self.movement =  self.speed*(self.direction - self.position)/abs(self.direction - self.position)

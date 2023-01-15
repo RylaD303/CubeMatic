@@ -27,7 +27,8 @@ class Player(GameObject):
 
     def main(self, player_movement : list[bool], clock: "pygame.time.Clock") -> None:
         """Handles player frame by frame
-        Recieve the player_movement to call on __move function."""
+        Recieve the player_movement to call on __move function.
+        Recieve clock to evaluate last call of main so it can subtract from cooldown fire."""
         if self.fire_cooldown > 0:
             self.fire_cooldown -= clock.get_time()
         self.__move(player_movement)
