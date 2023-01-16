@@ -13,7 +13,7 @@ class Player(GameObject):
         speed: number_types,
         player_sprite: "pygame.Surface",
         width: number_types = 64,
-        height: number_types = 64) -> "None":
+        height: number_types = 64) -> None:
         """Initialisation of Player object."""
 
         super().__init__(position)
