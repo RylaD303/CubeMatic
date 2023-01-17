@@ -85,3 +85,13 @@ class Boss(GameObject):
                     boss_bullets.append(create_bullet_with_angle(-i*angle))
 
 
+    def render_self(self, display: "pygame.Surface") -> None:
+        if self.visible:
+            rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
+            display.blit(\
+                rotated_sprite,
+                (self.position.x - (rotated_sprite.get_width() - self.sprite.get_width())/2,
+                self.position.y - (rotated_sprite.get_height() - self.sprite.get_height())/2))
+
+
+

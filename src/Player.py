@@ -60,7 +60,7 @@ class Player(GameObject):
             player_bullets.add(Bullet(self.position + PLAYER_SCALE/2, fire_to_position, PLAYER_BULLET_SPEED))
             self.fire_cooldown = PLAYER_SHOOT_COOLDOWN
 
-    def render(self, display: "pygame.Surface"):
+    def render(self, display: "pygame.Surface") -> None:
         rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
         display.blit(\
             rotated_sprite,
