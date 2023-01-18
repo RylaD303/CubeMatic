@@ -3,6 +3,9 @@ from src.classes.Vector2D import Vector2D, number_types
 from src.classes.GameObject import GameObject
 import pygame
 
+
+
+
 class Laser(GameObject):
     def __init__(self,
         begin_point: "Vector2D",
@@ -11,7 +14,7 @@ class Laser(GameObject):
         color: tuple = (255, 0, 0))-> None:
 
         super.__init__(begin_point) # starting position
-        self.direction = direction
+        self.direction = (direction/abs(direction))*LASER_LENGTH
         self.width = width
         self.color = color
 
