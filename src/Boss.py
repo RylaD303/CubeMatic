@@ -61,14 +61,6 @@ class Boss(GameObject):
 
     def __execute_attack_pattern(self, player: "Player", boss_bullets: list["Bullet"], clock: "pygame.time.Clock") -> None:
 
-        def create_bullet_with_angle(angle: number_types) -> "Bullet":
-            bullet_direction = Vector2D(
-                            player.position.x*cos(angle) - player.position.y*sin(angle),
-                            player.position.x*sin(angle) + player.position.y*cos(angle))
-
-            return Bullet(self.position, bullet_direction)
-
-
         #self.time_to_execute = 6000 #ms
         self.time_to_execute -= clock.get_time()
         self.attack_cooldown -= clock.get_time()
@@ -81,8 +73,8 @@ class Boss(GameObject):
                 #central bullet
                 boss_bullets.append(Bullet(self.position, player.position))
                 for i in range(1,3):
-                    boss_bullets.append(create_bullet_with_angle(i*angle))
-                    boss_bullets.append(create_bullet_with_angle(-i*angle))
+                    boss_bullets.append(Bullet(self.position, player.position.new_angle_rotate(i*angle)))
+                    boss_bullets.append(Bullet(self.position, player.position.new_angle_rotate(-i*angle)))
 
 
     def render_self(self, display: "pygame.Surface") -> None:

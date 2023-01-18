@@ -18,3 +18,8 @@ START_OF_MAP = Vector2D(0,0) #pixles
 END_OF_MAP = Vector2D(*WINDOW_SIZE) #pixles
 MAP_TILE_SIZE = (64, 64) #pixles
 
+#Boss values
+BOSS_BULLET_SPPED = PLAYER_BULLET_SPEED
+BOSS_LASER_WIDTH = 10 #pixels
+BOSS_LASER_ROTATION_SPEED = 1 #degrees per frame
+

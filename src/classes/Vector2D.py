@@ -1,6 +1,6 @@
 
 from typing import Union
-from math import atan2, sqrt
+from math import atan2, sqrt, cos, sin
 
 number_types = Union[int, float, complex]
 
@@ -114,3 +114,16 @@ class Vector2D:
         scale = 0 : returns self, scale = 1 : returns other"""
         self = (1-scale)*self + scale*other
         return self
+
+    def new_angle_rotate(self , angle) -> "Vector2D":
+        """Returns new vector rotated by with the given angle"""
+        copy = Vector2D(
+            self.x*cos(angle) - self.y*sin(angle),
+            self.x*sin(angle) + self.y*cos(angle))
+        return copy
+
+    def angle_rotate(self , angle) -> "Vector2D":
+        """Rotates the vector by the given angle"""
+        self = Vector2D(
+            self.x*cos(angle) - self.y*sin(angle),
+            self.x*sin(angle) + self.y*cos(angle))
