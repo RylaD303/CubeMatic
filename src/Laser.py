@@ -17,7 +17,7 @@ class Laser(GameObject):
         begin_point: "Vector2D",
         direction: "Vector2D",
         time: number_types, #ms
-        width: number_types,
+        width: number_types = 10,
         color: tuple = (255, 0, 0))-> None:
 
         super.__init__(begin_point) # starting position
@@ -51,10 +51,10 @@ class Laser(GameObject):
         if self.cooldown<=0:
             if self.state == LaserState.Anticipation:
                 self.state = LaserState.Attack
-                self.cooldown = self.time_to_execute-1
+                self.cooldown = self.time_to_execute-1000
             elif self.state == LaserState.Attack:
                 self.state == LaserState.Recovery
-                self.time_to_expire = 1
-                self.cooldown = 1
+                self.time_to_expire = 1000
+                self.cooldown = 1000
 
 
