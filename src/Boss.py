@@ -36,16 +36,17 @@ class Boss(GameObject):
     def __init__(self,
         position: "Vector2D",
         speed: number_types,
-        player_sprite: "pygame.Surface",
+        boss_sprite: "pygame.Surface",
         width: number_types = 64,
         height: number_types = 64) -> None:
-        """Initialisation of Player object."""
+        """Initialisation of Boss object."""
 
         super().__init__(position)
         #self.speed = speed
         #self.width = width
         #self.height = height
-        self.sprite = pygame.transform.scale(player_sprite, (width, height))
+        self.sprite = pygame.transform.scale(boss_sprite, (width, height))
+        self.speed = speed
         self.rotation = 0
         self.attack_sequence = Queue()
         self.movement_pattern = Queue()
@@ -68,9 +69,9 @@ class Boss(GameObject):
         if self.time_to_execute <= 0:
             self.current_attack_pattern = self.attack_sequence.get()
             self.attack_cooldown = 0
-            self.time_to_execute = 6000 #ms
+            self.time_to_execute = 8000 #ms
 
-    def __execute_attack_pattern(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock") -> None:
+    def __execute_attack_pattern(self, player: "Player", boss_bullets: set["Bullet"], boss_lasers: set["Laser"], clock: "pygame.time.Clock") -> None:
 
         self.time_to_execute -= clock.get_time()
         self.attack_cooldown -= clock.get_time()
@@ -78,23 +79,21 @@ class Boss(GameObject):
 
         if self.current_attack_pattern == FollowingAttackPattern.FiveWaveShoot:
             if self.attack_cooldown <=0:
-                self.attack_cooldown = 800 #ms
+                self.attack_cooldown = 1000 #ms
                 angle = pi/9
                 #central bullet
-                boss_bullets.append(Bullet(self.position, player.position))
+                boss_bullets.add(Bullet(self.position, player.position))
                 #side nnullets
                 for i in range(1,3):
-                    boss_bullets.append(Bullet(self.position, player.position.new_angle_rotate(i*angle)))
-                    boss_bullets.append(Bullet(self.position, player.position.new_angle_rotate(-i*angle)))
+                    boss_bullets.add(Bullet(self.position, player.position.new_angle_rotate(i*angle)))
+                    boss_bullets.add(Bullet(self.position, player.position.new_angle_rotate(-i*angle)))
         elif self.current_attack_pattern == FollowingAttackPattern.PlusLaser:
             if self.attack_cooldown <=0:
                 self.attack_cooldown = self.time_to_execute+1000
-                boss_lasers.append([
-                    Laser(self.position, Vector2D(2,2), self.time_to_execute),
-                    Laser(self.position, Vector2D(-2,2), self.time_to_execute),
-                    Laser(self.position, Vector2D(2,-2), self.time_to_execute),
-                    Laser(self.position, Vector2D(-2,-2), self.time_to_execute),
-                ])
+                boss_lasers.add(Laser(self.position, Vector2D(2,2), self.time_to_execute))
+                boss_lasers.add(Laser(self.position, Vector2D(-2,2), self.time_to_execute))
+                boss_lasers.add(Laser(self.position, Vector2D(2,-2), self.time_to_execute))
+                boss_lasers.add(Laser(self.position, Vector2D(-2,-2), self.time_to_execute))
 
     def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
         self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)

@@ -20,7 +20,7 @@ class Laser(GameObject):
         width: number_types = 10,
         color: tuple = (255, 0, 0))-> None:
 
-        super.__init__(begin_point) # starting position
+        super().__init__(begin_point) # starting position
         self.direction = (direction/abs(direction))*(LASER_LENGTH**2)
         self.width = width
         self.color = color

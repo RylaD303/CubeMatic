@@ -1,6 +1,7 @@
 import pygame, sys
 from pygame.locals import *
 from src.Player import Player
+from src.Boss import Boss
 from src.Bullet import Bullet
 from src.Teleport import Teleport
 from src.Tiles import MapTile
@@ -21,7 +22,7 @@ clock.tick()
 
 handle_collisions = CollisionHandler()
 
-def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport" ):
+def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss, boss_bullets, boss_lasers ):
     player.main(player_movement, clock)
     for bullet in player_bullets:
         bullet.main()
@@ -29,7 +30,14 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
     if teleportation_device.time_remaining == 0 and teleportation_device.active:
         teleportation_device.teleport_player(player)
 
-def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport"):
+    for bullet in boss_bullets:
+        bullet.main()
+
+    for laser in boss_lasers:
+        laser.main(clock)
+    boss.main(player, boss_bullets, boss_lasers, clock)
+
+def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss, boss_bullets, boss_lasers):
     #Rendering tile_map
     for map_tile in map_tiles:
         map_tile.main(screen)
@@ -44,6 +52,13 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
     #Rendering teleportation device
     teleportation_device.render(screen)
 
+    for bullet in boss_bullets:
+        bullet.render(screen)
+
+    for laser in boss_lasers:
+        laser.render(screen)
+
+    boss.render(screen)
     #Rendering screen
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()
@@ -69,7 +84,10 @@ player_movement = [False,False,False,False]
 player_firing = False
 teleportation_device: "Teleport" = Teleport(PLAYER_TELEPORT_SPEED)
 
-
+#Boss creation
+boss = Boss(Vector2D(500,500), PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(PLAYER_SCALE))
+boss_bullets = set()
+boss_lasers = set()
 #Other
 player_bullets: set[Bullet] = set()
 resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
@@ -144,11 +162,11 @@ while game_running:
         player.fire(player_bullets, Vector2D(*pygame.mouse.get_pos())/screen_scaling)
 
     #Rendering on the display
-    handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device)
+    handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
 
     #Handle moving and frame by frame stuff
-    handle_main(player, player_bullets, teleportation_device)
+    handle_main(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
     #Collision handling
     handle_collisions(player, player_bullets, teleportation_device)
