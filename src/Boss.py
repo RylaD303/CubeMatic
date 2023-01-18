@@ -96,9 +96,10 @@ class Boss(GameObject):
                     Laser(self.position, Vector2D(-2,-2), self.time_to_execute),
                 ])
 
+    def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
+        self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)
 
-
-    def render_self(self, display: "pygame.Surface") -> None:
+    def render(self, display: "pygame.Surface") -> None:
         if self.visible:
             rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
             display.blit(\
