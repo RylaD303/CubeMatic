@@ -38,9 +38,6 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
     boss.main(player, boss_bullets, boss_lasers, clock)
 
 def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss, boss_bullets, boss_lasers):
-    #Rendering tile_map
-    for map_tile in map_tiles:
-        map_tile.main(screen)
 
     #Rendering player on screen
     player.render(screen)
@@ -59,6 +56,11 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
         laser.render(screen)
 
     boss.render(screen)
+
+    #Rendering tile_map
+    for map_tile in map_tiles:
+        map_tile.main(screen)
+
     #Rendering screen
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()
