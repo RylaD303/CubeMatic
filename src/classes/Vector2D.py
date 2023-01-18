@@ -116,14 +116,14 @@ class Vector2D:
         return self
 
     def new_angle_rotate(self , angle) -> "Vector2D":
-        """Returns new vector rotated by with the given angle"""
+        """Returns new vector rotated by with the given angle. Angle should be in pi value."""
         copy = Vector2D(
             self.x*cos(angle) - self.y*sin(angle),
             self.x*sin(angle) + self.y*cos(angle))
         return copy
 
     def angle_rotate(self , angle) -> "Vector2D":
-        """Rotates the vector by the given angle"""
+        """Rotates the vector by the given angle. Angle should be in pi value."""
         self = Vector2D(
             self.x*cos(angle) - self.y*sin(angle),
             self.x*sin(angle) + self.y*cos(angle))

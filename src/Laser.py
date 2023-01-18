@@ -17,8 +17,9 @@ class Laser(GameObject):
 
 
     def main(self, new_position: "Vector2D", rotation: number_types = 0):
-        #self.direction = 
+        self.direction.angle_rotate(rotation)
+        self.position = new_position
 
     def render(self, display: "pygame.Surface"):
-        pygame.draw.line(display, self.color, *self.position, self.width)
+        pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
 
