@@ -39,8 +39,13 @@ class Laser(GameObject):
         self.__evaluate_state()
 
     def render(self, display: "pygame.Surface"):
-        pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
-
+        if self.state == LaserState.Anticipation:
+            pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
+        elif self.state == LaserState.Attack:
+            new_color = (*self.color, 128)
+            pygame.draw.line(display, new_color, tuple(self.position), tuple(self.direction), self.width)
+        elif self.state == Laser.Recovery:
+            pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
 
     def __evaluate_state(self):
         if self.cooldown<=0:
