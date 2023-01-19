@@ -85,13 +85,13 @@ class Boss(GameObject):
                 self.attack_cooldown = 1000 #ms
                 angle = pi/9
                 #central bullet
-                boss_bullets.add(Bullet(self.centre_position(), player.position))
+                boss_bullets.add(Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE))
                 #side nnullets
                 for i in range(1,3):
-                    bullet1 = Bullet(self.centre_position(), player.position)
+                    bullet1 = Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE)
                     bullet1.movement.angle_rotate(i*angle)
                     boss_bullets.add(bullet1)
-                    bullet2 = Bullet(self.centre_position(), player.position)
+                    bullet2 = Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE)
                     bullet2.movement.angle_rotate(-i*angle)
                     boss_bullets.add(bullet2)
         elif self.current_attack_pattern == FollowingAttackPattern.PlusLaser:

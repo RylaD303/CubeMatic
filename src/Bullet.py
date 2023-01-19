@@ -17,7 +17,7 @@ class Bullet(GameObject):
         self.speed = speed
         self.direction = direction
         self.radius = radius
-
+        self.color = color
         if self.position == self.direction :
             self.direction+=1
 

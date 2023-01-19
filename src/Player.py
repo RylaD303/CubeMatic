@@ -61,7 +61,7 @@ class Player(GameObject):
     def fire(self, player_bullets: set["Bullet"], fire_to_position: "Vector2D") -> None:
         """Fires bullet to target location only if cooldown for firing is 0."""
         if self.fire_cooldown <=0:
-            player_bullets.add(Bullet(self.centre_position(), fire_to_position, PLAYER_BULLET_SPEED))
+            player_bullets.add(Bullet(self.centre_position(), fire_to_position, PLAYER_BULLET_COLOR, PLAYER_BULLET_SIZE, PLAYER_BULLET_SPEED))
             self.fire_cooldown = PLAYER_SHOOT_COOLDOWN
 
     def render(self, display: "pygame.Surface") -> None:
