@@ -55,6 +55,9 @@ class Boss(GameObject):
         self.attack_cooldown = 0
         self.__choose_attack_sequence()
 
+    def centre_position(self) -> "Vector2D":
+        return self.position + BOSS_SCALE/2
+
     def __choose_attack_sequence(self)-> None:
         #for attack in sample(following_attacks, 3):
         #    self.attack_sequence.put(attack)
@@ -82,22 +85,22 @@ class Boss(GameObject):
                 self.attack_cooldown = 1000 #ms
                 angle = pi/9
                 #central bullet
-                boss_bullets.add(Bullet(self.position, player.position))
+                boss_bullets.add(Bullet(self.centre_position(), player.position))
                 #side nnullets
                 for i in range(1,3):
-                    bullet1 = Bullet(self.position, player.position)
+                    bullet1 = Bullet(self.centre_position(), player.position)
                     bullet1.movement.angle_rotate(i*angle)
                     boss_bullets.add(bullet1)
-                    bullet2 = Bullet(self.position, player.position)
+                    bullet2 = Bullet(self.centre_position(), player.position)
                     bullet2.movement.angle_rotate(-i*angle)
                     boss_bullets.add(bullet2)
         elif self.current_attack_pattern == FollowingAttackPattern.PlusLaser:
             if self.attack_cooldown <=0:
                 self.attack_cooldown = self.time_to_execute+1000
-                boss_lasers.add(Laser(self.position, Vector2D(2,2), self.time_to_execute))
-                boss_lasers.add(Laser(self.position, Vector2D(-2,2), self.time_to_execute))
-                boss_lasers.add(Laser(self.position, Vector2D(2,-2), self.time_to_execute))
-                boss_lasers.add(Laser(self.position, Vector2D(-2,-2), self.time_to_execute))
+                boss_lasers.add(Laser(self.centre_position(), Vector2D(2,2), self.time_to_execute))
+                boss_lasers.add(Laser(self.centre_position(), Vector2D(-2,2), self.time_to_execute))
+                boss_lasers.add(Laser(self.centre_position(), Vector2D(2,-2), self.time_to_execute))
+                boss_lasers.add(Laser(self.centre_position(), Vector2D(-2,-2), self.time_to_execute))
 
     def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
         self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)

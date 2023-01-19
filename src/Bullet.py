@@ -9,8 +9,9 @@ class Bullet(GameObject):
         self,
         starting_position: "Vector2D",
         direction: "Vector2D",
-        speed : number_types = 6,
-        radius: number_types = 2) -> None:
+        color: tuple = (0, 255, 0),
+        radius: number_types = 2,
+        speed : number_types = 6) -> None:
         """Initialises bullet."""
         super().__init__(starting_position)
         self.speed = speed
@@ -32,4 +33,4 @@ class Bullet(GameObject):
 
     def render(self, display : "pygame.Surface"):
         """Displays bullet on screen"""
-        pygame.draw.circle(display, (0, 255, 0), (self.position.x, self.position.y), self.radius)
+        pygame.draw.circle(display, self.color, (self.position.x, self.position.y), self.radius)

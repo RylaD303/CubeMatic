@@ -25,6 +25,9 @@ class Player(GameObject):
         self.rotation = 0
         self.fire_cooldown = 0
 
+    def centre_position(self) -> "Vector2D":
+        return self.position + PLAYER_SCALE/2
+
     def main(self, player_movement : list[bool], clock: "pygame.time.Clock") -> None:
         """Handles player frame by frame
         Recieve the player_movement to call on __move function.
@@ -54,10 +57,11 @@ class Player(GameObject):
 
         self.movement.x = 0
         self.movement.y = 0
-    def fire(self, player_bullets: set["Bullet"], fire_to_position: "Vector2D"):
+
+    def fire(self, player_bullets: set["Bullet"], fire_to_position: "Vector2D") -> None:
         """Fires bullet to target location only if cooldown for firing is 0."""
         if self.fire_cooldown <=0:
-            player_bullets.add(Bullet(self.position + PLAYER_SCALE/2, fire_to_position, PLAYER_BULLET_SPEED))
+            player_bullets.add(Bullet(self.centre_position(), fire_to_position, PLAYER_BULLET_SPEED))
             self.fire_cooldown = PLAYER_SHOOT_COOLDOWN
 
     def render(self, display: "pygame.Surface") -> None:
