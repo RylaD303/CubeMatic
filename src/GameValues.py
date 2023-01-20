@@ -1,5 +1,5 @@
 from src.classes.Vector2D import Vector2D
-
+from math import pi
 #Constants for the game
 #Player values
 PLAYER_START = Vector2D(20,20) #pixles
@@ -23,7 +23,14 @@ MAP_TILE_SIZE = (64, 64) #pixles
 BOSS_SCALE = Vector2D(48, 48)
 BOSS_BULLET_SPPED = PLAYER_BULLET_SPEED
 BOSS_LASER_WIDTH = 10 #pixels
-BOSS_LASER_ROTATION_SPEED = 1 #degrees per frame
-BOSS_BULLET_SIZE = 8 #pixels
+BOSS_BULLET_SIZE = 7 #pixels
 BOSS_ATTACK_COLOR = (255, 0, 0) # RGB
 LASER_LENGTH = abs(END_OF_MAP) #pixels
+
+
+
+#Boss attack vars
+BOSS_FIVE_WAVE_SHOOT_COOLDOWN = 1500 #ms
+BOSS_FIVE_WAVE_SHOOT_ANGLE = pi/9 #degrees in pi
+
+BOSS_PLUS_LASER_ROTATION_SPEED = 1 #degrees per frame

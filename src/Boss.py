@@ -82,8 +82,8 @@ class Boss(GameObject):
 
         if self.current_attack_pattern == FollowingAttackPattern.FiveWaveShoot:
             if self.attack_cooldown <=0:
-                self.attack_cooldown = 1000 #ms
-                angle = pi/9
+                self.attack_cooldown = BOSS_FIVE_WAVE_SHOOT_COOLDOWN
+                angle = BOSS_FIVE_WAVE_SHOOT_ANGLE
                 #central bullet
                 boss_bullets.add(Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE))
                 #side nnullets
