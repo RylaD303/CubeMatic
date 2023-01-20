@@ -11,6 +11,9 @@ class LaserState(Enum):
     Attack = 2
     Recovery = 3
 
+class LaserMovement(Enum):
+    Constant = 1
+
 
 class Laser(GameObject):
     def __init__(self,
@@ -26,7 +29,7 @@ class Laser(GameObject):
         self.color = color
         self.active = False
         self.state = LaserState.Anticipation
-        self.cooldown = 1000
+        self.cooldown = LASER_ANTICIPATION_TIME
         self.time_to_execute = time
 
 
@@ -37,6 +40,9 @@ class Laser(GameObject):
         if new_position:
             self.position = new_position
         self.__evaluate_state()
+
+        if self.state == LaserState.Recovery:
+            self.width = self.width - clock.get_time()/LASER_ANTICIPATION_TIME
 
     def render(self, display: "pygame.Surface"):
         if self.state == LaserState.Anticipation:
@@ -51,10 +57,10 @@ class Laser(GameObject):
         if self.cooldown<=0:
             if self.state == LaserState.Anticipation:
                 self.state = LaserState.Attack
-                self.cooldown = self.time_to_execute-1000
+                self.cooldown = self.time_to_execute-LASER_ANTICIPATION_TIME
             elif self.state == LaserState.Attack:
                 self.state == LaserState.Recovery
-                self.time_to_expire = 1000
-                self.cooldown = 1000
+                self.time_to_expire = LASER_ANTICIPATION_TIME
+                self.cooldown = LASER_ANTICIPATION_TIME
 
 

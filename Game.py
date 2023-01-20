@@ -33,8 +33,15 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
     for bullet in boss_bullets:
         bullet.main()
 
+    lasers_to_remove = set()
     for laser in boss_lasers:
         laser.main(clock)
+        if laser.time_to_execute <=0:
+            lasers_to_remove.add(laser)
+
+    for laser in lasers_to_remove:
+        boss_lasers.remove(laser)
+
     boss.main(player, boss_bullets, boss_lasers, clock)
 
 def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss, boss_bullets, boss_lasers):
