@@ -26,7 +26,7 @@ class Laser(GameObject):
         self.color = color
         self.active = False
         self.state = LaserState.Anticipation
-        self.cooldown = 1
+        self.cooldown = 1000
         self.time_to_execute = time
 
 
@@ -40,11 +40,11 @@ class Laser(GameObject):
 
     def render(self, display: "pygame.Surface"):
         if self.state == LaserState.Anticipation:
-            pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
-        elif self.state == LaserState.Attack:
-            new_color = (*self.color, 128)
+            new_color = (self.color[0]/2, self.color[1]/2, self.color[2]/2)
             pygame.draw.line(display, new_color, tuple(self.position), tuple(self.direction), self.width)
-        elif self.state == Laser.Recovery:
+        elif self.state == LaserState.Attack:
+            pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
+        elif self.state == LaserState.Recovery:
             pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
 
     def __evaluate_state(self):
