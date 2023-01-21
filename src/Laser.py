@@ -33,7 +33,7 @@ class Laser(GameObject):
         self.starting_width = width
         self.color = color
         self.state = Laser.LaserState.Anticipation
-        self.movement_type = Laser.LaserMovement.Constant
+        self.movement_types = [Laser.LaserMovement.Constant]
         self.rotation_speed = laser_rotation_speed
         self.cooldown = LASER_ANTICIPATION_TIME
         self.time_to_execute = time
@@ -69,18 +69,39 @@ class Laser(GameObject):
                 self.time_to_expire = LASER_ANTICIPATION_TIME
                 self.cooldown = LASER_ANTICIPATION_TIME
 
+
+    def __evaluate_movement(self, clock: "pygame.time.Clock"):
+
+        if self.movement_types[0] == Laser.LaserMovement.Constant:
+            pass #nothing to do here
+
+        elif self.movement_types[0] == Laser.LaserMovement.AcceleratingStart and self.state == Laser.LaserState.Attack:
+            if self.rotation_speed < self.max_rotation_speed:
+                self.rotation_speed += (clock.get_time()/1000)*self.control_rotation_speed
+            else:
+                self.movement_types.pop(0)
+
+        elif self.movement_types[0] == Laser.LaserMovement.DeceleratingEnd and self.state == Laser.LaserState.Attack and self.time_to_execute < LASER_ANTICIPATION_TIME*2:
+            if self.rotation_speed > self.min_rotation_speed:
+                self.rotation_speed -= (clock.get_time()/1000)*self.control_rotation_speed
+            elif:
+                self.movement_types.pop(0)
+
+
     def set_type_of_laser(self,
         move_types: list["Laser.LaserMovement"] = [LaserMovement.Constant],
-        increase_rotation_speed: number_types = 0, #px/s
-        max_rotation_speed: number_types = 0, #px/s
-        min_rotation_speed: number_types = 0, #px/s
+        control_rotation_speed: number_types = 0, #pi/s
+        max_rotation_speed: number_types = 0, #pi/s
+        min_rotation_speed: number_types = 0, #pi/s
         )->None:
         if not isinstance(move_types, list):
             move_types = [move_types]
+        if move_types[0] != Laser.LaserMovement.Constant:
+            move_types.append(Laser.LaserMovement.Constant)
         self.movement_types = move_types
-        self.increase_rotation_speed = increase_rotation_speed
+        self.control_rotation_speed = control_rotation_speed
         self.max_rotation_speed = max_rotation_speed
-        self.max_rotation_speed = min_rotation_speed
+        self.min_rotation_speed = min_rotation_speed
 
 
 
