@@ -24,15 +24,17 @@ class Laser(GameObject):
         direction: "Vector2D",
         time: number_types, #ms
         width: number_types = 10,
-        color: tuple = (255, 0, 0))-> None:
+        color: tuple = (255, 0, 0),
+        laser_rotation_speed: number_types = 0)-> None:
 
-        super().__init__(begin_point) # starting position
+        super().__init__(begin_point) #starting position
         self.direction = (direction/abs(direction))*(LASER_LENGTH**2)
         self.width = width
         self.starting_width = width
         self.color = color
-        self.active = False
         self.state = Laser.LaserState.Anticipation
+        self.movement_type = Laser.LaserMovement.Constant
+        self.rotation_speed = laser_rotation_speed
         self.cooldown = LASER_ANTICIPATION_TIME
         self.time_to_execute = time
 
@@ -66,5 +68,19 @@ class Laser(GameObject):
                 self.state = Laser.LaserState.Recovery
                 self.time_to_expire = LASER_ANTICIPATION_TIME
                 self.cooldown = LASER_ANTICIPATION_TIME
+
+    def set_type_of_laser(self,
+        move_types: list["Laser.LaserMovement"] = [LaserMovement.Constant],
+        increase_rotation_speed: number_types = 0, #px/s
+        max_rotation_speed: number_types = 0, #px/s
+        min_rotation_speed: number_types = 0, #px/s
+        )->None:
+        if not isinstance(move_types, list):
+            move_types = [move_types]
+        self.movement_types = move_types
+        self.increase_rotation_speed = increase_rotation_speed
+        self.max_rotation_speed = max_rotation_speed
+        self.max_rotation_speed = min_rotation_speed
+
 
 
