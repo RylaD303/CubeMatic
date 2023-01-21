@@ -62,7 +62,6 @@ class Boss(GameObject):
     def __choose_attack_sequence(self)-> None:
         #for attack in sample(following_attacks, 3):
         #    self.attack_sequence.put(attack)
-        self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
         self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
         self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
         self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
@@ -98,10 +97,13 @@ class Boss(GameObject):
         elif self.current_attack_pattern == Boss.FollowingAttackPattern.PlusLaser:
             if self.attack_cooldown <=0:
                 self.attack_cooldown = self.time_to_execute+1000
-                boss_lasers.add(Laser(self.centre_position(), Vector2D(2,2), self.time_to_execute))
-                boss_lasers.add(Laser(self.centre_position(), Vector2D(-2,2), self.time_to_execute))
-                boss_lasers.add(Laser(self.centre_position(), Vector2D(2,-2), self.time_to_execute))
-                boss_lasers.add(Laser(self.centre_position(), Vector2D(-2,-2), self.time_to_execute))
+                lasers = [Laser(self.centre_position(), Vector2D(2,2), self.time_to_execute),
+                        Laser(self.centre_position(), Vector2D(-2,2), self.time_to_execute),
+                        Laser(self.centre_position(), Vector2D(2,-2), self.time_to_execute),
+                        Laser(self.centre_position(), Vector2D(-2,-2), self.time_to_execute)]
+                for laser in lasers:
+                    laser.set_type_of_laser([Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd], pi/6, pi/3, pi/9)
+                    boss_lasers.add(laser)
 
     def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
         self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)

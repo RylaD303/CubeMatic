@@ -39,13 +39,15 @@ class Laser(GameObject):
         self.time_to_execute = time
 
 
-    def main(self, clock: "pygame.time.Clock", rotation: number_types = 0, new_position: "Vector2D" = None):
+    def main(self, clock: "pygame.time.Clock", new_position: "Vector2D" = None):
         self.cooldown -= clock.get_time()
         self.time_to_execute -= clock.get_time()
-        self.direction.angle_rotate(rotation)
+        self.direction.angle_rotate(self.rotation_speed*clock.get_time()/1000)
         if new_position:
             self.position = new_position
+
         self.__evaluate_state()
+        self.__evaluate_movement(clock)
 
         if self.state == Laser.LaserState.Recovery:
             self.width = (self.starting_width*(self.time_to_execute/LASER_ANTICIPATION_TIME))
@@ -84,7 +86,7 @@ class Laser(GameObject):
         elif self.movement_types[0] == Laser.LaserMovement.DeceleratingEnd and self.state == Laser.LaserState.Attack and self.time_to_execute < LASER_ANTICIPATION_TIME*2:
             if self.rotation_speed > self.min_rotation_speed:
                 self.rotation_speed -= (clock.get_time()/1000)*self.control_rotation_speed
-            elif:
+            else:
                 self.movement_types.pop(0)
 
 
@@ -96,7 +98,7 @@ class Laser(GameObject):
         )->None:
         if not isinstance(move_types, list):
             move_types = [move_types]
-        if move_types[0] != Laser.LaserMovement.Constant:
+        if move_types[-1] != Laser.LaserMovement.Constant:
             move_types.append(Laser.LaserMovement.Constant)
         self.movement_types = move_types
         self.control_rotation_speed = control_rotation_speed
