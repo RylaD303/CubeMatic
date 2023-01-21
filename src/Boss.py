@@ -14,25 +14,26 @@ from enum import Enum
 from math import sin, cos, pi
 import pygame
 
-class FollowingAttackPattern(Enum):
-    FiveWaveShoot = 1
-    ThreeSpiralShoot = 2
-    PlusLaser = 3
-
-class FollowingAttack(Enum):
-    Laser = 1
-    WaveShoot = 2
-    SpiralShoot = 3
-
-class MovePattern(Enum):
-    CentralLine = 1
-    StandInMiddle = 2
-    ParabolicMovement = 3
-    #CircularPattern
-following_attacks = list(FollowingAttackPattern)
 
 
 class Boss(GameObject):
+    class FollowingAttackPattern(Enum):
+        FiveWaveShoot = 1
+        ThreeSpiralShoot = 2
+        PlusLaser = 3
+
+    class FollowingAttack(Enum):
+        Laser = 1
+        WaveShoot = 2
+        SpiralShoot = 3
+
+    class MovePattern(Enum):
+        CentralLine = 1
+        StandInMiddle = 2
+        ParabolicMovement = 3
+        #CircularPattern
+
+    following_attacks = list(FollowingAttackPattern)
     def __init__(self,
         position: "Vector2D",
         speed: number_types,
@@ -61,12 +62,12 @@ class Boss(GameObject):
     def __choose_attack_sequence(self)-> None:
         #for attack in sample(following_attacks, 3):
         #    self.attack_sequence.put(attack)
-        self.attack_sequence.put(FollowingAttackPattern.FiveWaveShoot)
-        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
-        self.attack_sequence.put(FollowingAttackPattern.FiveWaveShoot)
-        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
-        self.attack_sequence.put(FollowingAttackPattern.FiveWaveShoot)
-        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
 
     def __evaluate_attack_pattern(self) -> None:
         if self.time_to_execute <= 0:
@@ -80,7 +81,7 @@ class Boss(GameObject):
         self.attack_cooldown -= clock.get_time()
         self.__evaluate_attack_pattern()
 
-        if self.current_attack_pattern == FollowingAttackPattern.FiveWaveShoot:
+        if self.current_attack_pattern == Boss.FollowingAttackPattern.FiveWaveShoot:
             if self.attack_cooldown <=0:
                 self.attack_cooldown = BOSS_FIVE_WAVE_SHOOT_COOLDOWN
                 angle = BOSS_FIVE_WAVE_SHOOT_ANGLE
@@ -94,7 +95,7 @@ class Boss(GameObject):
                     bullet2 = Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE)
                     bullet2.movement.angle_rotate(-i*angle)
                     boss_bullets.add(bullet2)
-        elif self.current_attack_pattern == FollowingAttackPattern.PlusLaser:
+        elif self.current_attack_pattern == Boss.FollowingAttackPattern.PlusLaser:
             if self.attack_cooldown <=0:
                 self.attack_cooldown = self.time_to_execute+1000
                 boss_lasers.add(Laser(self.centre_position(), Vector2D(2,2), self.time_to_execute))
