@@ -119,15 +119,15 @@ class Boss(GameObject):
         if self.movement_variant == 1:
             blend = 1 - self.time_to_execute/8000
             #evaluating the x axis positin for the elipse
-            x = blend*END_OF_MAP[0]
-            elx = ((x - END_OF_MAP[0])**2) / ((END_OF_MAP[2]/2)**2)
+            x = blend*END_OF_MAP.x
+            elx = ((x - END_OF_MAP.x/2)**2) / ((END_OF_MAP.x/2)**2)
 
             #evaluating the y length of the elipse so we can get the position
-            b2 = 49*END_OF_MAP[1]/256
-            y = (1 - elx)*b2 + END_OF_MAP[1] - END_OF_MAP[1]/20
+            b2 = 49*END_OF_MAP.y/256
+            y = (1 - elx)*b2 + END_OF_MAP.y - END_OF_MAP.y/20
 
 
-            self.position = Vector2D(x, y)
+            self.position = Vector2D(x, y - 7*END_OF_MAP.y/8)
 
 
     def __move(self):
