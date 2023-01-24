@@ -4,7 +4,7 @@ from src.classes.GameObject import GameObject
 import pygame
 from enum import Enum
 
-
+WHITE = (255, 255 ,255)
 
 class Laser(GameObject):
 
@@ -57,8 +57,10 @@ class Laser(GameObject):
             new_color = (self.color[0]/2, self.color[1]/2, self.color[2]/2)
             pygame.draw.line(display, new_color, tuple(self.position), tuple(self.direction), self.width)
         elif self.state == Laser.LaserState.Attack:
+            #pygame.draw.line(display, WHITE, tuple(self.position), tuple(self.direction), round(self.width+self.width*0.5))
             pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), self.width)
         else:
+            #pygame.draw.line(display, WHITE, tuple(self.position), tuple(self.direction), round(self.width+self.width*0.5))
             pygame.draw.line(display, self.color, tuple(self.position), tuple(self.direction), round(self.width))
 
     def __evaluate_state(self):

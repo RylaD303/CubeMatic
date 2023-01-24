@@ -34,6 +34,8 @@ class Boss(GameObject):
         #CircularPattern
 
     following_attacks = list(FollowingAttackPattern)
+    movement_patterns = list(MovePattern)
+
     def __init__(self,
         position: "Vector2D",
         speed: number_types,
@@ -49,8 +51,9 @@ class Boss(GameObject):
         self.sprite = pygame.transform.scale(boss_sprite, (width, height))
         self.speed = speed
         self.rotation = 0
+        self.movement_pattern = None
+        self.movement_variant = 0
         self.attack_sequence = Queue()
-        self.movement_pattern = Queue()
         self.current_attack_pattern = None
         self.time_to_execute = 0
         self.attack_cooldown = 0
@@ -68,11 +71,16 @@ class Boss(GameObject):
         self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
         self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
 
+    def __pick_new_movement_pattern(self):
+        self.movement_pattern = Boss.MovePattern.ParabolicMovement
+        self.movement_variant = 1
+
     def __evaluate_attack_pattern(self) -> None:
         if self.time_to_execute <= 0:
             self.current_attack_pattern = self.attack_sequence.get()
             self.attack_cooldown = 0
             self.time_to_execute = 8000 #ms
+            self.__pick_new_movement_pattern()
 
     def __execute_attack_pattern(self, player: "Player", boss_bullets: set["Bullet"], boss_lasers: set["Laser"], clock: "pygame.time.Clock") -> None:
 
@@ -105,8 +113,32 @@ class Boss(GameObject):
                     laser.set_type_of_laser([Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd], pi/6, pi/3, pi/9)
                     boss_lasers.add(laser)
 
+
+
+    def __evaluate_paravolic_movement(self):
+        if self.movement_variant == 1:
+            blend = 1 - self.time_to_execute/8000
+            #evaluating the x axis positin for the elipse
+            x = blend*END_OF_MAP[0]
+            elx = ((x - END_OF_MAP[0])**2) / ((END_OF_MAP[2]/2)**2)
+
+            #evaluating the y length of the elipse so we can get the position
+            b2 = 49*END_OF_MAP[1]/256
+            y = (1 - elx)*b2 + END_OF_MAP[1] - END_OF_MAP[1]/20
+
+
+            self.position = Vector2D(x, y)
+
+
+    #def __move(self):
+    #    if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
+    #        self.__evaluate_parabolic_movement()
+
+
     def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
+        self.__move()
         self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)
+
 
     def render(self, display: "pygame.Surface") -> None:
         if self.visible:
