@@ -1,19 +1,17 @@
+from random import sample
+from queue import Queue
+from enum import Enum
+from math import sin, cos, pi, sqrt
+import pygame
+
+
+
 from src.classes.Vector2D import Vector2D, number_types
 from src.classes.GameObject import GameObject
 from src.Player import Player
 from src.Bullet import Bullet
 from src.GameValues import *
 from src.Laser import Laser
-
-
-
-
-from random import sample
-from queue import Queue
-from enum import Enum
-from math import sin, cos, pi
-import pygame
-
 
 
 class Boss(GameObject):
@@ -84,10 +82,6 @@ class Boss(GameObject):
 
     def __execute_attack_pattern(self, player: "Player", boss_bullets: set["Bullet"], boss_lasers: set["Laser"], clock: "pygame.time.Clock") -> None:
 
-        self.time_to_execute -= clock.get_time()
-        self.attack_cooldown -= clock.get_time()
-        self.__evaluate_attack_pattern()
-
         if self.current_attack_pattern == Boss.FollowingAttackPattern.FiveWaveShoot:
             if self.attack_cooldown <=0:
                 self.attack_cooldown = BOSS_FIVE_WAVE_SHOOT_COOLDOWN
@@ -123,11 +117,12 @@ class Boss(GameObject):
             elx = ((x - END_OF_MAP.x/2)**2) / ((END_OF_MAP.x/2)**2)
 
             #evaluating the y length of the elipse so we can get the position
-            b2 = 49*END_OF_MAP.y/256
-            y = (1 - elx)*b2 + END_OF_MAP.y - END_OF_MAP.y/20
+            b2 = 49*(END_OF_MAP.y**2)/256
+            y = sqrt((1 - elx)*b2)
 
 
-            self.position = Vector2D(x, y - 7*END_OF_MAP.y/8)
+            self.position = Vector2D(x, y)
+            print(self.position)
 
 
     def __move(self):
@@ -136,6 +131,9 @@ class Boss(GameObject):
 
 
     def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
+        self.time_to_execute -= clock.get_time()
+        self.attack_cooldown -= clock.get_time()
+        self.__evaluate_attack_pattern()
         self.__move()
         self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)
 
