@@ -115,7 +115,7 @@ class Boss(GameObject):
 
 
 
-    def __evaluate_paravolic_movement(self):
+    def __evaluate_parabolic_movement(self):
         if self.movement_variant == 1:
             blend = 1 - self.time_to_execute/8000
             #evaluating the x axis positin for the elipse
@@ -130,9 +130,9 @@ class Boss(GameObject):
             self.position = Vector2D(x, y)
 
 
-    #def __move(self):
-    #    if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
-    #        self.__evaluate_parabolic_movement()
+    def __move(self):
+        if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
+            self.__evaluate_parabolic_movement()
 
 
     def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
