@@ -36,3 +36,12 @@ BOSS_FIVE_WAVE_SHOOT_COOLDOWN = 1500 #ms
 BOSS_FIVE_WAVE_SHOOT_ANGLE = pi/9 #degrees in pi
 
 BOSS_PLUS_LASER_ROTATION_SPEED = 1 #degrees per frame
+
+
+
+
+##Boss movement values
+#Boss parabolic/elipse movement
+BOSS_CENTRE_OF_ELIPSE = Vector2D(END_OF_MAP.x/2, -END_OF_MAP.y/20)
+BOSS_ELIPSE_HEIGHT = END_OF_MAP.y*7/16   #should scale with ends of the map
+BOSS_ELIPSE_WIDTH = END_OF_MAP.x/2   #should scale with end of the map
