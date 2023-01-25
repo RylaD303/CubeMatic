@@ -16,8 +16,10 @@ MAX_HOLD_TIME = 5000 #ms        how long can the player hold the teleportation d
 #Map values
 WINDOW_SIZE = (1400,700) #pixles
 START_OF_MAP = Vector2D(0,0) #pixles
-END_OF_MAP = Vector2D(*WINDOW_SIZE) #pixles # no touch
+END_OF_MAP = Vector2D(*WINDOW_SIZE) #pixles # do no touch
 MAP_TILE_SIZE = (64, 64) #pixles
+#END_OF_MAP.x -= MAP_TILE_SIZE[0]
+#END_OF_MAP.y -= MAP_TILE_SIZE[1]
 
 #Boss values
 BOSS_SCALE = Vector2D(48, 48)
@@ -43,6 +45,6 @@ BOSS_PLUS_LASER_ROTATION_SPEED = 1 #degrees per frame
 ##Boss movement values
 #Boss parabolic/elipse movement
 BOSS_UPPER_CENTRE_OF_ELIPSE = Vector2D(END_OF_MAP.x/2, -END_OF_MAP.y/20)
-BOSS_LOWER_CENTRE_OF_ELIPSE = Vector2D(END_OF_MAP.x/2, END_OF_MAP.y + END_OF_MAP.y/20)
+BOSS_LOWER_CENTRE_OF_ELIPSE = Vector2D(END_OF_MAP.x/2, END_OF_MAP.y - END_OF_MAP.y/20)
 BOSS_ELIPSE_HEIGHT = END_OF_MAP.y*7/16   #should scale with ends of the map
 BOSS_ELIPSE_WIDTH = END_OF_MAP.x/2   #should scale with end of the map

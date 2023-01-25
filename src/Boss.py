@@ -71,7 +71,7 @@ class Boss(GameObject):
 
     def __pick_new_movement_pattern(self):
         self.movement_pattern = Boss.MovePattern.ParabolicMovement
-        self.movement_variant = 1
+        self.movement_variant = 2
 
     def __evaluate_attack_pattern(self) -> None:
         if self.time_to_execute <= 0:
@@ -143,13 +143,21 @@ class Boss(GameObject):
         elx = ((x - BOSS_UPPER_CENTRE_OF_ELIPSE.x)**2)/a2
 
         if self.movement_variant == 1:
-
             #evaluating the y length of the elipse so we can get the position
             b2 = BOSS_ELIPSE_HEIGHT**2
             y = sqrt((1 - elx)*b2) - BOSS_UPPER_CENTRE_OF_ELIPSE.y
-
-
             self.position = Vector2D(x, y)
+
+        if self.movement_variant == 2:
+            #evaluating the y length of the elipse so we can get the position
+            b2 = BOSS_ELIPSE_HEIGHT**2
+            y = sqrt((1 - elx)*b2) + BOSS_LOWER_CENTRE_OF_ELIPSE.y
+
+            #getting the mirror image of y, so we can invert the half elipse
+            #and moving it to the correct position
+            y = -y + 2*BOSS_LOWER_CENTRE_OF_ELIPSE.y
+            self.position = Vector2D(x, y)
+
 
 
     def __move(self):
