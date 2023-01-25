@@ -80,46 +80,73 @@ class Boss(GameObject):
             self.time_to_execute = 8000 #ms
             self.__pick_new_movement_pattern()
 
-    def __execute_attack_pattern(self, player: "Player", boss_bullets: set["Bullet"], boss_lasers: set["Laser"], clock: "pygame.time.Clock") -> None:
+    def __shoot_bullet_wave(self, player: "Player", boss_bullets: set["Bullet"]):
+        self.attack_cooldown = BOSS_FIVE_WAVE_SHOOT_COOLDOWN
+        #central bullet
+        boss_bullets.add(
+            Bullet(self.centre_position(),
+            player.position,
+            BOSS_ATTACK_COLOR,
+            BOSS_BULLET_SIZE))
+        #side nnullets
+        for i in range(1,3):
+            bullet1 = Bullet(
+                self.centre_position(),
+                player.position,
+                BOSS_ATTACK_COLOR,
+                BOSS_BULLET_SIZE)
+            bullet1.movement.angle_rotate(i*BOSS_FIVE_WAVE_SHOOT_ANGLE)
+            boss_bullets.add(bullet1)
+            bullet2 = Bullet(
+                self.centre_position(),
+                player.position,
+                BOSS_ATTACK_COLOR,
+                BOSS_BULLET_SIZE)
+            bullet2.movement.angle_rotate(-i*BOSS_FIVE_WAVE_SHOOT_ANGLE)
+            boss_bullets.add(bullet2)
+
+    def __add_plus_lasers(self, boss_lasers: set["Laser"]):
+        self.attack_cooldown = self.time_to_execute+1000
+        lasers = [Laser(self.centre_position(), Vector2D(2,2), self.time_to_execute),
+                Laser(self.centre_position(), Vector2D(-2,2), self.time_to_execute),
+                Laser(self.centre_position(), Vector2D(2,-2), self.time_to_execute),
+                Laser(self.centre_position(), Vector2D(-2,-2), self.time_to_execute)]
+        for laser in lasers:
+            laser.set_type_of_laser(
+                [Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd],
+                 pi/6,
+                 pi/3,
+                 pi/9)
+            boss_lasers.add(laser)
+
+    def __execute_attack_pattern(self,
+    player: "Player",
+    boss_bullets: set["Bullet"],
+    boss_lasers: set["Laser"],
+    clock: "pygame.time.Clock") -> None:
 
         if self.current_attack_pattern == Boss.FollowingAttackPattern.FiveWaveShoot:
             if self.attack_cooldown <=0:
-                self.attack_cooldown = BOSS_FIVE_WAVE_SHOOT_COOLDOWN
-                angle = BOSS_FIVE_WAVE_SHOOT_ANGLE
-                #central bullet
-                boss_bullets.add(Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE))
-                #side nnullets
-                for i in range(1,3):
-                    bullet1 = Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE)
-                    bullet1.movement.angle_rotate(i*angle)
-                    boss_bullets.add(bullet1)
-                    bullet2 = Bullet(self.centre_position(), player.position, BOSS_ATTACK_COLOR, BOSS_BULLET_SIZE)
-                    bullet2.movement.angle_rotate(-i*angle)
-                    boss_bullets.add(bullet2)
+                self.__shoot_bullet_wave(player, boss_bullets)
         elif self.current_attack_pattern == Boss.FollowingAttackPattern.PlusLaser:
             if self.attack_cooldown <=0:
-                self.attack_cooldown = self.time_to_execute+1000
-                lasers = [Laser(self.centre_position(), Vector2D(2,2), self.time_to_execute),
-                        Laser(self.centre_position(), Vector2D(-2,2), self.time_to_execute),
-                        Laser(self.centre_position(), Vector2D(2,-2), self.time_to_execute),
-                        Laser(self.centre_position(), Vector2D(-2,-2), self.time_to_execute)]
-                for laser in lasers:
-                    laser.set_type_of_laser([Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd], pi/6, pi/3, pi/9)
-                    boss_lasers.add(laser)
+                self.__add_plus_lasers(boss_lasers)
 
 
 
     def __evaluate_parabolic_movement(self):
+        blend = 1 - self.time_to_execute/8000
+
+        #evaluating the x axis positin for the elipse (they are the same for both centres)
+        x = blend*(BOSS_UPPER_CENTRE_OF_ELIPSE.x + BOSS_ELIPSE_WIDTH)
+        a2 = BOSS_ELIPSE_WIDTH**2
+        elx = ((x - BOSS_UPPER_CENTRE_OF_ELIPSE.x)**2)/a2
+
         if self.movement_variant == 1:
-            blend = 1 - self.time_to_execute/8000
-            #evaluating the x axis positin for the elipse
-            x = blend*(BOSS_CENTRE_OF_ELIPSE.x + BOSS_ELIPSE_WIDTH)
-            a2 = BOSS_ELIPSE_WIDTH**2
-            elx = ((x - BOSS_CENTRE_OF_ELIPSE.x)**2)/a2
 
             #evaluating the y length of the elipse so we can get the position
             b2 = BOSS_ELIPSE_HEIGHT**2
-            y = sqrt((1 - elx)*b2) - BOSS_CENTRE_OF_ELIPSE.y
+            y = sqrt((1 - elx)*b2) - BOSS_UPPER_CENTRE_OF_ELIPSE.y
 
 
             self.position = Vector2D(x, y)

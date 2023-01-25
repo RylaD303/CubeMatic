@@ -42,6 +42,7 @@ BOSS_PLUS_LASER_ROTATION_SPEED = 1 #degrees per frame
 
 ##Boss movement values
 #Boss parabolic/elipse movement
-BOSS_CENTRE_OF_ELIPSE = Vector2D(END_OF_MAP.x/2, -END_OF_MAP.y/20)
+BOSS_UPPER_CENTRE_OF_ELIPSE = Vector2D(END_OF_MAP.x/2, -END_OF_MAP.y/20)
+BOSS_LOWER_CENTRE_OF_ELIPSE = Vector2D(END_OF_MAP.x/2, END_OF_MAP.y + END_OF_MAP.y/20)
 BOSS_ELIPSE_HEIGHT = END_OF_MAP.y*7/16   #should scale with ends of the map
 BOSS_ELIPSE_WIDTH = END_OF_MAP.x/2   #should scale with end of the map
