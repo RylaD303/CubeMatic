@@ -3,6 +3,7 @@ from pygame.locals import *
 from src.Player import Player
 from src.Boss import Boss
 from src.Bullet import Bullet
+from src.Laser import Laser
 from src.Teleport import Teleport
 from src.Tiles import MapTile
 from src.CollisionHandler import CollisionHandler
@@ -22,7 +23,7 @@ clock.tick()
 
 handle_collisions = CollisionHandler()
 
-def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss, boss_bullets, boss_lasers ):
+def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss: "Boss", boss_bullets: set["Bullet"], boss_lasers: set["Laser"]):
     player.main(player_movement, clock)
     for bullet in player_bullets:
         bullet.main()
@@ -35,7 +36,7 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
 
     lasers_to_remove = set()
     for laser in boss_lasers:
-        laser.main(clock)
+        laser.main(clock, boss.centre_position())
         if laser.time_to_execute <=0:
             lasers_to_remove.add(laser)
 
