@@ -1,4 +1,4 @@
-from random import sample
+from random import sample, randint
 from queue import Queue
 from enum import Enum
 from math import sin, cos, pi, sqrt
@@ -16,8 +16,8 @@ from src.Laser import Laser
 
 class Boss(GameObject):
     class FollowingAttackPattern(Enum):
-        FiveWaveShoot = 1
-        ThreeSpiralShoot = 2
+        WaveShots = 1
+        #ThreeSpiralShoot = 2
         PlusLaser = 3
 
     class FollowingAttack(Enum):
@@ -55,7 +55,6 @@ class Boss(GameObject):
         self.current_attack_pattern = None
         self.time_to_execute = 0
         self.attack_cooldown = 0
-        self.__choose_attack_sequence()
 
     def centre_position(self) -> "Vector2D":
         return self.position + BOSS_SCALE/2
@@ -64,24 +63,26 @@ class Boss(GameObject):
         #for attack in sample(following_attacks, 3):
         #    self.attack_sequence.put(attack)
         self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
-        self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.WaveShots)
         self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
-        self.attack_sequence.put(Boss.FollowingAttackPattern.FiveWaveShoot)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.WaveShots)
         self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
 
     def __pick_new_movement_pattern(self):
         self.movement_pattern = Boss.MovePattern.ParabolicMovement
-        self.movement_variant = 2
+        self.movement_variant = randint(1,2)
 
     def __evaluate_attack_pattern(self) -> None:
         if self.time_to_execute <= 0:
+            if self.attack_sequence.empty():
+                self.__choose_attack_sequence()
             self.current_attack_pattern = self.attack_sequence.get()
-            self.attack_cooldown = 0
+            self.attack_cooldown = 500
             self.time_to_execute = 8000 #ms
             self.__pick_new_movement_pattern()
 
     def __shoot_bullet_wave(self, player: "Player", boss_bullets: set["Bullet"]):
-        self.attack_cooldown = BOSS_FIVE_WAVE_SHOOT_COOLDOWN
+        self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
         #central bullet
         boss_bullets.add(
             Bullet(self.centre_position(),
@@ -95,14 +96,14 @@ class Boss(GameObject):
                 player.position,
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE)
-            bullet1.movement.angle_rotate(i*BOSS_FIVE_WAVE_SHOOT_ANGLE)
+            bullet1.movement.angle_rotate(i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet1)
             bullet2 = Bullet(
                 self.centre_position(),
                 player.position,
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE)
-            bullet2.movement.angle_rotate(-i*BOSS_FIVE_WAVE_SHOOT_ANGLE)
+            bullet2.movement.angle_rotate(-i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet2)
 
     def __add_plus_lasers(self, boss_lasers: set["Laser"]):
@@ -125,9 +126,13 @@ class Boss(GameObject):
     boss_lasers: set["Laser"],
     clock: "pygame.time.Clock") -> None:
 
-        if self.current_attack_pattern == Boss.FollowingAttackPattern.FiveWaveShoot:
+        if self.current_attack_pattern == Boss.FollowingAttackPattern.WaveShots:
             if self.attack_cooldown <=0:
-                self.__shoot_bullet_wave(player, boss_bullets)
+                if self.time_to_execute>BOSS_WAVE_SHOOT_COOLDOWN:
+                    self.__shoot_bullet_wave(player, boss_bullets)
+                else:
+                    self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
+
         elif self.current_attack_pattern == Boss.FollowingAttackPattern.PlusLaser:
             if self.attack_cooldown <=0:
                 self.__add_plus_lasers(boss_lasers)
