@@ -18,12 +18,8 @@ class Boss(GameObject):
     class FollowingAttackPattern(Enum):
         WaveShots = 1
         #ThreeSpiralShoot = 2
-        PlusLaser = 3
-
-    class FollowingAttack(Enum):
-        Laser = 1
-        WaveShoot = 2
-        SpiralShoot = 3
+        PlusLaser = 2
+        EdgeLaser = 3
 
     class MovePattern(Enum):
         CentralLine = 1
@@ -62,11 +58,12 @@ class Boss(GameObject):
     def __choose_attack_sequence(self)-> None:
         #for attack in sample(following_attacks, 3):
         #    self.attack_sequence.put(attack)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.EdgeLaser)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.EdgeLaser)
+        self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
         self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
         self.attack_sequence.put(Boss.FollowingAttackPattern.WaveShots)
-        self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
         self.attack_sequence.put(Boss.FollowingAttackPattern.WaveShots)
-        self.attack_sequence.put(Boss.FollowingAttackPattern.PlusLaser)
 
     def __pick_new_movement_pattern(self):
         self.movement_pattern = Boss.MovePattern.ParabolicMovement
@@ -115,10 +112,21 @@ class Boss(GameObject):
         for laser in lasers:
             laser.set_type_of_laser(
                 [Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd],
-                 pi/6,
-                 pi/3,
+                 pi/4,
+                 pi/2,
                  pi/9)
             boss_lasers.add(laser)
+
+    def __add_edge_laser(self, player: "Player", boss_lasers: set["Laser"]):
+        self.attack_cooldown = self.time_to_execute+1000
+        direction = Vector2D(-1,0) if player.position.x > self.position.x else Vector2D(1,0)
+        laser = Laser(self.centre_position(), direction, self.time_to_execute)
+        laser.set_type_of_laser(
+            [Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd],
+            pi/2,
+            pi,
+            pi/9)
+        boss_lasers.add(laser)
 
     def __execute_attack_pattern(self,
     player: "Player",
@@ -138,6 +146,9 @@ class Boss(GameObject):
                 self.__add_plus_lasers(boss_lasers)
 
 
+        elif self.current_attack_pattern == Boss.FollowingAttackPattern.EdgeLaser:
+            if self.attack_cooldown <=0:
+                self.__add_edge_laser(player, boss_lasers)
 
     def __evaluate_parabolic_movement(self):
         blend = 1 - self.time_to_execute/8000
