@@ -17,7 +17,7 @@ from src.Laser import Laser
 class Boss(GameObject):
     class FollowingAttackPattern(Enum):
         WaveShots = 1
-        #ThreeSpiralShoot = 2
+        SpiralShoot = 4
         PlusLaser = 2
         EdgeLaser = 3
 
@@ -131,17 +131,16 @@ class Boss(GameObject):
         boss_lasers.add(laser)
 
     def __shoot_spiral_bullets(self, boss_bullets, player):
-        if self.attack_cooldown <= 0:
-            self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
-            if self.angle_for_attacks == None:
-                self.angle_for_attack = Vector2D(-1,0) if player.position.x > self.position.x else Vector2D(1,0)
-            boss_bullets.add(
-                Bullet(self.centre_position(),
-                self.angle_for_attack,
-                BOSS_ATTACK_COLOR,
-                BOSS_BULLET_SIZE))
-            self.angle_for_attack.angle_rotate(BOSS_SPIRAL_SHOOT_ATTACK_ROTATION)
-            self.attack_cooldown = BOSS_SPIRAL_ATTACK_COOLDOWN
+        self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
+        if self.angle_for_attacks == None:
+            self.angle_for_attack = Vector2D(-1,0) if player.position.x > self.position.x else Vector2D(1,0)
+        boss_bullets.add(
+            Bullet(self.centre_position(),
+            self.angle_for_attack,
+            BOSS_ATTACK_COLOR,
+            BOSS_BULLET_SIZE))
+        self.angle_for_attack.angle_rotate(BOSS_SPIRAL_SHOOT_ATTACK_ROTATION)
+        self.attack_cooldown = BOSS_SPIRAL_ATTACK_COOLDOWN
 
 
     def __execute_attack_pattern(self,
@@ -149,22 +148,22 @@ class Boss(GameObject):
     boss_bullets: set["Bullet"],
     boss_lasers: set["Laser"],
     clock: "pygame.time.Clock") -> None:
-
         if self.current_attack_pattern == Boss.FollowingAttackPattern.WaveShots:
-            if self.attack_cooldown <=0:
-                if self.time_to_execute>BOSS_WAVE_SHOOT_COOLDOWN:
-                    self.__shoot_bullet_wave(player, boss_bullets)
-                else:
-                    self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
+            if self.time_to_execute>BOSS_WAVE_SHOOT_COOLDOWN:
+                self.__shoot_bullet_wave(player, boss_bullets)
+            else:
+                self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
 
         elif self.current_attack_pattern == Boss.FollowingAttackPattern.PlusLaser:
-            if self.attack_cooldown <=0:
-                self.__add_plus_lasers(boss_lasers)
+            self.__add_plus_lasers(boss_lasers)
 
 
         elif self.current_attack_pattern == Boss.FollowingAttackPattern.EdgeLaser:
-            if self.attack_cooldown <=0:
-                self.__add_edge_laser(player, boss_lasers)
+            self.__add_edge_laser(player, boss_lasers)
+
+        elif self.current_attack_pattern == Boss.FollowingAttackPattern.SpiralShoot:
+            self.__shoot_spiral_bullets(boss_bullets, player)
+
 
     def __evaluate_parabolic_movement(self):
         blend = 1 - self.time_to_execute/8000
@@ -202,7 +201,7 @@ class Boss(GameObject):
         self.attack_cooldown -= clock.get_time()
         self.__evaluate_attack_pattern()
         self.__move()
-        self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)
+        if self.attack_cooldown <=0: self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)
 
 
     def render(self, display: "pygame.Surface") -> None:
