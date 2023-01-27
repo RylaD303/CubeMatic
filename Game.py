@@ -67,7 +67,7 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
 
     #Rendering tile_map
     for map_tile in map_tiles:
-        map_tile.main(screen)
+        map_tile.render(screen)
 
     #Rendering screen
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))

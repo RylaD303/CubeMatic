@@ -39,6 +39,8 @@ BOSS_WAVE_SHOOT_ANGLE = pi/9 #degrees in pi
 
 BOSS_PLUS_LASER_ROTATION_SPEED = 1 #degrees per frame
 
+BOSS_SPIRAL_SHOOT_ATTACK_ROTATION = pi/18 #degrees in pi
+BOSS_SPIRAL_ATTACK_COOLDOWN = 500 #ms
 
 
 

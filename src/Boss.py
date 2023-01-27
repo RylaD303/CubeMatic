@@ -51,6 +51,7 @@ class Boss(GameObject):
         self.current_attack_pattern = None
         self.time_to_execute = 0
         self.attack_cooldown = 0
+        self.angle_for_attack = None
 
     def centre_position(self) -> "Vector2D":
         return self.position + BOSS_SCALE/2
@@ -76,6 +77,7 @@ class Boss(GameObject):
             self.current_attack_pattern = self.attack_sequence.get()
             self.attack_cooldown = 500
             self.time_to_execute = 8000 #ms
+            self.angle_for_attacks = None
             self.__pick_new_movement_pattern()
 
     def __shoot_bullet_wave(self, player: "Player", boss_bullets: set["Bullet"]):
@@ -119,14 +121,28 @@ class Boss(GameObject):
 
     def __add_edge_laser(self, player: "Player", boss_lasers: set["Laser"]):
         self.attack_cooldown = self.time_to_execute+1000
-        direction = Vector2D(-1,0) if player.position.x > self.position.x else Vector2D(1,0)
-        laser = Laser(self.centre_position(), direction, self.time_to_execute)
+        self.angle_for_attack = Vector2D(-1,0) if player.position.x > self.position.x else Vector2D(1,0)
+        laser = Laser(self.centre_position(), self.angle_for_attack, self.time_to_execute)
         laser.set_type_of_laser(
             [Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd],
             pi/2,
             pi,
             pi/9)
         boss_lasers.add(laser)
+
+    def __shoot_spiral_bullets(self, boss_bullets, player):
+        if self.attack_cooldown <= 0:
+            self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
+            if self.angle_for_attacks == None:
+                self.angle_for_attack = Vector2D(-1,0) if player.position.x > self.position.x else Vector2D(1,0)
+            boss_bullets.add(
+                Bullet(self.centre_position(),
+                self.angle_for_attack,
+                BOSS_ATTACK_COLOR,
+                BOSS_BULLET_SIZE))
+            self.angle_for_attack.angle_rotate(BOSS_SPIRAL_SHOOT_ATTACK_ROTATION)
+            self.attack_cooldown = BOSS_SPIRAL_ATTACK_COOLDOWN
+
 
     def __execute_attack_pattern(self,
     player: "Player",

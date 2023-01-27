@@ -21,7 +21,7 @@ class MapTile(GameObject):
         self.sprite = pygame.transform.scale(tile_sprite, (self.width, self.height))
         self.rotation = rotation
 
-    def main(self, display: "pygame.Surface") -> None:
+    def render(self, display: "pygame.Surface") -> None:
         """Draws the MapTile on the screen."""
         rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
         display.blit(\
