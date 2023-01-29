@@ -208,8 +208,21 @@ class Boss(GameObject):
             self.position = Vector2D(x, y)
 
     def __evaluate_stand_in_middle_movement(self):
-        if
-
+        blend = 1 - self.time_to_execute_pattern/self.movement_pattern.get_time()
+        centre_of_screen = Vector2D(END_OF_MAP/2)
+        if blend<=0.1 or blend>=0.9:
+            self.can_attack = False
+            current_blend = blend*5 if blend<=0.1 else 1 - (blend - 0.9)*5
+            if self.movement_variant in [2,4]:
+                current_blend = 1 - current_blend # opposite
+            if self.movement_variant in [1,2]:
+                self.position = current_blend*Vector2D(0,END_OF_MAP.y/2) +\
+                                (1 - current_blend)*Vector2D(END_OF_MAP.x,END_OF_MAP.y/2)
+            else:
+                self.position = current_blend*Vector2D(END_OF_MAP.x/2,0) +\
+                                (1 - current_blend)*Vector2D(END_OF_MAP.x/2,END_OF_MAP.y)
+        else:
+            self.position = centre_of_screen
     def __move(self):
         if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
             self.__evaluate_parabolic_movement()

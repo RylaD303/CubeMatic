@@ -109,11 +109,10 @@ class Vector2D:
         """Return the vector's components in polar coordinates."""
         return self.__abs__(), atan2(self.y, self.x)
 
-    def blend(self, other : "Vector2D", scale : number_types) -> "Vector2D":
+    def blend(self, other : "Vector2D", scale : number_types) -> None:
         """Blends two vectors into self.
-        scale = 0 : returns self, scale = 1 : returns other"""
+        scale = 0 : stays self, scale = 1 : becomes other"""
         self = (1-scale)*self + scale*other
-        return self
 
     def angle_rotated(self , angle) -> "Vector2D":
         """Returns new vector rotated by with the given angle. Angle should be in pi value."""

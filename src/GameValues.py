@@ -15,7 +15,7 @@ MAX_HOLD_TIME = 5000 #ms        how long can the player hold the teleportation d
 
 #Map values
 WINDOW_SIZE = (1400,700) #pixles
-START_OF_MAP = Vector2D(0,0) #pixles
+START_OF_MAP = Vector2D(0,0) #pixles # do no touch
 END_OF_MAP = Vector2D(*WINDOW_SIZE) #pixles # do no touch
 MAP_TILE_SIZE = (64, 64) #pixles
 #END_OF_MAP.x -= MAP_TILE_SIZE[0]
