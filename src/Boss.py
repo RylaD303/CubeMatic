@@ -82,8 +82,8 @@ class Boss(GameObject):
         self.attack_sequence.put(Boss.FollowingAttackPattern.WaveShots)
 
     def __pick_new_movement_pattern(self):
-        self.movement_pattern = Boss.MovePattern.ParabolicMovement
-        self.movement_variant = randint(1,2)
+        self.movement_pattern = Boss.MovePattern.StandInMiddle
+        self.movement_variant = 1#randint(1,2)
 
     def __evaluate_attack_pattern(self) -> None:
         if self.time_to_execute_pattern <= 0:
@@ -91,10 +91,10 @@ class Boss(GameObject):
                 self.__choose_attack_sequence()
             self.current_attack_pattern = self.attack_sequence.get()
             self.attack_cooldown = 500
-            self.time_to_execute_pattern = self.movement_pattern.get_time()
             self.angle_for_attack = None
             self.can_attack = True
             self.__pick_new_movement_pattern()
+            self.time_to_execute_pattern = self.movement_pattern.get_time()
 
     def __shoot_bullet_wave(self, player: "Player", boss_bullets: set["Bullet"]):
         self.attack_cooldown = self.movement_pattern.cooldown_for_wave_shoot()
@@ -122,7 +122,7 @@ class Boss(GameObject):
             boss_bullets.add(bullet2)
 
     def __add_plus_lasers(self, boss_lasers: set["Laser"]):
-        self.attack_cooldown = self.time_to_execute_pattern+1000
+        self.attack_cooldown = self.movement_pattern.time_laser_attack()
         lasers = [Laser(self.centre_position(), Vector2D(2,2),self.movement_pattern.time_laser_attack()),
                 Laser(self.centre_position(), Vector2D(-2,2), self.movement_pattern.time_laser_attack()),
                 Laser(self.centre_position(), Vector2D(2,-2), self.movement_pattern.time_laser_attack()),
@@ -208,21 +208,22 @@ class Boss(GameObject):
             self.position = Vector2D(x, y)
 
     def __evaluate_stand_in_middle_movement(self):
-        blend = 1 - self.time_to_execute_pattern/self.movement_pattern.get_time()
-        centre_of_screen = Vector2D(END_OF_MAP/2)
-        if blend<=0.1 or blend>=0.9:
+        blend = self.time_to_execute_pattern/self.movement_pattern.get_time()
+        if blend<=0.2 or blend>=0.8:
             self.can_attack = False
-            current_blend = blend*5 if blend<=0.1 else 1 - (blend - 0.9)*5
+            current_blend = blend*5 if blend<=0.2 else (blend - 0.8)*5 + 1
+            current_blend /= 2
             if self.movement_variant in [2,4]:
                 current_blend = 1 - current_blend # opposite
             if self.movement_variant in [1,2]:
-                self.position = current_blend*Vector2D(0,END_OF_MAP.y/2) +\
-                                (1 - current_blend)*Vector2D(END_OF_MAP.x,END_OF_MAP.y/2)
+                self.position = current_blend*Vector2D(0,CENTRE_OF_MAP.y) +\
+                                (1 - current_blend)*Vector2D(CENTRE_OF_MAP.x*2,CENTRE_OF_MAP.y)
             else:
-                self.position = current_blend*Vector2D(END_OF_MAP.x/2,0) +\
-                                (1 - current_blend)*Vector2D(END_OF_MAP.x/2,END_OF_MAP.y)
+                self.position = current_blend*Vector2D(CENTRE_OF_MAP.x,0) +\
+                                (1 - current_blend)*Vector2D(CENTRE_OF_MAP.x,CENTRE_OF_MAP.y*2)
         else:
-            self.position = centre_of_screen
+            self.position = CENTRE_OF_MAP
+
     def __move(self):
         if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
             self.__evaluate_parabolic_movement()
