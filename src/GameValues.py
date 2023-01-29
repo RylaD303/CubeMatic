@@ -20,8 +20,10 @@ END_OF_MAP = Vector2D(*WINDOW_SIZE) #pixles # do no touch
 MAP_TILE_SIZE = (64, 64) #pixles
 
 CENTRE_OF_MAP = Vector2D(\
-    END_OF_MAP.x/2 - WINDOW_SIZE[0]%MAP_TILE_SIZE[0],\
-    END_OF_MAP.y/2 - WINDOW_SIZE[1]%MAP_TILE_SIZE[1]) #pixles
+    END_OF_MAP.x/2,\
+    END_OF_MAP.y/2)
+    # - WINDOW_SIZE[0]%MAP_TILE_SIZE[0],\
+    # - WINDOW_SIZE[1]%MAP_TILE_SIZE[1]) #pixles
 #END_OF_MAP.x -= MAP_TILE_SIZE[0]
 #END_OF_MAP.y -= MAP_TILE_SIZE[1]
 

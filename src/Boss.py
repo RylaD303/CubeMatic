@@ -16,28 +16,28 @@ from src.Laser import Laser
 
 class Boss(GameObject):
     class FollowingAttackPattern(Enum):
-        WaveShots = None
-        PlusLaser = None
-        EdgeLaser = None
-        SpiralShoot = None
+        WaveShots = 1
+        PlusLaser = 2
+        EdgeLaser = 3
+        SpiralShoot = 4
 
     class MovePattern(Enum):
-        StandInMiddle = {
+        StandInMiddle = [1,{
             "time_to_execute": 10000,
             "time_for_one_laser_attack":8000,
-            "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}
-        ParabolicMovement = {
+            "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}]
+        ParabolicMovement = [2,{
             "time_to_execute": 8000,
             "time_for_one_laser_attack":7000,
-            "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}
+            "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}]
         #StandInMiddle = 2
 
         def get_time(self):
-            return self.value["time_to_execute"]
+            return self.value[1]["time_to_execute"]
         def time_laser_attack(self):
-            return self.value["time_for_one_laser_attack"]
+            return self.value[1]["time_for_one_laser_attack"]
         def cooldown_for_wave_shoot(self):
-            return self.value["cooldown_for_wave_shoot"]
+            return self.value[1]["cooldown_for_wave_shoot"]
 
     following_attacks = list(FollowingAttackPattern)
     movement_patterns = list(MovePattern)
@@ -55,6 +55,8 @@ class Boss(GameObject):
         #self.width = width
         #self.height = height
         self.sprite = pygame.transform.scale(boss_sprite, (width, height))
+        self.width = width
+        self.height = height
         self.speed = speed
         self.rotation = 0
         self.movement_pattern = None
@@ -67,7 +69,9 @@ class Boss(GameObject):
         self.can_attack = False
 
     def centre_position(self) -> "Vector2D":
-        return self.position + BOSS_SCALE/2
+        rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
+        return Vector2D(self.position.x - (rotated_sprite.get_width() - self.sprite.get_width())/2,
+                self.position.y - (rotated_sprite.get_height() - self.sprite.get_height())/2)
 
     def __choose_attack_sequence(self)-> None:
         #for attack in sample(following_attacks, 3):
@@ -222,7 +226,10 @@ class Boss(GameObject):
                 self.position = current_blend*Vector2D(CENTRE_OF_MAP.x,0) +\
                                 (1 - current_blend)*Vector2D(CENTRE_OF_MAP.x,CENTRE_OF_MAP.y*2)
         else:
+            self.can_attack = True
             self.position = CENTRE_OF_MAP
+
+
 
     def __move(self):
         if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
@@ -238,7 +245,6 @@ class Boss(GameObject):
         self.__move()
         if self.attack_cooldown <=0:
             self.__execute_attack_pattern(player, boss_bullets, boss_lasers, clock)
-
 
     def render(self, display: "pygame.Surface") -> None:
         if self.visible:
