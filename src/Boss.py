@@ -16,16 +16,28 @@ from src.Laser import Laser
 
 class Boss(GameObject):
     class FollowingAttackPattern(Enum):
-        WaveShots = 1
-        SpiralShoot = 4
-        PlusLaser = 2
-        EdgeLaser = 3
+        WaveShots = None
+        PlusLaser = None
+        EdgeLaser = None
+        SpiralShoot = None
 
     class MovePattern(Enum):
-        CentralLine = 1
-        StandInMiddle = 2
-        ParabolicMovement = 3
-        #CircularPattern
+        StandInMiddle = {
+            "time_to_execute": 10000,
+            "time_for_one_laser_attack":8000,
+            "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}
+        ParabolicMovement = {
+            "time_to_execute": 8000,
+            "time_for_one_laser_attack":7000,
+            "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}
+        #StandInMiddle = 2
+
+        def get_time(self):
+            return self.value["time_to_execute"]
+        def time_laser_attack(self):
+            return self.value["time_for_one_laser_attack"]
+        def cooldown_for_wave_shoot(self):
+            return self.value["cooldown_for_wave_shoot"]
 
     following_attacks = list(FollowingAttackPattern)
     movement_patterns = list(MovePattern)
@@ -49,9 +61,10 @@ class Boss(GameObject):
         self.movement_variant = 0
         self.attack_sequence = Queue()
         self.current_attack_pattern = None
-        self.time_to_execute = 0
         self.attack_cooldown = 0
         self.angle_for_attack = None
+        self.time_to_execute_pattern = 0
+        self.can_attack = False
 
     def centre_position(self) -> "Vector2D":
         return self.position + BOSS_SCALE/2
@@ -73,17 +86,18 @@ class Boss(GameObject):
         self.movement_variant = randint(1,2)
 
     def __evaluate_attack_pattern(self) -> None:
-        if self.time_to_execute <= 0:
+        if self.time_to_execute_pattern <= 0:
             if self.attack_sequence.empty():
                 self.__choose_attack_sequence()
             self.current_attack_pattern = self.attack_sequence.get()
             self.attack_cooldown = 500
-            self.time_to_execute = 8000 #ms
+            self.time_to_execute_pattern = self.movement_pattern.get_time()
             self.angle_for_attack = None
+            self.can_attack = True
             self.__pick_new_movement_pattern()
 
     def __shoot_bullet_wave(self, player: "Player", boss_bullets: set["Bullet"]):
-        self.attack_cooldown = BOSS_WAVE_SHOOT_COOLDOWN
+        self.attack_cooldown = self.movement_pattern.cooldown_for_wave_shoot()
         #central bullet
         boss_bullets.add(
             Bullet(self.centre_position(),
@@ -108,11 +122,11 @@ class Boss(GameObject):
             boss_bullets.add(bullet2)
 
     def __add_plus_lasers(self, boss_lasers: set["Laser"]):
-        self.attack_cooldown = self.time_to_execute+1000
-        lasers = [Laser(self.centre_position(), Vector2D(2,2), self.time_to_execute),
-                Laser(self.centre_position(), Vector2D(-2,2), self.time_to_execute),
-                Laser(self.centre_position(), Vector2D(2,-2), self.time_to_execute),
-                Laser(self.centre_position(), Vector2D(-2,-2), self.time_to_execute)]
+        self.attack_cooldown = self.time_to_execute_pattern+1000
+        lasers = [Laser(self.centre_position(), Vector2D(2,2),self.movement_pattern.time_laser_attack()),
+                Laser(self.centre_position(), Vector2D(-2,2), self.movement_pattern.time_laser_attack()),
+                Laser(self.centre_position(), Vector2D(2,-2), self.movement_pattern.time_laser_attack()),
+                Laser(self.centre_position(), Vector2D(-2,-2), self.movement_pattern.time_laser_attack())]
         for laser in lasers:
             laser.set_type_of_laser(
                 [Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd],
@@ -122,9 +136,9 @@ class Boss(GameObject):
             boss_lasers.add(laser)
 
     def __add_edge_laser(self, player: "Player", boss_lasers: set["Laser"]):
-        self.attack_cooldown = self.time_to_execute+1000
+        self.attack_cooldown = self.time_to_execute_pattern+1000
         self.angle_for_attack = Vector2D(-1,0) if player.position.x > self.position.x else Vector2D(1,0)
-        laser = Laser(self.centre_position(), self.angle_for_attack, self.time_to_execute)
+        laser = Laser(self.centre_position(), self.angle_for_attack, self.movement_pattern.time_laser_attack())
         laser.set_type_of_laser(
             [Laser.LaserMovement.AcceleratingStart, Laser.LaserMovement.DeceleratingEnd],
             pi/2,
@@ -149,8 +163,10 @@ class Boss(GameObject):
     boss_bullets: set["Bullet"],
     boss_lasers: set["Laser"],
     clock: "pygame.time.Clock") -> None:
+        if not self.can_attack:
+            return
         if self.current_attack_pattern == Boss.FollowingAttackPattern.WaveShots:
-            if self.time_to_execute>BOSS_WAVE_SHOOT_COOLDOWN:
+            if self.time_to_execute_pattern > self.movement_pattern.cooldown_for_wave_shoot():
                 self.__shoot_bullet_wave(player, boss_bullets)
 
         elif self.current_attack_pattern == Boss.FollowingAttackPattern.PlusLaser:
@@ -165,8 +181,11 @@ class Boss(GameObject):
 
 
     def __evaluate_parabolic_movement(self):
-        blend = 1 - self.time_to_execute/8000
-
+        blend = 1 - self.time_to_execute_pattern/self.movement_pattern.get_time()
+        if blend<0.1 or blend>0.9:
+            self.can_attack = False
+        else:
+            self.can_attack = True
         #evaluating the x axis positin for the elipse (they are the same for both centres)
         x = blend*(BOSS_UPPER_CENTRE_OF_ELIPSE.x + BOSS_ELIPSE_WIDTH)
         a2 = BOSS_ELIPSE_WIDTH**2
@@ -188,15 +207,18 @@ class Boss(GameObject):
             y = -y + 2*BOSS_LOWER_CENTRE_OF_ELIPSE.y
             self.position = Vector2D(x, y)
 
-
+    def __evaluate_stand_in_middle_movement(self):
+        if
 
     def __move(self):
         if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
             self.__evaluate_parabolic_movement()
+        if self.movement_pattern == Boss.MovePattern.StandInMiddle:
+            self.__evaluate_stand_in_middle_movement()
 
 
     def main(self, player: "Player", boss_bullets: list["Bullet"], boss_lasers: list["Laser"], clock: "pygame.time.Clock"):
-        self.time_to_execute -= clock.get_time()
+        self.time_to_execute_pattern -= clock.get_time()
         self.attack_cooldown -= clock.get_time()
         self.__evaluate_attack_pattern()
         self.__move()
