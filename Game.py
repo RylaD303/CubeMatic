@@ -73,6 +73,11 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()
 
+font = pygame.font.SysFont("arialblack", 40)
+def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame.Surface") -> None:
+    img = font.render(text, True, text_color)
+    screen.blit(img, tuple(position))
+
 #Tile map creation
 map_tile_sprite = pygame.image.load('src\sprites\Tile_map_sprite.png')
 map_tile_sprite.set_colorkey(map_tile_sprite.get_at((0,0)))
@@ -180,6 +185,13 @@ while game_running:
     if player_firing:
         player.fire(player_bullets, Vector2D(*pygame.mouse.get_pos())/screen_scaling)
 
+
+    #Renders text if game is paused:
+    if game_paused:
+        draw_text("Press ESC again to unpause",
+                (0, 128, 0),
+                Vector2D(END_OF_MAP.x/2, 100),
+                screen)
     #Rendering on the display
     handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
