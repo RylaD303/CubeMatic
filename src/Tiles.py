@@ -1,8 +1,6 @@
-from typing import Union
-from math import sin
-from src.classes.Vector2D import Vector2D, number_types
-from src.classes.GameObject import GameObject
 import pygame
+from src.classes.vector_2d import Vector2D, number_types
+from src.classes.game_object import GameObject
 
 class MapTile(GameObject):
     """The MapTile Game object. Stops player from moving around. Stops projectiles."""

@@ -5,15 +5,15 @@ from math import pi, sqrt
 
 
 
-from src.classes.Vector2D import Vector2D, number_types
-from src.classes.GameObject import GameObject
-from src.Player import Player
-from src.Bullet import Bullet
-from src.GameValues import *
-from src.Laser import Laser
+from src.classes.vector_2d import Vector2D, number_types
+from src.classes.game_object import GameObject
+from src.player import Player
+from src.bullet import Bullet
+from src.game_values import *
+from src.laser import Laser
 
 
-class Boss_AI(GameObject):
+class BossAI(GameObject):
     """
     BossAI object.
     Handles the movement patterns and the attack patterns of

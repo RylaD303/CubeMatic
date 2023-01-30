@@ -1,5 +1,6 @@
-from src.classes.Vector2D import Vector2D
 from math import pi
+from src.classes.vector_2d import Vector2D
+
 #Constants for the game
 #Player values
 PLAYER_START = Vector2D(20,20) #pixles

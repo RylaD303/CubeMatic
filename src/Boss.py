@@ -1,14 +1,14 @@
 import pygame
 
-from src.classes.Vector2D import number_types
-from src.classes.Boss_AI import Boss_AI
-from src.Player import Player
-from src.Bullet import Bullet
-from src.GameValues import *
-from src.Laser import Laser
+from src.classes.vector_2d import number_types
+from src.classes.boss_ai import BossAI
+from src.player import Player
+from src.bullet import Bullet
+from src.game_values import *
+from src.laser import Laser
 
 
-class Boss(Boss_AI):
+class Boss(BossAI):
     def __init__(self,
         boss_sprite: "pygame.Surface",
         width: number_types = 64,

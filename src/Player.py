@@ -1,7 +1,7 @@
-from src.classes.Vector2D import Vector2D, number_types
-from src.classes.GameObject import GameObject
-from src.Bullet import Bullet
-from src.GameValues import *
+from src.classes.vector_2d import Vector2D, number_types
+from src.classes.game_object import GameObject
+from src.bullet import Bullet
+from src.game_values import *
 import pygame
 
 

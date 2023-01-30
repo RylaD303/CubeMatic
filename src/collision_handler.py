@@ -1,8 +1,8 @@
 import pygame
-from src.Player import Player
-from src.Teleport import Teleport
-from src.Bullet import Bullet
-from src.GameValues import *
+from src.player import Player
+from src.teleport import Teleport
+from src.bullet import Bullet
+from src.game_values import *
 
 class CollisionHandler():
     def __call__(self, player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport"):

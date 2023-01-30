@@ -1,6 +1,6 @@
-from src.GameValues import *
-from src.classes.Vector2D import Vector2D, number_types
-from src.classes.GameObject import GameObject
+from src.game_values import *
+from src.classes.vector_2d import Vector2D, number_types
+from src.classes.game_object import GameObject
 import pygame
 from enum import Enum
 

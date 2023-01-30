@@ -1,14 +1,14 @@
 import pygame, sys
 from pygame.locals import *
-from src.Player import Player
-from src.Boss import Boss
-from src.Bullet import Bullet
-from src.Laser import Laser
-from src.Teleport import Teleport
-from src.Tiles import MapTile
-from src.CollisionHandler import CollisionHandler
-from src.classes.Vector2D import Vector2D
-from src.GameValues import *
+from src.player import Player
+from src.boss import Boss
+from src.bullet import Bullet
+from src.laser import Laser
+from src.teleport import Teleport
+from src.tiles import MapTile
+from src.collision_handler import CollisionHandler
+from src.classes.vector_2d import Vector2D
+from src.game_values import *
 
 #def collision_test(sprite: "pygame.Rect", objects: list["MapTile"]):
 #    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
