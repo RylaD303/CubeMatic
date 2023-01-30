@@ -2,7 +2,6 @@ from random import randint
 from queue import Queue
 from enum import Enum
 from math import pi, sqrt
-import pygame
 
 
 
@@ -14,12 +13,15 @@ from src.GameValues import *
 from src.Laser import Laser
 
 
-class BossAI(GameObject):
+class Boss_AI(GameObject):
     """
     BossAI object.
-    Handles the movement patterns and the attack patterns of the Boss.
-    Value of enums is ID"""
+    Handles the movement patterns and the attack patterns of
+    the Boss. Value of enums is ID.
+    """
     class FollowingAttackPattern(Enum):
+        """
+        """
         WaveShots = 1
         PlusLaser = 2
         EdgeLaser = 3
@@ -29,28 +31,45 @@ class BossAI(GameObject):
         """
         Enum for state of movement pattern of the boss.
         First value of Enum is ID.
-        Second value is dict describing how attack patterns should act."""
+        Second value is dict describing how attack patterns
+        should act.
+        """
 
         StandInMiddle = [1, {"time_to_execute": 10000,
                              "time_for_one_laser_attack":8000,
-                             "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}]
+                             "cooldown_for_wave_shoot":
+                             BOSS_WAVE_SHOOT_COOLDOWN}]
         ParabolicMovement = [2, {"time_to_execute": 8000,
                                  "time_for_one_laser_attack":6800,
-                                 "cooldown_for_wave_shoot": BOSS_WAVE_SHOOT_COOLDOWN}]
+                                 "cooldown_for_wave_shoot":
+                                 BOSS_WAVE_SHOOT_COOLDOWN}]
         #StandInMiddle = 2
 
         def get_time(self) -> number_types:
+            """
+            Returns the enums corresponding time to
+            execute movement patter
+            """
             return self.value[1]["time_to_execute"]
         def time_laser_attack(self)  -> number_types:
+            """
+            Returns the enums corresponding time to
+            execute laser attack pattern
+            """
             return self.value[1]["time_for_one_laser_attack"]
         def cooldown_for_wave_shoot(self)  -> number_types:
+            """
+            Returns the enums corresponding cooldown for
+            wave shoot attack pattern
+            """
             return self.value[1]["cooldown_for_wave_shoot"]
 
     following_attacks = list(FollowingAttackPattern)
     movement_patterns = list(MovePattern)
 
     def __init__(self) -> None:
-        """Initialisation of BossAI object.
+        """
+        Initialisation of BossAI object.
         Has:
         current_movement_pattern -
             current movement pattern execution;
@@ -91,10 +110,11 @@ class BossAI(GameObject):
         self.time_to_execute_pattern = 0
 
     def centre_position(self) -> "Vector2D":
-        """Returns the centre position of the Boss,
-           depending on its scale.
+        """
+        Returns the centre position of the Boss,
+        depending on its scale.
 
-           return_t: Vector2D
+        return_t: Vector2D
         """
         return self.position + BOSS_SCALE/2
 
@@ -105,13 +125,14 @@ class BossAI(GameObject):
 
     def _shoot_bullet_wave(self, player: "Player",
                            boss_bullets: set["Bullet"])  -> None:
-        """Executes attack WAVESHOOT:
-           Shoots a wave of five bullets towards the player.
-           Parameters:
-            player:
-                for position of player
-            Set of bullets:
-                to add the bullets so they can be handled
+        """
+        Executes attack WAVESHOOT:
+        Shoots a wave of five bullets towards the player.
+        Parameters:
+        player:
+            for position of player
+        Set of bullets:
+            to add the bullets so they can be handled
         """
         self.attack_cooldown =\
             self.current_movement_pattern.cooldown_for_wave_shoot()
@@ -139,13 +160,14 @@ class BossAI(GameObject):
             boss_bullets.add(bullet2)
 
     def _add_plus_lasers(self, boss_lasers: set["Laser"])  -> None:
-        """Executes the plus laser attack pattern.
-           Adds four lasers pointing to the main diagonals
-           and sets them to accelerate in the beggining and
-           decelerate at the end.
-           Parameters:
-            Set of boss lasers:
-                to add the lasers so they can be handled.
+        """
+        Executes the plus laser attack pattern.
+        Adds four lasers pointing to the main diagonals
+        and sets them to accelerate in the beggining and
+        decelerate at the end.
+        Parameters:
+        Set of boss lasers:
+            to add the lasers so they can be handled.
         """
         self.attack_cooldown =\
             self.current_movement_pattern.time_laser_attack()
@@ -165,22 +187,23 @@ class BossAI(GameObject):
 
     def _add_edge_laser(self, player: "Player",
                         boss_lasers: set["Laser"])  -> None:
-        """Executes the edge laser attack pattern.
-           Adds one laser pointing away from the player.
-           Sets the laser to fast speed, sets it to
-           accelerate in the beggining and decelerate
-           at the end.
+        """
+        Executes the edge laser attack pattern.
+        Adds one laser pointing away from the player.
+        Sets the laser to fast speed, sets it to
+        accelerate in the beggining and decelerate
+        at the end.
 
-           In case of Stand in middle movement pattern
-           adds a second pattern so it is not so easy
-           to dodge.
+        In case of Stand in middle movement pattern
+        adds a second pattern so it is not so easy
+        to dodge.
 
-           Parameters:
-            player:
-                to know the players position, so it can
-                set the laser's direction away from player.
-            set of lasers:
-                to add them to the set os they can be handled.
+        Parameters:
+        player:
+            to know the players position, so it can
+            set the laser's direction away from player.
+        set of lasers:
+            to add them to the set os they can be handled.
         """
         self.attack_cooldown = self.time_to_execute_pattern+1000
         self.angle_for_attack = Vector2D(-1,0)\
@@ -205,19 +228,22 @@ class BossAI(GameObject):
             laser2.direction.angle_rotate(pi)
             boss_lasers.add(laser2)
 
-    def _shoot_spiral_bullets(self, boss_bullets: list["Bullet"], player: "Player")  -> None:
-        """Executes the edge laser attack pattern.
-           Adds one laser pointing away from the player.
-           Sets the laser to fast speed, sets it to
-           accelerate in the beggining and decelerate
-           at the end.
+    def _shoot_spiral_bullets(self,
+                              boss_bullets: list["Bullet"],
+                              player: "Player")  -> None:
+        """
+        Executes the edge laser attack pattern.
+        Adds one laser pointing away from the player.
+        Sets the laser to fast speed, sets it to
+        accelerate in the beggining and decelerate
+        at the end.
 
-           parameters:
-            player:
-                to set the starting angle away from the player
+        parameters:
+        player:
+            to set the starting angle away from the player
 
-            set of bullets:
-                to add the bullets so they can be handled
+        set of bullets:
+            to add the bullets so they can be handled
         """
         if self.angle_for_attack is None:
             self.angle_for_attack = Vector2D(-1,0)\
@@ -240,10 +266,11 @@ class BossAI(GameObject):
 
 
     def _evaluate_parabolic_movement(self) -> None:
-        """Evaluates the current movement of the boss depending on
-           the time left to execute the movement pattern.
+        """
+        Evaluates the current movement of the boss depending on
+        the time left to execute the movement pattern.
 
-           todo!
+        todo!
         """
         blend = 1 - self.time_to_execute_pattern\
                     / self.current_movement_pattern.get_time()
@@ -251,35 +278,41 @@ class BossAI(GameObject):
             self.can_attack = False
         else:
             self.can_attack = True
-        #evaluating the x axis positin for the elipse (they are the same for both centres)
-        boss_postion_x = blend*(BOSS_UPPER_CENTRE_OF_ELIPSE.x + BOSS_ELIPSE_WIDTH)
+        #evaluating the x axis positin for the elipse
+        #(they are the same for both centres)
+        boss_postion_x = blend\
+                        * (BOSS_UPPER_CENTRE_OF_ELIPSE.x + BOSS_ELIPSE_WIDTH)
         width_of_elipse_power_2 = BOSS_ELIPSE_WIDTH**2
         elx = ((boss_postion_x - BOSS_UPPER_CENTRE_OF_ELIPSE.x)**2)\
                 / width_of_elipse_power_2
 
         if self.movement_variant == 1:
-            #evaluating the y length of the elipse so we can get the position
+            #evaluating the y length of the elipse
+            #so we can get the position
             length_of_elipse_power_2 = BOSS_ELIPSE_HEIGHT**2
             boss_position_y = sqrt((1 - elx)*length_of_elipse_power_2)\
                               - BOSS_UPPER_CENTRE_OF_ELIPSE.y
             self.position = Vector2D(boss_postion_x, boss_position_y)
 
         if self.movement_variant == 2:
-            #evaluating the y length of the elipse so we can get the position
+            #evaluating the y length of the elipse
+            #so we can get the position
             length_of_elipse_power_2 = BOSS_ELIPSE_HEIGHT**2
             boss_postion_y = sqrt((1 - elx)*length_of_elipse_power_2)\
                              + BOSS_LOWER_CENTRE_OF_ELIPSE.y
 
-            #getting the mirror image of y, so we can invert the half elipse
+            #getting the mirror image of y,
+            #so we can invert the half elipse
             #and moving it to the correct position
             boss_postion_y = -boss_postion_y + 2*BOSS_LOWER_CENTRE_OF_ELIPSE.y
             self.position = Vector2D(boss_postion_x, boss_postion_y)
 
     def _evaluate_stand_in_middle_movement(self) -> None:
-        """Evaluates the current movement of the boss depending on
-           the time left to execute the movement pattern.
+        """
+        Evaluates the current movement of the boss depending on
+        the time left to execute the movement pattern.
 
-           todo!
+        todo!
         """
         blend = self.time_to_execute_pattern\
                 / self.current_movement_pattern.get_time()
