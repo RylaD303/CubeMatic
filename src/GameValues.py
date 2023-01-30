@@ -3,7 +3,7 @@ from math import pi
 #Constants for the game
 #Player values
 PLAYER_START = Vector2D(20,20) #pixles
-PLAYER_SPEED = 7 #pixles
+PLAYER_SPEED = 6 #pixles
 PLAYER_SCALE = Vector2D(48, 48) #pixles
 PLAYER_BULLET_SPEED = 20 #pixles
 PLAYER_BULLET_SIZE = 3 # pixels
