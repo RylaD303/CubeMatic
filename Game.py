@@ -95,7 +95,7 @@ player_firing = False
 teleportation_device: "Teleport" = Teleport(PLAYER_TELEPORT_SPEED)
 
 #Boss creation
-boss = Boss(Vector2D(500,500), PLAYER_SPEED, pygame.image.load('src/sprites/Player1.png'), *tuple(BOSS_SCALE))
+boss = Boss(pygame.image.load('src/sprites/Player1.png'), *tuple(BOSS_SCALE))
 boss_bullets = set()
 boss_lasers = set()
 

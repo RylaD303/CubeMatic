@@ -1,7 +1,6 @@
 import pygame
 from src.Player import Player
 from src.Teleport import Teleport
-from src.Tiles import MapTile
 from src.Bullet import Bullet
 from src.GameValues import *
 
