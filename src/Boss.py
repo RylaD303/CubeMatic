@@ -69,9 +69,7 @@ class Boss(GameObject):
         self.can_attack = False
 
     def centre_position(self) -> "Vector2D":
-        rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
-        return Vector2D(self.position.x - (rotated_sprite.get_width() - self.sprite.get_width())/2,
-                self.position.y - (rotated_sprite.get_height() - self.sprite.get_height())/2)
+        return self.position + BOSS_SCALE/2
 
     def __choose_attack_sequence(self)-> None:
         #for attack in sample(following_attacks, 3):
