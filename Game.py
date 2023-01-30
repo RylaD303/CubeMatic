@@ -107,7 +107,7 @@ screen = resizable_screen.copy()
 screen_scaling = 1
 
 game_running = True
-
+game_paused = False
 while game_running:
 
     #Black background
@@ -122,14 +122,16 @@ while game_running:
             pygame.quit()
             sys.exit()
 
+
         #Changing window size
         elif event.type == VIDEORESIZE:
             resizable_screen = pygame.display.set_mode((event.size[0],event.size[0]/2), RESIZABLE)
             screen_scaling = event.size[0]/WINDOW_SIZE[0]
 
 
-        #Player start movement
         elif event.type == pygame.KEYDOWN:
+
+            #Player start movement
             if event.key == pygame.K_LEFT or event.key == ord('a'):
                 player_movement[0] = True
             if event.key == pygame.K_RIGHT or event.key == ord('d'):
@@ -139,9 +141,14 @@ while game_running:
             if event.key == pygame.K_DOWN or event.key == ord('s'):
                 player_movement[3] = True
 
+            #Pausing and unpausing game
+            if event.key == pygame.K_ESCAPE:
+                game_paused = not game_paused
 
-        #Player stop movement
+
         elif event.type == pygame.KEYUP:
+
+            #Player stop movement
             if event.key == pygame.K_LEFT or event.key == ord('a'):
                 player_movement[0] = False
             if event.key == pygame.K_RIGHT or event.key == ord('d'):
@@ -176,12 +183,12 @@ while game_running:
     #Rendering on the display
     handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
+    if not game_paused:
+        #Handle moving and frame by frame stuff
+        handle_main(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
-    #Handle moving and frame by frame stuff
-    handle_main(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
-
-    #Collision handling
-    handle_collisions(player, player_bullets, teleportation_device)
+        #Collision handling
+        handle_collisions(player, player_bullets, teleportation_device)
 
     #Setting FPS
     clock.tick(60)
