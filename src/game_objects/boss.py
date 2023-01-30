@@ -28,7 +28,7 @@ class Boss(BossAI):
         if not self.can_attack:
             return
         if self.current_attack_pattern == BossAI.FollowingAttackPattern.WaveShots:
-            if self.time_to_execute_pattern > self.movement_pattern.cooldown_for_wave_shoot():
+            if self.time_to_execute_pattern > self.current_movement_pattern.cooldown_for_wave_shoot():
                 self._shoot_bullet_wave(player, boss_bullets)
 
         elif self.current_attack_pattern == BossAI.FollowingAttackPattern.PlusLaser:
@@ -58,12 +58,12 @@ class Boss(BossAI):
             self.angle_for_attack = None
             self.can_attack = True
             self._pick_new_movement_pattern()
-            self.time_to_execute_pattern = self.movement_pattern.get_time()
+            self.time_to_execute_pattern = self.current_movement_pattern.get_time()
 
     def _move(self) -> None:
-        if self.movement_pattern == Boss.MovePattern.ParabolicMovement:
+        if self.current_movement_pattern == Boss.MovePattern.ParabolicMovement:
             self._evaluate_parabolic_movement()
-        if self.movement_pattern == Boss.MovePattern.StandInMiddle:
+        if self.current_movement_pattern == Boss.MovePattern.StandInMiddle:
             self._evaluate_stand_in_middle_movement()
 
 

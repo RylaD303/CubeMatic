@@ -118,7 +118,7 @@ class BossAI(GameObject):
         """
         return self.position + BOSS_SCALE/2
 
-    def _pick_new_current_movement_pattern(self)  -> None:
+    def _pick_new_movement_pattern(self)  -> None:
         """todo!"""
         self.current_movement_pattern = BossAI.MovePattern.StandInMiddle
         self.movement_variant = randint(1,4)

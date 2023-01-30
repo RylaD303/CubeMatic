@@ -8,8 +8,8 @@ class Vector2D:
     """A two-dimensional vector with Cartesian coordinates."""
     def __init__(self, x_axis: number_types, y_axis: number_types) -> "None":
         """Initialisation of a Vector2D."""
-        self.x = x
-        self.y = y
+        self.x = x_axis
+        self.y = y_axis
 
     def __repr__(self) -> str:
         """returns: Unambiguous string representation of the vector."""
