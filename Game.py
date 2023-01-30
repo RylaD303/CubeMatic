@@ -1,11 +1,11 @@
 import pygame, sys
 from pygame.locals import *
-from src.player import Player
-from src.boss import Boss
-from src.bullet import Bullet
-from src.laser import Laser
-from src.teleport import Teleport
-from src.tiles import MapTile
+from src.game_objects.player import Player
+from src.game_objects.boss import Boss
+from src.game_objects.bullet import Bullet
+from src.game_objects.laser import Laser
+from src.game_objects.teleport import Teleport
+from src.game_objects.tiles import MapTile
 from src.collision_handler import CollisionHandler
 from src.classes.vector_2d import Vector2D
 from src.game_values import *

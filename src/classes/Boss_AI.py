@@ -7,10 +7,10 @@ from math import pi, sqrt
 
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
-from src.player import Player
-from src.bullet import Bullet
+from src.game_objects.player import Player
+from src.game_objects.bullet import Bullet
 from src.game_values import *
-from src.laser import Laser
+from src.game_objects.laser import Laser
 
 
 class BossAI(GameObject):

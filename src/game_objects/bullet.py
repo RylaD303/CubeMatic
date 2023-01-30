@@ -1,6 +1,3 @@
-"""
-Bullet game object module.
-"""
 import pygame
 
 from src.classes.vector_2d import Vector2D, number_types

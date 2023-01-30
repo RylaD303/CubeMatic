@@ -1,7 +1,7 @@
 import pygame
-from src.player import Player
-from src.teleport import Teleport
-from src.bullet import Bullet
+from src.game_objects.player import Player
+from src.game_objects.teleport import Teleport
+from src.game_objects.bullet import Bullet
 from src.game_values import *
 
 class CollisionHandler():

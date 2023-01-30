@@ -1,7 +1,7 @@
 from typing import Union
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
-from src.player import Player
+from src.game_objects.player import Player
 from src.game_values import *
 import pygame
 
