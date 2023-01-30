@@ -92,7 +92,7 @@ class Laser(GameObject):
                 self.movement_types.pop(0)
 
 
-    def set_type_of_laser(self,
+    def set_type(self,
         move_types: list["Laser.LaserMovement"] = [LaserMovement.Constant],
         control_rotation_speed: number_types = 0, #pi/s
         max_rotation_speed: number_types = 0, #pi/s

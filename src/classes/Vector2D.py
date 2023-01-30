@@ -6,7 +6,7 @@ number_types = Union[int, float, complex]
 
 class Vector2D:
     """A two-dimensional vector with Cartesian coordinates."""
-    def __init__(self, x : number_types, y : number_types) -> "None":
+    def __init__(self, x_axis: number_types, y_axis: number_types) -> "None":
         """Initialisation of a Vector2D."""
         self.x = x
         self.y = y
