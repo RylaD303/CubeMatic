@@ -49,7 +49,7 @@ class Laser(GameObject):
         super().__init__(begin_point)
         self.direction = (direction/abs(direction))*(LASER_LENGTH**2)
         self.width = width
-        self.starting_width = 0
+        self.starting_width = width
         self.color = color
         self.state = LaserState.Anticipation
         self.movement_types = [LaserMovement.Constant]
@@ -83,7 +83,7 @@ class Laser(GameObject):
         self.__evaluate_movement(clock)
 
         if self.state == LaserState.Recovery:
-            self.width =(self.starting_width\
+            self.width = (self.starting_width\
                         * (self.time_to_execute/LASER_ANTICIPATION_TIME))
 
     def render(self, display: "pygame.Surface"):
@@ -111,10 +111,15 @@ class Laser(GameObject):
                             self.color,
                             tuple(self.position),
                             tuple(self.direction),
-                            round(self.width))
+                            self.width)
+            # pygame.draw.line(display,
+            #                 WHITE,
+            #                 tuple(self.position),
+            #                 tuple(self.direction),
+            #                 round(self.width/3))
         else:
             pygame.draw.line(display,
-                            self.color,
+                            WHITE,
                             tuple(self.position),
                             tuple(self.direction),
                             round(self.width))
@@ -133,7 +138,7 @@ class Laser(GameObject):
                 self.cooldown = self.time_to_execute-LASER_ANTICIPATION_TIME
             elif self.state == LaserState.Attack:
                 self.state = LaserState.Recovery
-                self.time_to_expire = LASER_ANTICIPATION_TIME
+                self.time_to_execute = LASER_ANTICIPATION_TIME
                 self.cooldown = LASER_ANTICIPATION_TIME
 
 
