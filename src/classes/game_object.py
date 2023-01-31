@@ -8,9 +8,16 @@ class GameObject():
     """Base class for every object in the game."""
 
     def __init__(self, position : "Vector2D") -> None:
-        """Initialises Game object. Sets position."""
+        """
+        Initialises Game object.
+        Sets position, visibility and radius of collision.
+        """
         self.position = position
         self.visible = True
+        self.radius = 0
+
+    def centre_position(self) -> Vector2D:
+        return self.position
 
     def is_colliding_with(self, other) -> bool:
         pass

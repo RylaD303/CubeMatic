@@ -25,6 +25,7 @@ class Boss(BossAI, GameObject):
         self.width = width
         self.height = height
         self.rotation = 0
+        self.radius = width/2
 
     def _execute_attack_pattern(self,
     player: "Player",
