@@ -99,16 +99,13 @@ class Player(GameObject):
             player_bullets: set["Bullet"],
             fire_to_position: "Vector2D") -> None:
         """
-        Fires bullet to target location only if cooldown for firing
+        Fires bullet to target location only (mouse position) if cooldown for firing
         is 0. When a bullet is fired the cooldown is reset.
 
         Parameters:
             player_bullets -
                 set of bullets to add the supposedly fired bullet to
                 so it can be handled on its own.
-            fire_to_position -
-                Vector to the target location the bullet should be
-                fired to.
 
         """
         if self.fire_cooldown <=0:

@@ -188,10 +188,7 @@ while game_running:
 
     #Renders text if game is paused:
     if game_paused:
-        draw_text("Press ESC again to unpause",
-                (0, 128, 0),
-                Vector2D(END_OF_MAP.x/2, 100),
-                screen)
+        draw_text("Press ESC again to unpause", (0, 128, 0), Vector2D(END_OF_MAP.x/2, 100), screen)
     #Rendering on the display
     handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
