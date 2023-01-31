@@ -64,16 +64,18 @@ class Bullet(GameObject):
         self._check_boundaries()
         return self.valid
 
-    def main(self) -> None:
-        """Handles the bullet frame by frame"""
-        self.__move()
+    def main(self, clock: "pygame.time.Clock") -> None:
+        """
+        Handles the bullet frame by frame
+        """
+        self.__move(clock)
 
-    def __move(self) -> None:
+    def __move(self, clock: "pygame.time.Clock") -> None:
         """
         Moves the bullet by it's movement vector,
-        which is scaled by its speed
+        which is scaled by its speed and time passed.
         """
-        self.position += self.movement
+        self.position += self.movement*(clock.get_time()/1000)
 
     def render(self, display : "pygame.Surface"):
         """Displays bullet on screen"""

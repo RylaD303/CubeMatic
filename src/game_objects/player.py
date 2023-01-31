@@ -76,13 +76,16 @@ class Player(GameObject):
                 to call on _move function.
             clock -
                 to evaluate last call of main so it can
-                subtract from cooldown fire.
+                subtract from cooldown fire and scale player
+                movement.
         """
         if self.fire_cooldown > 0:
             self.fire_cooldown -= clock.get_time()
-        self._move(player_movement)
+        self._move(player_movement, clock)
 
-    def _move(self, player_movement : list[bool])-> None:
+    def _move(self,
+              player_movement : list[bool],
+              clock: "pygame.time.Clock")-> None:
         """
         Changes the Players position based on the player_movement
         vector.  Vector scales with self.speed so palyer doesn't
@@ -106,7 +109,9 @@ class Player(GameObject):
         if movement_scaling > 0:
             self.rotation+=7
             self.rotation%=90
-            self.position += self.speed*self.movement/movement_scaling
+            self.position += self.speed\
+                             * self.movement/movement_scaling\
+                             * clock.get_time()/1000
 
         self.movement.x = 0
         self.movement.y = 0

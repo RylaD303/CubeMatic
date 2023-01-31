@@ -4,13 +4,13 @@ from src.classes.vector_2d import Vector2D
 #Constants for the game
 #Player values
 PLAYER_START = Vector2D(20,20) #pixles
-PLAYER_SPEED = 6 #pixles
+PLAYER_SPEED = 400 #pixles per second
 PLAYER_SCALE = Vector2D(48, 48) #pixles
-PLAYER_BULLET_SPEED = 20 #pixles
+PLAYER_BULLET_SPEED = 600 #pixles per second
 PLAYER_BULLET_SIZE = 3 # pixels
 PLAYER_BULLET_COLOR = (0,255,0) #RGB
-PLAYER_TELEPORT_SPEED = 35 #pixles
-PLAYER_SHOOT_COOLDOWN = 100 #ms
+PLAYER_TELEPORT_SPEED = 1800 #pixles per second
+PLAYER_SHOOT_COOLDOWN = 150 #ms
 MAX_HOLD_TIME = 5000 #ms        how long can the player hold the teleportation device.
 
 
@@ -34,7 +34,7 @@ CENTRE_OF_MAP = Vector2D(\
 
 #Boss values
 BOSS_SCALE = Vector2D(48, 48)
-BOSS_BULLET_SPPED = PLAYER_BULLET_SPEED
+BOSS_BULLET_SPEED = 400 #pixels per second
 BOSS_LASER_WIDTH = 10 #pixels
 BOSS_BULLET_SIZE = 7 #pixels
 BOSS_ATTACK_COLOR = (255, 0, 0) # RGB

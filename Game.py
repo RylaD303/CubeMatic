@@ -26,15 +26,15 @@ handle_collisions = CollisionHandler()
 def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss: "Boss", boss_bullets: set["Bullet"], boss_lasers: set["Laser"]):
     player.main(player_movement, clock)
     for bullet in player_bullets:
-        bullet.main()
+        bullet.main(clock)
     teleportation_device.main(player, clock)
     if teleportation_device.time_remaining == 0 and teleportation_device.active:
         teleportation_device.teleport_player(player)
 
     for bullet in boss_bullets:
-        bullet.main()
+        bullet.main(clock)
 
-    lasers_to_remove = set()
+    lasers_to_remove: set["Laser"] = set()
     for laser in boss_lasers:
         laser.main(clock, boss.centre_position())
         if laser.time_to_execute <=0:

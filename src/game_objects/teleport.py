@@ -31,7 +31,7 @@ class Teleport(GameObject):
         self.active = False
 
 
-    def main(self, player: "Player", clock: "pygame.time.Clock"):
+    def main(self, player: "Player", clock: "pygame.time.Clock") -> None:
         """
         Handles teleportation device remaining time and teleportation.
 
@@ -43,7 +43,7 @@ class Teleport(GameObject):
         """
         if self.active:
             if self.time_remaining>MAX_HOLD_TIME/3*2:
-                self.__move()
+                self.__move(clock)
             self.time_remaining -= clock.get_time()
             if self.time_remaining<=0:
                 self.teleport_player(player)
@@ -61,7 +61,7 @@ class Teleport(GameObject):
         if self.position.y > END_OF_MAP.y:
             self.movement.y = -abs(self.movement.y)
 
-    def __move(self):
+    def __move(self, clock: "pygame.time.Clock"):
         """
         Moves the teleportation device by it's movement vector.
         Depending on the remaining time the movement will decrease
@@ -69,7 +69,9 @@ class Teleport(GameObject):
         if self.active:
             speed_scaling = (self.time_remaining - MAX_HOLD_TIME/3*2)\
                             / MAX_HOLD_TIME
-            self.position += self.movement*(speed_scaling)
+            self.position += self.movement\
+                             * (speed_scaling)\
+                             * clock.get_time()/1000
 
     def teleport_player(self, player: "Player"):
         """

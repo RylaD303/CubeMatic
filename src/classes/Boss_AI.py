@@ -155,21 +155,24 @@ class BossAI():
             Bullet(self.centre_position(),
             player.position,
             BOSS_ATTACK_COLOR,
-            BOSS_BULLET_SIZE))
+            BOSS_BULLET_SIZE,
+            BOSS_BULLET_SPEED))
         #side nnullets
         for i in range(1,3):
             bullet1 = Bullet(
                 self.centre_position(),
                 player.position,
                 BOSS_ATTACK_COLOR,
-                BOSS_BULLET_SIZE)
+                BOSS_BULLET_SIZE,
+                BOSS_BULLET_SPEED)
             bullet1.movement.angle_rotate(i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet1)
             bullet2 = Bullet(
                 self.centre_position(),
                 player.position,
                 BOSS_ATTACK_COLOR,
-                BOSS_BULLET_SIZE)
+                BOSS_BULLET_SIZE,
+                BOSS_BULLET_SPEED)
             bullet2.movement.angle_rotate(-i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet2)
 
@@ -267,14 +270,16 @@ class BossAI():
             Bullet(self.centre_position(),
             self.centre_position() + self.angle_for_attack,
             BOSS_ATTACK_COLOR,
-            BOSS_BULLET_SIZE))
+            BOSS_BULLET_SIZE,
+            BOSS_BULLET_SPEED))
         if self.current_movement_pattern.type == MovePatternType.StandInMiddle:
             boss_bullets.add(
                 Bullet(self.centre_position(),
                 self.centre_position()\
                 + self.angle_for_attack.angle_rotated(pi),
                 BOSS_ATTACK_COLOR,
-                BOSS_BULLET_SIZE))
+                BOSS_BULLET_SIZE,
+                BOSS_BULLET_SPEED))
         self.angle_for_attack.angle_rotate(BOSS_SPIRAL_SHOOT_ATTACK_ROTATION)
         self.attack_cooldown = BOSS_SPIRAL_ATTACK_COOLDOWN
 
