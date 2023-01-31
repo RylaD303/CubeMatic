@@ -6,7 +6,7 @@ import pygame
 
 
 class Player(GameObject):
-    """The Player Game object. Can move around"""
+    """The Player Game object"""
     def __init__(
         self,
         position: "Vector2D",
@@ -14,31 +14,68 @@ class Player(GameObject):
         player_sprite: "pygame.Surface",
         width: number_types = 64,
         height: number_types = 64) -> None:
-        """Initialisation of Player object."""
+        """
+        Initialisation of Player object.
+
+        Parameters:
+            position -
+                Vector2D starting position of the player object.
+            speed -
+                the players intended speed ingame.
+            player_sprite -
+                Surface object to be printed as the player's sprite.
+            width -
+                Intended width to scale the sprite with.
+            height -
+                Intended height to scale the sprite with.
+
+        width and height should be equal.
+        """
 
         super().__init__(position)
         self.speed = speed
         self.width = width
         self.height = height
-        self.sprite = pygame.transform.scale(player_sprite, (self.width, self.height))
+        self.sprite =\
+            pygame.transform.scale(player_sprite, (self.width, self.height))
         self.movement = Vector2D(0,0)
         self.rotation = 0
         self.fire_cooldown = 0
 
     def centre_position(self) -> "Vector2D":
+        """
+        Returns the player's current centre position.
+        Scales with players size.
+        """
         return self.position + PLAYER_SCALE/2
 
-    def main(self, player_movement : list[bool], clock: "pygame.time.Clock") -> None:
-        """Handles player frame by frame
-        Recieve the player_movement to call on _move function.
-        Recieve clock to evaluate last call of main so it can subtract from cooldown fire."""
+    def main(self,
+            player_movement : list[bool],
+            clock: "pygame.time.Clock") -> None:
+        """
+        Handles player frame by frame
+        Parameters:
+            player_movement -
+                list of 4 Bool for the 4 directions
+                to call on _move function.
+            clock -
+                to evaluate last call of main so it can
+                subtract from cooldown fire.
+        """
         if self.fire_cooldown > 0:
             self.fire_cooldown -= clock.get_time()
         self._move(player_movement)
 
     def _move(self, player_movement : list[bool])-> None:
-        """Changes the Players position based on the player_movement vector.
-        Vector scales with self.speed so palyer doesn't move faster diagonally"""
+        """
+        Changes the Players position based on the player_movement
+        vector.  Vector scales with self.speed so palyer doesn't
+        move faster diagonally
+
+        Parameters:
+            player_movement -
+                list of 4 Bool for the 4 directions
+        """
 
         if player_movement[0] :
             self.movement.x = -1
@@ -58,19 +95,49 @@ class Player(GameObject):
         self.movement.x = 0
         self.movement.y = 0
 
-    def fire(self, player_bullets: set["Bullet"], fire_to_position: "Vector2D") -> None:
-        """Fires bullet to target location only if cooldown for firing is 0."""
+    def fire(self,
+            player_bullets: set["Bullet"],
+            fire_to_position: "Vector2D") -> None:
+        """
+        Fires bullet to target location only if cooldown for firing
+        is 0. When a bullet is fired the cooldown is reset.
+
+        Parameters:
+            player_bullets -
+                set of bullets to add the supposedly fired bullet to
+                so it can be handled on its own.
+            fire_to_position -
+                Vector to the target location the bullet should be
+                fired to.
+
+        """
         if self.fire_cooldown <=0:
-            player_bullets.add(Bullet(self.centre_position(), fire_to_position, PLAYER_BULLET_COLOR, PLAYER_BULLET_SIZE, PLAYER_BULLET_SPEED))
+            bullet_to_fire = Bullet(self.centre_position(),
+                                    fire_to_position,
+                                    PLAYER_BULLET_COLOR,
+                                    PLAYER_BULLET_SIZE,
+                                    PLAYER_BULLET_SPEED)
+            player_bullets.add(bullet_to_fire)
             self.fire_cooldown = PLAYER_SHOOT_COOLDOWN
 
     def render(self, display: "pygame.Surface") -> None:
+        """
+        Renders the player on a display.
+        Scales with players rotation and sprites width
+
+        Parameters:
+            display - pygame.Surface
+                to print the player on the surface.
+
+        The function renders the player on a different position depending
+        on its rotated sprite values. Because when a sprite rotates it
+        increses its size to hold the new rotated imagine.
+        """
         rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
-        display.blit(\
-            rotated_sprite,
-            (self.position.x - (rotated_sprite.get_width() - self.sprite.get_width())/2,
-            self.position.y - (rotated_sprite.get_height() - self.sprite.get_height())/2))
+        position_to_print_on =Vector2D(\
+            self.position.x\
+            - (rotated_sprite.get_width() - self.sprite.get_width())/2,
+            self.position.y\
+            - (rotated_sprite.get_height() - self.sprite.get_height())/2)
 
-
-
-
+        display.blit(rotated_sprite, tuple(position_to_print_on))
