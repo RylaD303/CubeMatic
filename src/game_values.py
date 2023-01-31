@@ -11,7 +11,7 @@ PLAYER_BULLET_SIZE = 3 # pixels
 PLAYER_BULLET_COLOR = (0,255,0) #RGB
 PLAYER_TELEPORT_SPEED = 1800 #pixles per second
 PLAYER_SHOOT_COOLDOWN = 150 #ms
-MAX_HOLD_TIME = 5000 #ms        how long can the player hold the teleportation device.
+MAX_HOLD_TIME = 5000 #ms - how long can the player hold the teleportation device.
 
 
 #Map values

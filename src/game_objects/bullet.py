@@ -1,4 +1,5 @@
 import pygame
+from typing import Union
 
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
@@ -14,7 +15,7 @@ class Bullet(GameObject):
         starting_position: "Vector2D",
         direction: "Vector2D",
         color: tuple = (0, 255, 0),
-        radius: number_types = 2,
+        radius: number_types = 3,
         speed : number_types = 6) -> None:
         """
         Initialises the bullet.
@@ -28,7 +29,8 @@ class Bullet(GameObject):
             radius -
                 radius of the circle to be displayed for the bullet;
             speed -
-                the bullets speed"""
+                the bullets speed
+        """
         super().__init__(starting_position)
         self.speed = speed
         self.direction = direction
@@ -48,9 +50,9 @@ class Bullet(GameObject):
         """
         self.valid = False
 
-    def _check_boundaries(self):
+    def check_boundaries(self):
         """
-        Checks if bullet is still in map boundaries
+        Checks if bullet is still in map boundaries.
         Invalidates bullet if it got out.
         """
         if  self.position.x <= START_OF_MAP.x\
@@ -58,16 +60,25 @@ class Bullet(GameObject):
             or self.position.y <= START_OF_MAP.y\
             or self.position.y >= END_OF_MAP.y:
             self.invalidate()
+    def is_colliding_with(self, other: "GameObject") -> bool:
+        """
+        Checks if the bullet is colliding with other game object.
+        Should have radius of collision.
+        Parameters:
+            other -
+                either player or boss objects.
+        """
+        distance = other.centre_position().distance_to(self.position)
+        if other.radius + self.radius > distance:
+            return True
+        return False
 
     def is_valid(self):
-        """Checks if bullet got destroyed"""
-        self._check_boundaries()
+        """Returns if the bullet got destroyed"""
         return self.valid
 
     def main(self, clock: "pygame.time.Clock") -> None:
-        """
-        Handles the bullet frame by frame
-        """
+        """ Handles the bullet frame by frame"""
         self.__move(clock)
 
     def __move(self, clock: "pygame.time.Clock") -> None:

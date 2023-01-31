@@ -41,6 +41,7 @@ class Player(GameObject):
         self.movement = Vector2D(0,0)
         self.rotation = 0
         self.fire_cooldown = 0
+        self.radius = width/2
 
     def centre_position(self) -> "Vector2D":
         """

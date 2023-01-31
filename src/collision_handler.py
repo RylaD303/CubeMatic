@@ -23,6 +23,10 @@ class CollisionHandler():
         #collects the player's bullets which need to be removed.
         players_bullets_to_remove: set[Bullet]= set()
         for bullet in player_bullets:
+            if bullet.is_colliding_with(boss):
+                bullet.invalidate()
+                #todo!
+            bullet.check_boundaries()
             if not bullet.is_valid():
                 players_bullets_to_remove.add(bullet)
 
@@ -34,6 +38,7 @@ class CollisionHandler():
         #collects the boss' bullets which need to be removed.
         boss_bullets_to_remove: set[Bullet]= set()
         for bullet in boss_bullets:
+            bullet.check_boundaries()
             if not bullet.is_valid():
                 boss_bullets_to_remove.add(bullet)
 
