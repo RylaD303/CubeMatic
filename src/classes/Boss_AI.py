@@ -7,7 +7,7 @@ from src.classes.vector_2d import Vector2D, number_types
 from src.game_objects.player import Player
 from src.game_objects.bullet import Bullet
 from src.game_values import *
-from src.game_objects.laser import Laser
+from src.game_objects.laser import Laser, LaserMovement
 
 
 class FollowingAttackPattern(Enum):
@@ -193,8 +193,8 @@ class BossAI():
                         direction,
                         self.current_movement_pattern.time_laser_attack())
                     for direction in plus_laser_directions]
-        plus_laser_behaviour = [Laser.LaserMovement.AcceleratingStart,
-                                Laser.LaserMovement.DeceleratingEnd]
+        plus_laser_behaviour = [LaserMovement.AcceleratingStart,
+                                LaserMovement.DeceleratingEnd]
         for laser in lasers:
             laser.set_type( plus_laser_behaviour, pi/4, pi/2, pi/9)
             boss_lasers.add(laser)
@@ -226,8 +226,8 @@ class BossAI():
         laser = Laser(self.centre_position(),
                       self.angle_for_attack,
                       self.current_movement_pattern.time_laser_attack())
-        edge_laser_behaviour =[Laser.LaserMovement.AcceleratingStart,
-                               Laser.LaserMovement.DeceleratingEnd]
+        edge_laser_behaviour =[LaserMovement.AcceleratingStart,
+                               LaserMovement.DeceleratingEnd]
         laser.set_type(edge_laser_behaviour, pi/2,  pi, pi/9)
         boss_lasers.add(laser)
         if self.current_movement_pattern.type == MovePatternType.StandInMiddle:

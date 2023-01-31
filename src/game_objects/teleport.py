@@ -48,6 +48,19 @@ class Teleport(GameObject):
             if self.time_remaining<=0:
                 self.teleport_player(player)
 
+    def check_boundaries(self):
+        if self.position.x < START_OF_MAP.x:
+            self.movement.x = abs(self.movement.x)
+
+        if self.position.x > END_OF_MAP.x:
+            self.movement.x = -abs(self.movement.x)
+
+        if self.position.y < START_OF_MAP.y:
+            self.movement.y = abs(self.movement.y)
+
+        if self.position.y > END_OF_MAP.y:
+            self.movement.y = -abs(self.movement.y)
+
     def __move(self):
         """
         Moves the teleportation device by it's movement vector.

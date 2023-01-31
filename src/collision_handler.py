@@ -2,45 +2,44 @@ import pygame
 from src.game_objects.player import Player
 from src.game_objects.teleport import Teleport
 from src.game_objects.bullet import Bullet
+from src.game_objects.laser import Laser
+from src.game_objects.boss import Boss
 from src.game_values import *
 
 class CollisionHandler():
-    def __call__(self, player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport"):
-        if player.position.x < START_OF_MAP.x:
-            player.position.x = START_OF_MAP.x
+    """
+    Handles the collision between all object on the screen.
+    """
+    def __call__(self,
+                player: "Player",
+                player_bullets: set["Bullet"],
+                teleportation_device: "Teleport",
+                boss: "Boss",
+                boss_bullets: set["Bullet"],
+                boss_lasers: set["Laser"]):
 
-        if player.position.x > END_OF_MAP.x-PLAYER_SCALE.x:
-            player.position.x = END_OF_MAP.x-PLAYER_SCALE.x
+        player.check_out_of_bounds()
 
-        if player.position.y < START_OF_MAP.y:
-            player.position.y = START_OF_MAP.y
-
-        if player.position.y > END_OF_MAP.y-PLAYER_SCALE.y:
-            player.position.y = END_OF_MAP.y-PLAYER_SCALE.y
-
-        #Getting care of which bullets to remove
-        bullets_to_remove: set[Bullet]= set()
+        #collects the player's bullets which need to be removed.
+        players_bullets_to_remove: set[Bullet]= set()
         for bullet in player_bullets:
-            if  bullet.position.x <=  START_OF_MAP.x or\
-                bullet.position.x >= END_OF_MAP.x or\
-                bullet.position.y <= START_OF_MAP.y or\
-                bullet.position.y >= END_OF_MAP.y:
+            if not bullet.is_valid():
+                players_bullets_to_remove.add(bullet)
 
-                bullets_to_remove.add(bullet)
 
-        #Removing here, because we cannot change object while being iterated if any
-        for bullet in bullets_to_remove:
+        #removes the player's bullets who are not valid.
+        for bullet in players_bullets_to_remove:
             player_bullets.remove(bullet)
 
+        #collects the boss' bullets which need to be removed.
+        boss_bullets_to_remove: set[Bullet]= set()
+        for bullet in boss_bullets:
+            if not bullet.is_valid():
+                boss_bullets_to_remove.add(bullet)
+
+        #removes the boss' bullets who are not valid.
+        for bullet in boss_bullets_to_remove:
+            boss_bullets.remove(bullet)
+
         if teleportation_device.active:
-            if teleportation_device.position.x < START_OF_MAP.x:
-                teleportation_device.movement.x = abs(teleportation_device.movement.x)
-
-            if teleportation_device.position.x > END_OF_MAP.x:
-                teleportation_device.movement.x = -abs(teleportation_device.movement.x)
-
-            if teleportation_device.position.y < START_OF_MAP.y:
-                teleportation_device.movement.y = abs(teleportation_device.movement.y)
-
-            if teleportation_device.position.y > END_OF_MAP.y:
-                teleportation_device.movement.y = -abs(teleportation_device.movement.y)
+            teleportation_device.check_boundaries()

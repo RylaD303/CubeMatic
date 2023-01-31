@@ -2,7 +2,7 @@ import pygame
 
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
-
+from src.game_values import *
 
 class Bullet(GameObject):
     """
@@ -34,11 +34,35 @@ class Bullet(GameObject):
         self.direction = direction
         self.radius = radius
         self.color = color
+        self.valid = True
         if self.position == self.direction :
             self.direction+=1
 
         self.movement = speed*(self.direction - self.position)\
                         / abs(self.direction - self.position)
+
+    def invalidate(self):
+        """
+        Invalidates bullet so the collision handler can detect
+        it should be removed.
+        """
+        self.valid = False
+
+    def _check_boundaries(self):
+        """
+        Checks if bullet is still in map boundaries
+        Invalidates bullet if it got out.
+        """
+        if  self.position.x <= START_OF_MAP.x\
+            or self.position.x >= END_OF_MAP.x\
+            or self.position.y <= START_OF_MAP.y\
+            or self.position.y >= END_OF_MAP.y:
+            self.invalidate()
+
+    def is_valid(self):
+        """Checks if bullet got destroyed"""
+        self._check_boundaries()
+        return self.valid
 
     def main(self) -> None:
         """Handles the bullet frame by frame"""

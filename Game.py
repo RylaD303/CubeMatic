@@ -197,7 +197,7 @@ while game_running:
         handle_main(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
         #Collision handling
-        handle_collisions(player, player_bullets, teleportation_device)
+        handle_collisions(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
     #Setting FPS
     print (clock.get_fps())

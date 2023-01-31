@@ -49,6 +49,22 @@ class Player(GameObject):
         """
         return self.position + PLAYER_SCALE/2
 
+    def check_out_of_bounds(self):
+        """
+        Keeps player in map boundaries.
+        """
+        if self.position.x < START_OF_MAP.x:
+            self.position.x = START_OF_MAP.x
+
+        if self.position.x > END_OF_MAP.x-PLAYER_SCALE.x:
+            self.position.x = END_OF_MAP.x-PLAYER_SCALE.x
+
+        if self.position.y < START_OF_MAP.y:
+            self.position.y = START_OF_MAP.y
+
+        if self.position.y > END_OF_MAP.y-PLAYER_SCALE.y:
+            self.position.y = END_OF_MAP.y-PLAYER_SCALE.y
+
     def main(self,
             player_movement : list[bool],
             clock: "pygame.time.Clock") -> None:
