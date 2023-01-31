@@ -1,14 +1,14 @@
 import pygame
-
+from src.classes.game_object import GameObject
 from src.classes.vector_2d import number_types
-from src.classes.boss_ai import BossAI
+from src.classes.boss_ai import BossAI, MovePatternType, FollowingAttackPattern
 from src.game_objects.player import Player
 from src.game_objects.bullet import Bullet
 from src.game_values import *
 from src.game_objects.laser import Laser
 
 
-class Boss(BossAI):
+class Boss(BossAI, GameObject):
     """
     Boss object to battle with player.
     Has AI to handle movement and attack patterns.
@@ -19,7 +19,8 @@ class Boss(BossAI):
         height: number_types = 64) -> None:
         """Initialisation of Boss object."""
 
-        super().__init__()
+        BossAI.__init__(self)
+        GameObject.__init__(self, Vector2D(0,0))
         self.sprite = pygame.transform.scale(boss_sprite, (width, height))
         self.width = width
         self.height = height
@@ -44,22 +45,22 @@ class Boss(BossAI):
         if not self.can_attack:
             return
         if self.current_attack_pattern\
-                == BossAI.FollowingAttackPattern.WaveShots\
+                == FollowingAttackPattern.WaveShots\
             and self.time_to_execute_pattern\
                 > self.current_movement_pattern.cooldown_for_wave_shoot():
             self._shoot_bullet_wave(player, boss_bullets)
 
         elif self.current_attack_pattern\
-            == BossAI.FollowingAttackPattern.PlusLaser:
+            == FollowingAttackPattern.PlusLaser:
             self._add_plus_lasers(boss_lasers)
 
 
         elif self.current_attack_pattern\
-            == BossAI.FollowingAttackPattern.EdgeLaser:
+            == FollowingAttackPattern.EdgeLaser:
             self._add_edge_laser(player, boss_lasers)
 
         elif self.current_attack_pattern\
-            == BossAI.FollowingAttackPattern.SpiralShoot:
+            == FollowingAttackPattern.SpiralShoot:
             self._shoot_spiral_bullets(boss_bullets, player)
 
     def _choose_attack_sequence(self)-> None:
@@ -69,10 +70,10 @@ class Boss(BossAI):
         """
         #for attack in sample(following_attacks, 3):
         #    self.attack_sequence.put(attack)
-        self.attack_sequence.put(BossAI.FollowingAttackPattern.EdgeLaser)
-        self.attack_sequence.put(BossAI.FollowingAttackPattern.SpiralShoot)
-        self.attack_sequence.put(BossAI.FollowingAttackPattern.PlusLaser)
-        self.attack_sequence.put(BossAI.FollowingAttackPattern.WaveShots)
+        self.attack_sequence.put(FollowingAttackPattern.EdgeLaser)
+        self.attack_sequence.put(FollowingAttackPattern.SpiralShoot)
+        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
+        self.attack_sequence.put(FollowingAttackPattern.WaveShots)
 
     def _evaluate_attack_pattern(self) -> None:
         """
@@ -94,9 +95,11 @@ class Boss(BossAI):
         """
         Moves the boss object with the correspoinding move pattern.
         """
-        if self.current_movement_pattern == Boss.MovePattern.ParabolicMovement:
+        if self.current_movement_pattern.type\
+            == MovePatternType.ParabolicMovement:
             self._evaluate_parabolic_movement()
-        if self.current_movement_pattern == Boss.MovePattern.StandInMiddle:
+        if self.current_movement_pattern.type\
+            == MovePatternType.StandInMiddle:
             self._evaluate_stand_in_middle_movement()
 
 

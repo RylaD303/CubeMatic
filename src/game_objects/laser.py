@@ -7,13 +7,19 @@ from enum import Enum
 WHITE = (255, 255 ,255)
 
 class Laser(GameObject):
+    """
+    Laser object for the boss attacks.
 
+    Handles own movement and chagne of states.
+    """
     class LaserState(Enum):
+        """Enum for laser state"""
         Anticipation = 1
         Attack = 2
         Recovery = 3
 
     class LaserMovement(Enum):
+        """Enum to describe the laser movements"""
         Constant = 1
         AcceleratingStart = 2
         DeceleratingEnd = 3
@@ -26,7 +32,11 @@ class Laser(GameObject):
         width: number_types = 10,
         color: tuple = (255, 0, 0),
         laser_rotation_speed: number_types = 0)-> None:
+        """
+        Initialises the Laser.
 
+        Parameters:
+        """
         super().__init__(begin_point) #starting position
         self.direction = (direction/abs(direction))*(LASER_LENGTH**2)
         self.width = width

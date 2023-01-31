@@ -200,4 +200,5 @@ while game_running:
         handle_collisions(player, player_bullets, teleportation_device)
 
     #Setting FPS
-    clock.tick(60)
+    print (clock.get_fps())
+    clock.tick(120)

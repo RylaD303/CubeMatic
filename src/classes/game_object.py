@@ -7,7 +7,16 @@ import pygame
 class GameObject():
     """Base class for every object in the game."""
 
-    def __init__(self, position : "Vector2D") -> "None":
+    def __init__(self, position : "Vector2D") -> None:
         """Initialises Game object. Sets position."""
         self.position = position
         self.visible = True
+
+    def is_colliding_with(self, other) -> bool:
+        pass
+
+    def main(self) -> None:
+        pass
+
+    def render(self) -> None:
+        pass

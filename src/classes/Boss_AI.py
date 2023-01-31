@@ -3,70 +3,83 @@ from queue import Queue
 from enum import Enum
 from math import pi, sqrt
 
-
-
 from src.classes.vector_2d import Vector2D, number_types
-from src.classes.game_object import GameObject
 from src.game_objects.player import Player
 from src.game_objects.bullet import Bullet
 from src.game_values import *
 from src.game_objects.laser import Laser
 
 
-class BossAI(GameObject):
+class FollowingAttackPattern(Enum):
+    """
+    Attack patterns for boss.
+    """
+    WaveShots = 1
+    PlusLaser = 2
+    EdgeLaser = 3
+    SpiralShoot = 4
+
+
+class MovePatternType(Enum):
+    """
+    Enum for state of movement pattern of the boss.
+    """
+    StandInMiddle = 1
+    ParabolicMovement = 2
+
+
+class MovePattern():
+    """
+    Class to evaluate move_patterns
+    """
+    evaluations = {
+    MovePatternType.StandInMiddle: {
+                        "time_to_execute": 10000,
+                        "time_for_one_laser_attack":8000,
+                        "cooldown_for_wave_shoot":
+                        BOSS_WAVE_SHOOT_COOLDOWN},
+    MovePatternType.ParabolicMovement: {
+                            "time_to_execute": 8000,
+                            "time_for_one_laser_attack":6800,
+                            "cooldown_for_wave_shoot":
+                            BOSS_WAVE_SHOOT_COOLDOWN}}
+    #StandInMiddle = 2
+
+    def __init__(self, move_pattern_type: "MovePatternType"):
+        """
+        Creates MovePattern for the boss to evaluate
+        move pattern types.
+        """
+        self.type = move_pattern_type
+
+    def get_time(self) -> number_types:
+        """
+        Returns the enums corresponding time to
+        execute movement patter
+        """
+        return self.evaluations[self.type]["time_to_execute"]
+    def time_laser_attack(self)  -> number_types:
+        """
+        Returns the enums corresponding time to
+        execute laser attack pattern
+        """
+        return self.evaluations[self.type]["time_for_one_laser_attack"]
+    def cooldown_for_wave_shoot(self)  -> number_types:
+        """
+        Returns the enums corresponding cooldown for
+        wave shoot attack pattern
+        """
+        return self.evaluations[self.type]["cooldown_for_wave_shoot"]
+
+class BossAI():
     """
     BossAI object.
     Handles the movement patterns and the attack patterns of
     the Boss. Value of enums is ID.
     """
-    class FollowingAttackPattern(Enum):
-        """
-        Attack patterns for boss.
-        """
-        WaveShots = 1
-        PlusLaser = 2
-        EdgeLaser = 3
-        SpiralShoot = 4
-
-    class MovePattern(Enum):
-        """
-        Enum for state of movement pattern of the boss.
-        First value of Enum is ID.
-        Second value is dict describing how attack patterns
-        should act.
-        """
-
-        StandInMiddle = [1, {"time_to_execute": 10000,
-                             "time_for_one_laser_attack":8000,
-                             "cooldown_for_wave_shoot":
-                             BOSS_WAVE_SHOOT_COOLDOWN}]
-        ParabolicMovement = [2, {"time_to_execute": 8000,
-                                 "time_for_one_laser_attack":6800,
-                                 "cooldown_for_wave_shoot":
-                                 BOSS_WAVE_SHOOT_COOLDOWN}]
-        #StandInMiddle = 2
-
-        def get_time(self) -> number_types:
-            """
-            Returns the enums corresponding time to
-            execute movement patter
-            """
-            return self.value[1]["time_to_execute"]
-        def time_laser_attack(self)  -> number_types:
-            """
-            Returns the enums corresponding time to
-            execute laser attack pattern
-            """
-            return self.value[1]["time_for_one_laser_attack"]
-        def cooldown_for_wave_shoot(self)  -> number_types:
-            """
-            Returns the enums corresponding cooldown for
-            wave shoot attack pattern
-            """
-            return self.value[1]["cooldown_for_wave_shoot"]
 
     following_attacks = list(FollowingAttackPattern)
-    movement_patterns = list(MovePattern)
+    movement_pattern_types = list(MovePatternType)
 
     def __init__(self) -> None:
         """
@@ -97,7 +110,6 @@ class BossAI(GameObject):
             time left to execute the current movement pattern.
         """
 
-        super().__init__(Vector2D(0,0))
         #self.speed = speed
         #self.width = width
         #self.height = height
@@ -121,7 +133,8 @@ class BossAI(GameObject):
 
     def _pick_new_movement_pattern(self)  -> None:
         """todo!"""
-        self.current_movement_pattern = BossAI.MovePattern.StandInMiddle
+        self.current_movement_pattern =\
+            MovePattern(MovePatternType.StandInMiddle)
         self.movement_variant = randint(1,4)
 
     def _shoot_bullet_wave(self, player: "Player",
@@ -217,7 +230,7 @@ class BossAI(GameObject):
                                Laser.LaserMovement.DeceleratingEnd]
         laser.set_type(edge_laser_behaviour, pi/2,  pi, pi/9)
         boss_lasers.add(laser)
-        if self.current_movement_pattern == BossAI.MovePattern.StandInMiddle:
+        if self.current_movement_pattern.type == MovePatternType.StandInMiddle:
             laser2 = Laser(self.centre_position(),
                            self.angle_for_attack,
                            self.current_movement_pattern.time_laser_attack())
@@ -255,7 +268,7 @@ class BossAI(GameObject):
             self.centre_position() + self.angle_for_attack,
             BOSS_ATTACK_COLOR,
             BOSS_BULLET_SIZE))
-        if self.current_movement_pattern == BossAI.MovePattern.StandInMiddle:
+        if self.current_movement_pattern.type == MovePatternType.StandInMiddle:
             boss_bullets.add(
                 Bullet(self.centre_position(),
                 self.centre_position()\
