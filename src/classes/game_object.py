@@ -5,7 +5,7 @@ import pygame
 
 
 class GameObject():
-    """Base class for every object in the game."""
+    """Abstract base class for every object in the game."""
 
     def __init__(self, position : "Vector2D") -> None:
         """
@@ -15,6 +15,17 @@ class GameObject():
         self.position = position
         self.visible = True
         self.radius = 0
+        self.valid = True
+
+    def is_valid(self) -> None:
+        """
+        Invalidates game object so the collision handler can detect
+        it should be removed.
+        """
+        return self.valid
+
+    def invalidate(self) -> None:
+        self.valid = False
 
     def centre_position(self) -> Vector2D:
         return self.position

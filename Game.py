@@ -37,7 +37,7 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
     lasers_to_remove: set["Laser"] = set()
     for laser in boss_lasers:
         laser.main(clock, boss.centre_position())
-        if laser.time_to_execute <=0:
+        if not laser.is_valid():
             lasers_to_remove.add(laser)
 
     for laser in lasers_to_remove:

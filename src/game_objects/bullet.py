@@ -43,13 +43,6 @@ class Bullet(GameObject):
         self.movement = speed*(self.direction - self.position)\
                         / abs(self.direction - self.position)
 
-    def invalidate(self):
-        """
-        Invalidates bullet so the collision handler can detect
-        it should be removed.
-        """
-        self.valid = False
-
     def check_boundaries(self):
         """
         Checks if bullet is still in map boundaries.
@@ -60,6 +53,7 @@ class Bullet(GameObject):
             or self.position.y <= START_OF_MAP.y\
             or self.position.y >= END_OF_MAP.y:
             self.invalidate()
+
     def is_colliding_with(self, other: "GameObject") -> bool:
         """
         Checks if the bullet is colliding with other game object.
@@ -72,10 +66,6 @@ class Bullet(GameObject):
         if other.radius + self.radius > distance:
             return True
         return False
-
-    def is_valid(self):
-        """Returns if the bullet got destroyed"""
-        return self.valid
 
     def main(self, clock: "pygame.time.Clock") -> None:
         """ Handles the bullet frame by frame"""

@@ -140,6 +140,8 @@ class Laser(GameObject):
                 self.state = LaserState.Recovery
                 self.time_to_execute = LASER_ANTICIPATION_TIME
                 self.cooldown = LASER_ANTICIPATION_TIME
+            else:
+                self.invalidate()
 
 
     def __evaluate_movement(self, clock: "pygame.time.Clock"):
