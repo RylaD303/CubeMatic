@@ -21,6 +21,7 @@ class BossAI(GameObject):
     """
     class FollowingAttackPattern(Enum):
         """
+        Attack patterns for boss.
         """
         WaveShots = 1
         PlusLaser = 2
@@ -126,7 +127,7 @@ class BossAI(GameObject):
     def _shoot_bullet_wave(self, player: "Player",
                            boss_bullets: set["Bullet"])  -> None:
         """
-        Executes attack WAVESHOOT:
+        Executes attack waveshoot:
         Shoots a wave of five bullets towards the player.
         Parameters:
         player:
