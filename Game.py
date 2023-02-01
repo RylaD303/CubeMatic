@@ -190,6 +190,8 @@ while game_running:
     if game_paused:
         draw_text("Press ESC again to unpause", (0, 128, 0), Vector2D(END_OF_MAP.x/2, 100), screen)
     #Rendering on the display
+    handle_collisions(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers, screen, clock)
+
     handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
     if not game_paused:
@@ -197,7 +199,6 @@ while game_running:
         handle_main(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
         #Collision handling
-        handle_collisions(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
 
     #Setting FPS
     print (clock.get_fps())

@@ -7,7 +7,7 @@ PLAYER_START = Vector2D(20,20) #pixles
 PLAYER_SPEED = 400 #pixles per second
 PLAYER_SCALE = Vector2D(48, 48) #pixles
 PLAYER_BULLET_SPEED = 600 #pixles per second
-PLAYER_BULLET_SIZE = 3 # pixels
+PLAYER_BULLET_SIZE = 4 # pixels
 PLAYER_BULLET_COLOR = (0,255,0) #RGB
 PLAYER_TELEPORT_SPEED = 1800 #pixles per second
 PLAYER_SHOOT_COOLDOWN = 150 #ms
@@ -31,6 +31,11 @@ CENTRE_OF_MAP = Vector2D(\
     # - WINDOW_SIZE[1]%MAP_TILE_SIZE[1]) #pixles
 #END_OF_MAP.x -= MAP_TILE_SIZE[0]
 #END_OF_MAP.y -= MAP_TILE_SIZE[1]
+
+
+#Animation
+SPEED_OF_SHRINKING = 800 #ms
+
 
 #Boss values
 BOSS_SCALE = Vector2D(48, 48)

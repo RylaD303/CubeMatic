@@ -68,7 +68,7 @@ class Bullet(GameObject):
         return False
 
     def main(self, clock: "pygame.time.Clock") -> None:
-        """ Handles the bullet frame by frame"""
+        """ Handles the bullets movement"""
         self.__move(clock)
 
     def __move(self, clock: "pygame.time.Clock") -> None:
@@ -78,9 +78,9 @@ class Bullet(GameObject):
         """
         self.position += self.movement*(clock.get_time()/1000)
 
-    def render(self, display : "pygame.Surface"):
+    def render(self, display : "pygame.Surface") -> None:
         """Displays bullet on screen"""
         pygame.draw.circle( display,
                             self.color,
-                            (self.position.x, self.position.y),
+                            tuple(self.position),
                             self.radius)
