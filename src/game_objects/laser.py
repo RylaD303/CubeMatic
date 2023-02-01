@@ -266,18 +266,49 @@ class Laser(GameObject):
                     START_OF_MAP,
                     RIGHT_UPPER_CORNER)
 
+        if intersection_point1 and intersection_point2\
+            and isclose(intersection_point1.x, intersection_point2.x)\
+            and isclose(intersection_point1.y, intersection_point2.y):
+            return None
 
-        if intersection_point1\
-            and intersection_point1.x <= END_OF_MAP.x\
-            and intersection_point1.y <= END_OF_MAP.y:
-            return intersection_point1
 
-        if intersection_point2\
-            and intersection_point2.x <= END_OF_MAP.x\
-            and intersection_point2.y <= END_OF_MAP.y:
-            return intersection_point2
+        if intersection_point1 and intersection_point2\
+           and self.position.distance_to(intersection_point1)\
+           > self.position.distance_to(intersection_point2):
+            if intersection_point2.y < START_OF_MAP.y:
+                return Vector2D(intersection_point2.x, START_OF_MAP.y)
+            return Vector2D(intersection_point2.x, END_OF_MAP.y)
 
-        return None
+        if not intersection_point1:
+            if intersection_point2.y < START_OF_MAP.y:
+                return Vector2D(intersection_point2.x, START_OF_MAP.y)
+            return Vector2D(intersection_point2.x, END_OF_MAP.y)
+
+        if intersection_point1.x < START_OF_MAP.x:
+            return Vector2D(START_OF_MAP.x, intersection_point1.y)
+        return Vector2D(END_OF_MAP.x, intersection_point1.y)
+
+
+
+        # if intersection_point1 and intersection_point2:
+        #     if intersection_point2.x < START_OF_MAP.x:
+        #         if intersection_point1.x < START_OF_MAP.x:
+        #             return Vector2D(START_OF_MAP.x, intersection_point1.y)
+        #         return Vector2D(END_OF_MAP.x, intersection_point1.y)
+
+        # if intersection_point2 and not intersection_point1:
+        #     if intersection_point2.y < START_OF_MAP.y:
+        #         return Vector2D(intersection_point2.x, START_OF_MAP.y)
+        #     return Vector2D(intersection_point2.x, END_OF_MAP.y)
+
+        # if intersection_point1 and not intersection_point2:
+        #     if intersection_point1.x < START_OF_MAP.x:
+        #         return Vector2D(START_OF_MAP.x, intersection_point1.y)
+        #     return Vector2D(END_OF_MAP.x, intersection_point1.y)
+
+        # if intersection_point2.y < START_OF_MAP.y:
+        #     return Vector2D(intersection_point2.x, START_OF_MAP.y)
+        # return Vector2D(intersection_point2.x, END_OF_MAP.y)
 
 
 
