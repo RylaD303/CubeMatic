@@ -72,6 +72,17 @@ class Game:
         the game is running so they can evaluate the objects
         positions, cooldowns and other thing.
         """
+
+        if self.keys_pressed["teleport"]:
+            self.keys_pressed["teleport"] = False
+            if not self.teleportation_device.active:
+                self.teleportation_device.activate(
+                    self.player.position + PLAYER_SCALE/2,
+                    Vector2D(*pygame.mouse.get_pos())\
+                    / self.screen_scaling)
+            else:
+                self.teleportation_device.teleport_player(self.player)
+
         #Check if mouse button is held down
         if self.keys_pressed["fire"]:
             self.player.fire(self.player_bullets,
@@ -206,6 +217,9 @@ class Game:
 
 
     def load_level(self):
+        """
+        Loads the objects into the game class.
+        """
         #Tile map creation
         map_tile_sprite =\
             pygame.image.load('src\sprites\Tile_map_wall_sprite.png')
@@ -292,6 +306,9 @@ class Game:
 
 
     def evaluate_key_presses(self):
+        """
+        Gets the key presses from the user and evaluates the events.
+        """
         for event in pygame.event.get():
             #Existing game
             if event.type == QUIT:
@@ -322,7 +339,7 @@ class Game:
 
                 #Pausing and unpausing game
                 if event.key == pygame.K_ESCAPE:
-                    self.keys_pressed["pause"]=not self.keys_pressed["pause"]
+                    self.keys_pressed["pause"] = not self.keys_pressed["pause"]
 
 
             elif event.type == pygame.KEYUP:
@@ -345,13 +362,7 @@ class Game:
 
                 #Teleporting
                 if event.button == 3:              #right mouse click
-                    if not self.teleportation_device.active:
-                        self.teleportation_device.activate(
-                            self.player.position + PLAYER_SCALE/2,
-                            Vector2D(*pygame.mouse.get_pos())\
-                            / self.screen_scaling)
-                    else:
-                        self.teleportation_device.teleport_player(self.player)
+                    self.keys_pressed["teleport"] = True
 
             #Player stop firing
             elif event.type == pygame.MOUSEBUTTONUP :
