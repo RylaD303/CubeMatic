@@ -1,6 +1,6 @@
 
 from typing import Union
-from math import atan2, sqrt, cos, sin
+from math import atan2, sqrt, cos, sin, isclose
 
 number_types = Union[int, float, complex]
 
@@ -86,8 +86,8 @@ class Vector2D:
         returns: bool -
         true if they have equal coorinates false otherwise"""
         if type(other) is tuple:
-            return (self.x, self.y) == other
-        return (self.x, self.y) == (other.x, other.y)
+            return isclose(self.x, other[0]) and isclose(self.y, other[0])
+        return isclose(self.x, other.x) and isclose(self.y, other.y)
 
     def __neq__(self, other : Union["Vector2D", tuple[number_types, number_types]]) -> bool:
         """Compares 2 vectors or vector and tuple of (number , number),
@@ -126,3 +126,15 @@ class Vector2D:
         self.x, self.y =\
             self.x*cos(angle) - self.y*sin(angle),\
             self.x*sin(angle) + self.y*cos(angle)
+
+    def check_parallel(self, other: "Vector2D") -> bool:
+        """Checks if two vectors are parallel."""
+        return isclose(self.x*other.y, self.y*other.x)
+
+    def cross_product(self, other: "Vector2D") -> number_types:
+        """
+        For simplicity we define the cross product to return
+        the length of the actual cross product, since we do
+        not need the 3D vector for anything anyway
+        """
+        return self.x*other.y - self.y*other.x
