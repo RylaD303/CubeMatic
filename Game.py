@@ -72,29 +72,6 @@ class Game:
         the game is running so they can evaluate the objects
         positions, cooldowns and other thing.
         """
-
-        if self.keys_pressed["teleport"]:
-            self.keys_pressed["teleport"] = False
-            if not self.teleportation_device.active:
-                self.teleportation_device.activate(
-                    self.player.position + PLAYER_SCALE/2,
-                    Vector2D(*pygame.mouse.get_pos())\
-                    / self.screen_scaling)
-            else:
-                self.teleportation_device.teleport_player(self.player)
-
-        #Check if mouse button is held down
-        if self.keys_pressed["fire"]:
-            self.player.fire(self.player_bullets,
-                            Vector2D(*pygame.mouse.get_pos())/self.screen_scaling)
-
-        #Renders text if game is paused:
-        if self.keys_pressed["pause"]:
-            draw_text("Press ESC again to unpause",
-                     (0, 128, 0),
-                     Vector2D(END_OF_MAP.x/2, 100),
-                     self.screen)
-
         #Player movement
         self.player.main(self.keys_pressed["player_movement"], clock)
 
@@ -157,7 +134,6 @@ class Game:
         #Renderiing effects
         for effect in self.circle_effects:
             effect.render(self.screen)
-
 
     def handle_collisions(self):
         """
@@ -304,8 +280,7 @@ class Game:
             "teleport": False
             }
 
-
-    def evaluate_key_presses(self):
+    def get_key_presses(self):
         """
         Gets the key presses from the user and evaluates the events.
         """
@@ -369,6 +344,29 @@ class Game:
                 if event.button == 1:
                     self.keys_pressed["fire"] = False
 
+    def evaluate_key_presses(self):
+        if self.keys_pressed["teleport"]:
+            self.keys_pressed["teleport"] = False
+            if not self.teleportation_device.active:
+                self.teleportation_device.activate(
+                    self.player.position + PLAYER_SCALE/2,
+                    Vector2D(*pygame.mouse.get_pos())\
+                    / self.screen_scaling)
+            else:
+                self.teleportation_device.teleport_player(self.player)
+
+        #Check if mouse button is held down
+        if self.keys_pressed["fire"]:
+            self.player.fire(self.player_bullets,
+                            Vector2D(*pygame.mouse.get_pos())/self.screen_scaling)
+
+        #Renders text if game is paused:
+        if self.keys_pressed["pause"]:
+            draw_text("Press ESC again to unpause",
+                        (0, 128, 0),
+                        Vector2D(END_OF_MAP.x/2, 100),
+                        self.screen)
+
     def run(self):
         self.load_level()
         self.game_state = GameState.Running
@@ -379,7 +377,7 @@ class Game:
         while self.game_state in [GameState.Running, GameState.Paused]:
             #Black background
             self.screen.fill((0,0,0))
-            self.evaluate_key_presses()
+            self.get_key_presses()
             if self.game_state == GameState.Running:
                 self.handle_main()
             self.handle_collisions()
