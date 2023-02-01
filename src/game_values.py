@@ -38,6 +38,7 @@ CENTRE_OF_MAP = Vector2D(\
 #Effects
 LIFETIME_OF_CIRCLE_EFFECT = 700 #ms
 
+LASER_EFFECT_RADIUS = 10
 
 #Boss values
 BOSS_SCALE = Vector2D(48, 48)

@@ -231,7 +231,7 @@ class Laser(GameObject):
         self.min_rotation_speed = min_rotation_speed
 
 
-    def get_end_point(self) -> Union["Vector2D", None]:
+    def get_end_point_in_map(self) -> Union["Vector2D", None]:
         """
         Returns the point at which the laser ends on the map
         Possible misscalculations may result in No point at all.
@@ -267,12 +267,12 @@ class Laser(GameObject):
                     RIGHT_UPPER_CORNER)
 
 
-        if intersection_point1 != None\
+        if intersection_point1\
             and intersection_point1.x <= END_OF_MAP.x\
             and intersection_point1.y <= END_OF_MAP.y:
             return intersection_point1
 
-        if intersection_point2 != None\
+        if intersection_point2\
             and intersection_point2.x <= END_OF_MAP.x\
             and intersection_point2.y <= END_OF_MAP.y:
             return intersection_point2

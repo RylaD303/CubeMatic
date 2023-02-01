@@ -4,7 +4,7 @@ from pygame.locals import *
 from src.game_objects.player import Player
 from src.game_objects.boss import Boss
 from src.game_objects.bullet import Bullet
-from src.game_objects.laser import Laser
+from src.game_objects.laser import Laser, LaserState
 from src.game_objects.teleport import Teleport
 from src.game_objects.tiles import MapTile
 from src.game_objects.effects import CircleEffect
@@ -187,6 +187,11 @@ class Game:
         for laser in self.boss_lasers:
             if not laser.is_valid():
                 lasers_to_remove.add(laser)
+            if laser.state == LaserState.Attack:
+                point = laser.get_end_point_in_map()
+                if point:
+                    self.circle_effects.add(\
+                        CircleEffect(point,LASER_EFFECT_RADIUS))
 
         for laser in lasers_to_remove:
             self.boss_lasers.remove(laser)
