@@ -4,11 +4,10 @@ from src.game_objects.teleport import Teleport
 from src.game_objects.bullet import Bullet
 from src.game_objects.laser import Laser
 from src.game_objects.boss import Boss
-from src.game_objects.animations import CircleAnimation
+from src.game_objects.effects import CircleEffect
 from src.game_values import *
 
 
-circle_animations: set["CircleAnimation"] = set()
 class CollisionHandler():
     """
     Handles the collision between all object on the screen.
@@ -20,13 +19,7 @@ class CollisionHandler():
                 boss: "Boss",
                 boss_bullets: set["Bullet"],
                 boss_lasers: set["Laser"],
-                screen,
-                clock):
-
-        for circle_animation in circle_animations:
-            circle_animation.render(screen)
-        for circle_animation in circle_animations:
-            circle_animation.main(clock)
+                circle_effects: set["CircleEffect"]):
 
         player.check_out_of_bounds()
 
@@ -51,7 +44,7 @@ class CollisionHandler():
             bullet.check_boundaries()
             if not bullet.is_valid():
                 boss_bullets_to_remove.add(bullet)
-                circle_animations.add(CircleAnimation(bullet.position,BOSS_BULLET_SIZE*2))
+                circle_effects.add(CircleEffect(bullet.position,BOSS_BULLET_SIZE*2))
 
         #removes the boss' bullets who are not valid.
         for bullet in boss_bullets_to_remove:
@@ -60,11 +53,11 @@ class CollisionHandler():
         if teleportation_device.active:
             teleportation_device.check_boundaries()
 
-        animations_to_remove: set[Bullet]= set()
-        for animation in circle_animations:
-            if not animation.is_valid():
-                animations_to_remove.add(animation)
+        effects_to_remove: set[Bullet]= set()
+        for effect in circle_effects:
+            if not effect.is_valid():
+                effects_to_remove.add(effect)
 
-        for animation in animations_to_remove:
-            circle_animations.remove(animation)
+        for effect in effects_to_remove:
+            circle_effects.remove(effect)
 

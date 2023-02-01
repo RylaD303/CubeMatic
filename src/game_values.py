@@ -33,8 +33,8 @@ CENTRE_OF_MAP = Vector2D(\
 #END_OF_MAP.y -= MAP_TILE_SIZE[1]
 
 
-#Animation
-SPEED_OF_SHRINKING = 800 #ms
+#Effects
+LIFETIME_OF_CIRCLE_EFFECT = 700 #ms
 
 
 #Boss values

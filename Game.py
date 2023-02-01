@@ -6,6 +6,7 @@ from src.game_objects.bullet import Bullet
 from src.game_objects.laser import Laser
 from src.game_objects.teleport import Teleport
 from src.game_objects.tiles import MapTile
+from src.game_objects.effects import CircleEffect
 from src.collision_handler import CollisionHandler
 from src.classes.vector_2d import Vector2D
 from src.game_values import *
@@ -23,7 +24,7 @@ clock.tick()
 
 handle_collisions = CollisionHandler()
 
-def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss: "Boss", boss_bullets: set["Bullet"], boss_lasers: set["Laser"]):
+def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss: "Boss", boss_bullets: set["Bullet"], boss_lasers: set["Laser"], circle_effects: set["CircleEffect"]):
     player.main(player_movement, clock)
     for bullet in player_bullets:
         bullet.main(clock)
@@ -45,7 +46,10 @@ def handle_main(player: "Player", player_bullets: list["Bullet"], teleportation_
 
     boss.main(player, boss_bullets, boss_lasers, clock)
 
-def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss, boss_bullets, boss_lasers):
+    for effect in circle_effects:
+        effect.main(clock)
+
+def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], player: "Player", player_bullets: list["Bullet"], teleportation_device: "Teleport", boss, boss_bullets, boss_lasers, circle_effects):
 
     #Rendering player on screen
     player.render(screen)
@@ -69,6 +73,8 @@ def handle_rendering(screen: "pygame.Surface", map_tiles: list["MapTile"], playe
     for map_tile in map_tiles:
         map_tile.render(screen)
 
+    for effect in circle_effects:
+        effect.render(screen)
     #Rendering screen
     resizable_screen.blit(pygame.transform.scale(screen, resizable_screen.get_rect().size), (0,0))
     pygame.display.flip()
@@ -110,6 +116,8 @@ player_bullets: set[Bullet] = set()
 resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
 screen = resizable_screen.copy()
 screen_scaling = 1
+
+circle_effects: set["CircleEffect"] = set()
 
 game_running = True
 game_paused = False
@@ -190,13 +198,13 @@ while game_running:
     if game_paused:
         draw_text("Press ESC again to unpause", (0, 128, 0), Vector2D(END_OF_MAP.x/2, 100), screen)
     #Rendering on the display
-    handle_collisions(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers, screen, clock)
+    handle_collisions(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers, circle_effects)
 
-    handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
+    handle_rendering(screen, map_tiles, player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers, circle_effects)
 
     if not game_paused:
         #Handle moving and frame by frame stuff
-        handle_main(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers)
+        handle_main(player, player_bullets, teleportation_device, boss, boss_bullets, boss_lasers, circle_effects)
 
         #Collision handling
 
