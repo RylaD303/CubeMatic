@@ -26,6 +26,19 @@ class Boss(BossAI, GameObject):
         self.height = height
         self.rotation = 0
         self.radius = width/2
+        self.active = False
+
+    def activate(self):
+        """
+        Boss starts to execute patterns and to attack.
+        """
+        self.active = True
+
+    def deactivate(self):
+        """
+        Boss stops to executing patterns and attacking.
+        """
+        self.active = True
 
     def _execute_attack_pattern(self,
     player: "Player",
@@ -128,12 +141,13 @@ class Boss(BossAI, GameObject):
             clock -
                 to get time from last call to subtract from cooldowns.
         """
-        self.time_to_execute_pattern -= clock.get_time()
-        self.attack_cooldown -= clock.get_time()
-        self._evaluate_attack_pattern()
-        self._move()
-        if self.attack_cooldown <=0:
-            self._execute_attack_pattern(player, boss_bullets, boss_lasers)
+        if self.active:
+            self.time_to_execute_pattern -= clock.get_time()
+            self.attack_cooldown -= clock.get_time()
+            self._evaluate_attack_pattern()
+            self._move()
+            if self.attack_cooldown <=0:
+                self._execute_attack_pattern(player, boss_bullets, boss_lasers)
 
     def render(self, display: "pygame.Surface") -> None:
         """
