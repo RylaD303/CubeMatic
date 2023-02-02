@@ -71,6 +71,8 @@ class Boss(BossAI, GameObject):
         """
         #for attack in sample(following_attacks, 3):
         #    self.attack_sequence.put(attack)
+        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
+        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
         self.attack_sequence.put(FollowingAttackPattern.EdgeLaser)
         self.attack_sequence.put(FollowingAttackPattern.EdgeLaser)
         self.attack_sequence.put(FollowingAttackPattern.EdgeLaser)

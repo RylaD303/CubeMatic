@@ -187,7 +187,7 @@ class Game:
         for laser in self.boss_lasers:
             if not laser.is_valid():
                 lasers_to_remove.add(laser)
-            if laser.state == LaserState.Attack:
+            elif laser.state == LaserState.Attack:
                 point = laser.get_end_point_in_map()
                 if point:
                     self.circle_effects.add(\

@@ -35,13 +35,13 @@ def get_segment_intersection(beginpoint1: "Vector2D",
     vector1 = endpoint1 - beginpoint1
     vector2 = endpoint2 - beginpoint2
     cross_product1 = vector1.cross_product(vector2)
-    cross_product2 = vector2.cross_product(beginpoint2 - beginpoint1)
+    cross_product2 = vector2.cross_product(beginpoint1 - beginpoint2)
     if isclose(cross_product1, 0) or isclose(cross_product2, 0):
         return None
 
     scalar = cross_product2/cross_product1
 
-    return beginpoint1 + scalar*vector1
+    return (beginpoint1 + scalar*vector1, scalar)
 
 
 class Laser(GameObject):
@@ -73,7 +73,7 @@ class Laser(GameObject):
                 color with which the laser will be rendered.
         """
         super().__init__(begin_point)
-        self.direction = (direction/abs(direction))*(LASER_LENGTH**2)
+        self.direction = (direction/abs(direction))*LASER_LENGTH
         self.width = width
         self.starting_width = width
         self.color = color
@@ -129,14 +129,14 @@ class Laser(GameObject):
             pygame.draw.line(display,
                             new_color,
                             tuple(self.position),
-                            tuple(self.position + self.direction),
+                            tuple(self.position+self.direction),
                             round(self.width))
 
         elif self.state == LaserState.Attack:
             pygame.draw.line(display,
                             self.color,
                             tuple(self.position),
-                            tuple(self.position + self.direction),
+                            tuple(self.position+self.direction),
                             self.width)
             # pygame.draw.line(display,
             #                 WHITE,
@@ -147,7 +147,7 @@ class Laser(GameObject):
             pygame.draw.line(display,
                             WHITE,
                             tuple(self.position),
-                            tuple(self.position + self.direction),
+                            tuple(self.position+self.direction),
                             round(self.width))
 
     def __evaluate_state(self):
@@ -177,7 +177,7 @@ class Laser(GameObject):
 
         Parameters:
             clock -
-                to set cooldowns with.
+                to scale movement with.
         """
         if self.movement_types[0] == LaserMovement.Constant:
             pass #nothing to do here
@@ -237,6 +237,18 @@ class Laser(GameObject):
         Possible misscalculations may result in No point at all.
         (I blame the float for that)
         """
+
+        def choose_intersection_point1(point: "Vector2D") -> "Vector2D":
+            if point.x-50 < START_OF_MAP.x:
+                return Vector2D(START_OF_MAP.x, point.y)
+            return Vector2D(END_OF_MAP.x, point.y)
+
+        def choose_intersection_point2(point: "Vector2D") -> "Vector2D":
+            if point.y-50 < START_OF_MAP.y:
+                return Vector2D(point.x, START_OF_MAP.y)
+            return Vector2D(point.x, END_OF_MAP.y)
+
+
         if self.direction.x>0:
             intersection_point1 =\
                 get_segment_intersection(
@@ -266,27 +278,29 @@ class Laser(GameObject):
                     START_OF_MAP,
                     RIGHT_UPPER_CORNER)
 
-        if intersection_point1 and intersection_point2\
-            and isclose(intersection_point1.x, intersection_point2.x)\
-            and isclose(intersection_point1.y, intersection_point2.y):
-            return None
+        # if intersection_point1 and intersection_point2\
+        #     and isclose(intersection_point1.x, intersection_point2.x)\
+        #     and isclose(intersection_point1.y, intersection_point2.y):
+        #     return None
 
-
-        if intersection_point1 and intersection_point2\
-           and self.position.distance_to(intersection_point1)\
-           > self.position.distance_to(intersection_point2):
-            if intersection_point2.y < START_OF_MAP.y:
-                return Vector2D(intersection_point2.x, START_OF_MAP.y)
-            return Vector2D(intersection_point2.x, END_OF_MAP.y)
 
         if not intersection_point1:
-            if intersection_point2.y < START_OF_MAP.y:
-                return Vector2D(intersection_point2.x, START_OF_MAP.y)
-            return Vector2D(intersection_point2.x, END_OF_MAP.y)
+            return choose_intersection_point2(intersection_point2[0])
 
-        if intersection_point1.x < START_OF_MAP.x:
-            return Vector2D(START_OF_MAP.x, intersection_point1.y)
-        return Vector2D(END_OF_MAP.x, intersection_point1.y)
+        if not intersection_point2:
+            return choose_intersection_point1(intersection_point1[0])
+
+        if 1 > intersection_point1[1] > 0 and 1 > intersection_point2[1] > 0:
+            if self.position.distance_to(intersection_point1[0])\
+                > self.position.distance_to(intersection_point2[0]):
+                return choose_intersection_point2(intersection_point2[0])
+            else:
+                return choose_intersection_point1(intersection_point1[0])
+
+        if 1> intersection_point1[1] > 0:
+            return choose_intersection_point1(intersection_point1[0])
+
+        return choose_intersection_point2(intersection_point2[0])
 
 
 
@@ -309,9 +323,3 @@ class Laser(GameObject):
         # if intersection_point2.y < START_OF_MAP.y:
         #     return Vector2D(intersection_point2.x, START_OF_MAP.y)
         # return Vector2D(intersection_point2.x, END_OF_MAP.y)
-
-
-
-
-
-

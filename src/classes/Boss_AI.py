@@ -134,8 +134,8 @@ class BossAI():
     def _pick_new_movement_pattern(self)  -> None:
         """todo!"""
         self.current_movement_pattern =\
-            MovePattern(MovePatternType.StandInMiddle)
-        self.movement_variant = randint(1,4)
+            MovePattern(MovePatternType.ParabolicMovement)
+        self.movement_variant = randint(1,2)
 
     def _shoot_bullet_wave(self, player: "Player",
                            boss_bullets: set["Bullet"])  -> None:
