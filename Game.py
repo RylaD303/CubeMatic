@@ -389,7 +389,6 @@ class Game:
         self.game_state = GameState.Menu
         while True:
             self._update()
-            print(clock.get_fps())
             clock.tick(120)
 
     def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
@@ -413,6 +412,7 @@ class Game:
             self.clear_surface()
         else:
             self.game_state = GameState.Running
+            self.boss.activate()
             #self.boss.activate()
 
     def run_level(self):

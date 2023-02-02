@@ -117,7 +117,7 @@ class BossAI():
         self.movement_variant = 0
         self.attack_sequence = Queue()
         self.current_attack_pattern = None
-        self.attack_cooldown = 2000
+        self.attack_cooldown = 0
         self.angle_for_attack = None
         self.can_attack = False
         self.time_to_execute_pattern = 0

@@ -27,6 +27,7 @@ class Boss(BossAI, GameObject):
         self.rotation = 0
         self.radius = width/2
         self.active = False
+        self.sleep_time = 2000
 
     def activate(self):
         """
@@ -38,7 +39,7 @@ class Boss(BossAI, GameObject):
         """
         Boss stops to executing patterns and attacking.
         """
-        self.active = True
+        self.active = False
 
     def _execute_attack_pattern(self,
     player: "Player",
@@ -95,19 +96,19 @@ class Boss(BossAI, GameObject):
     def _evaluate_attack_pattern(self) -> None:
         """
         Sets new atatck pattern if the old one is finished.
-        Takes care of cooldowns
+        Takes care of cooldowns.
         """
         if self.time_to_execute_pattern <= 0:
             if self.attack_sequence.empty():
                 self._choose_attack_sequence()
             self.current_attack_pattern = self.attack_sequence.get()
-            self.attack_cooldown = 2000
+            self.attack_cooldown = 0
             self.angle_for_attack = None
             self.can_attack = True
             self._pick_new_movement_pattern()
             self.time_to_execute_pattern =\
                 self.current_movement_pattern.get_time()
-            self.deactivate()
+            self.sleep_time = 1500
 
     def _move(self) -> None:
         """
@@ -142,15 +143,17 @@ class Boss(BossAI, GameObject):
             clock -
                 to get time from last call to subtract from cooldowns.
         """
-        self.time_to_execute_pattern -= clock.get_time()
-        self.attack_cooldown -= clock.get_time()
         if self.active:
-            self._evaluate_attack_pattern()
-            self._move()
-            if self.attack_cooldown <=0:
-                self._execute_attack_pattern(player, boss_bullets, boss_lasers)
-        elif self.attack_cooldown < 0:
-            self.activate()
+            if self.sleep_time < 0:
+                self.time_to_execute_pattern -= clock.get_time()
+                self.attack_cooldown -= clock.get_time()
+                self._evaluate_attack_pattern()
+                self._move()
+                if self.attack_cooldown <=0:
+                    self._execute_attack_pattern(player, boss_bullets, boss_lasers)
+            else:
+                self.sleep_time -= clock.get_time()
+
 
     def render(self, display: "pygame.Surface") -> None:
         """
