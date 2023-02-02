@@ -8,6 +8,7 @@ from src.game_objects.laser import Laser, LaserState
 from src.game_objects.teleport import Teleport
 from src.game_objects.tiles import MapTile
 from src.game_objects.effects import CircleEffect
+from src.game_objects.button import Button
 from src.classes.vector_2d import Vector2D
 from src.game_values import *
 
@@ -15,11 +16,13 @@ from src.game_values import *
 #    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
 #    return hit_list
 
-pygame.init()
+def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame.Surface") -> None:
+    img = font.render(text, True, text_color)
+    offset = Vector2D(img.get_width(),img.get_height())/2
+    screen.blit(img, tuple(position - offset))
 
-#Clock
-clock = pygame.time.Clock()
-clock.tick()
+play_button_image = pygame.image.load('src/sprites/Play_button.png')
+play_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
 
 
 class GameState(Enum):
@@ -29,12 +32,6 @@ class GameState(Enum):
     Won = 3
     Lost = 4
     Paused = 5
-
-
-font = pygame.font.SysFont("arialblack", 40)
-def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame.Surface") -> None:
-    img = font.render(text, True, text_color)
-    screen.blit(img, tuple(position))
 
 class Game:
     """
@@ -62,6 +59,94 @@ class Game:
         self.screen_scaling = 1
         self.game_state = None
         self.keys_pressed = {}
+
+    def load_level(self):
+        """
+        Loads the objects into the game class.
+        """
+        #Tile map creation
+        map_tile_sprite =\
+            pygame.image.load('src\sprites\Tile_map_wall_sprite.png')
+        map_tile_corner_sprite =\
+            pygame.image.load('src\sprites\Tile_map_corner_sprite.png')
+
+        self.map_tiles = []
+        start_pos_x = START_OF_WINDOW.x  #(END_OF_WINDOW.x%MAP_TILE_SIZE[0])/2
+        start_pos_y = START_OF_WINDOW.y  #(END_OF_WINDOW.y%MAP_TILE_SIZE[1])/2
+        end_pos_x = END_OF_WINDOW.x//MAP_TILE_SIZE[0]*MAP_TILE_SIZE[0]
+        end_pos_y = END_OF_WINDOW.y//MAP_TILE_SIZE[1]*MAP_TILE_SIZE[1]
+        top_left_map_corner = Vector2D(start_pos_x, start_pos_y)
+        top_right_map_corner = Vector2D(end_pos_x + start_pos_x, start_pos_y)
+        bottom_left_map_corner =\
+            Vector2D(start_pos_x, end_pos_y + start_pos_y)
+        bottom_right_map_corner =\
+            Vector2D(end_pos_x + start_pos_x, end_pos_y + start_pos_y)
+
+        self.map_tiles.append(MapTile(top_left_map_corner,
+                                    map_tile_corner_sprite,
+                                    90,
+                                    *MAP_TILE_SIZE))
+        self.map_tiles.append(MapTile(top_right_map_corner,
+                                    map_tile_corner_sprite,
+                                    0,
+                                    *MAP_TILE_SIZE))
+        self.map_tiles.append(MapTile(bottom_left_map_corner,
+                                    map_tile_corner_sprite,
+                                    180,
+                                    *MAP_TILE_SIZE))
+        self.map_tiles.append(MapTile(bottom_right_map_corner,
+                                    map_tile_corner_sprite,
+                                    270,
+                                    *MAP_TILE_SIZE))
+
+        for i in range(1, END_OF_WINDOW.x//MAP_TILE_SIZE[0]):
+            position_x = start_pos_x + i*MAP_TILE_SIZE[0]
+            self.map_tiles.append(MapTile(Vector2D(position_x, 0),
+                                        map_tile_sprite,
+                                        0,
+                                        *MAP_TILE_SIZE))
+            self.map_tiles.append(MapTile(Vector2D(position_x, end_pos_y),
+                                        map_tile_sprite,
+                                        180,
+                                        *MAP_TILE_SIZE))
+
+        for i in range(1, END_OF_WINDOW.y//MAP_TILE_SIZE[1]):
+            position_y = start_pos_y + i*MAP_TILE_SIZE[1]
+            self.map_tiles.append(MapTile(Vector2D(start_pos_x, position_y),
+                                        map_tile_sprite,
+                                        90,
+                                        *MAP_TILE_SIZE))
+            self.map_tiles.append(MapTile(Vector2D(end_pos_x, position_y),
+                                        map_tile_sprite,
+                                        270,
+                                        *MAP_TILE_SIZE))
+
+        #Player creation
+        self.player = Player(PLAYER_START,
+                        PLAYER_SPEED,
+                        pygame.image.load('src/sprites/Player1.png'),
+                        *tuple(PLAYER_SCALE))
+        self.teleportation_device: "Teleport" = Teleport(PLAYER_TELEPORT_SPEED)
+
+        #Boss creation
+        self.boss = Boss(pygame.image.load('src/sprites/Player1.png'),\
+                    *tuple(BOSS_SCALE))
+        self.boss_bullets = set()
+        self.boss_lasers = set()
+
+
+        #Other
+        self.player_bullets: set[Bullet] = set()
+
+        self.circle_effects: set["CircleEffect"] = set()
+
+        self.keys_pressed =\
+            {
+            "player_movement": [False, False, False, False],
+            "fire": False,
+            "pause": False,
+            "teleport": False
+            }
 
     def handle_objects_main(self):
         """
@@ -205,95 +290,6 @@ class Game:
         for laser in lasers_to_remove:
             self.boss_lasers.remove(laser)
 
-
-    def load_level(self):
-        """
-        Loads the objects into the game class.
-        """
-        #Tile map creation
-        map_tile_sprite =\
-            pygame.image.load('src\sprites\Tile_map_wall_sprite.png')
-        map_tile_corner_sprite =\
-            pygame.image.load('src\sprites\Tile_map_corner_sprite.png')
-
-        self.map_tiles = []
-        start_pos_x = START_OF_WINDOW.x  #(END_OF_WINDOW.x%MAP_TILE_SIZE[0])/2
-        start_pos_y = START_OF_WINDOW.y  #(END_OF_WINDOW.y%MAP_TILE_SIZE[1])/2
-        end_pos_x = END_OF_WINDOW.x//MAP_TILE_SIZE[0]*MAP_TILE_SIZE[0]
-        end_pos_y = END_OF_WINDOW.y//MAP_TILE_SIZE[1]*MAP_TILE_SIZE[1]
-        top_left_map_corner = Vector2D(start_pos_x, start_pos_y)
-        top_right_map_corner = Vector2D(end_pos_x + start_pos_x, start_pos_y)
-        bottom_left_map_corner =\
-            Vector2D(start_pos_x, end_pos_y + start_pos_y)
-        bottom_right_map_corner =\
-            Vector2D(end_pos_x + start_pos_x, end_pos_y + start_pos_y)
-
-        self.map_tiles.append(MapTile(top_left_map_corner,
-                                    map_tile_corner_sprite,
-                                    90,
-                                    *MAP_TILE_SIZE))
-        self.map_tiles.append(MapTile(top_right_map_corner,
-                                    map_tile_corner_sprite,
-                                    0,
-                                    *MAP_TILE_SIZE))
-        self.map_tiles.append(MapTile(bottom_left_map_corner,
-                                    map_tile_corner_sprite,
-                                    180,
-                                    *MAP_TILE_SIZE))
-        self.map_tiles.append(MapTile(bottom_right_map_corner,
-                                    map_tile_corner_sprite,
-                                    270,
-                                    *MAP_TILE_SIZE))
-
-        for i in range(1, END_OF_WINDOW.x//MAP_TILE_SIZE[0]):
-            position_x = start_pos_x + i*MAP_TILE_SIZE[0]
-            self.map_tiles.append(MapTile(Vector2D(position_x, 0),
-                                        map_tile_sprite,
-                                        0,
-                                        *MAP_TILE_SIZE))
-            self.map_tiles.append(MapTile(Vector2D(position_x, end_pos_y),
-                                        map_tile_sprite,
-                                        180,
-                                        *MAP_TILE_SIZE))
-
-        for i in range(1, END_OF_WINDOW.y//MAP_TILE_SIZE[1]):
-            position_y = start_pos_y + i*MAP_TILE_SIZE[1]
-            self.map_tiles.append(MapTile(Vector2D(start_pos_x, position_y),
-                                        map_tile_sprite,
-                                        90,
-                                        *MAP_TILE_SIZE))
-            self.map_tiles.append(MapTile(Vector2D(end_pos_x, position_y),
-                                        map_tile_sprite,
-                                        270,
-                                        *MAP_TILE_SIZE))
-
-        #Player creation
-        self.player = Player(PLAYER_START,
-                        PLAYER_SPEED,
-                        pygame.image.load('src/sprites/Player1.png'),
-                        *tuple(PLAYER_SCALE))
-        self.teleportation_device: "Teleport" = Teleport(PLAYER_TELEPORT_SPEED)
-
-        #Boss creation
-        self.boss = Boss(pygame.image.load('src/sprites/Player1.png'),\
-                    *tuple(BOSS_SCALE))
-        self.boss_bullets = set()
-        self.boss_lasers = set()
-
-
-        #Other
-        self.player_bullets: set[Bullet] = set()
-
-        self.circle_effects: set["CircleEffect"] = set()
-
-        self.keys_pressed =\
-            {
-            "player_movement": [False, False, False, False],
-            "fire": False,
-            "pause": False,
-            "teleport": False
-            }
-
     def get_key_presses(self):
         """
         Gets the key presses from the user and evaluates the events.
@@ -348,7 +344,6 @@ class Game:
                 #Bullet firing
                 if event.button == 1:              #left mouse click
                     self.keys_pressed["fire"] = True
-                    print(self.keys_pressed["fire"])
 
                 #Teleporting
                 if event.button == 3:              #right mouse click
@@ -433,11 +428,21 @@ class Game:
                 (0, 255, 0),
                 CENTRE_OF_WINDOW - Vector2D(160,280),
                 self.screen)
+        clicked = play_button.main(self.screen, self.screen_scaling)
         self.render_surface()
+        if clicked == True:
+            print(True)
 
     def _update(self):
         if self.game_state == GameState.Menu:
             self.in_menu()
+
+pygame.init()
+font = pygame.font.SysFont("arialblack", 40)
+#Clock
+clock = pygame.time.Clock()
+clock.tick()
+
 
 game = Game()
 game.run()
