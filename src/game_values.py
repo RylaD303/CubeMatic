@@ -1,18 +1,6 @@
 from math import pi
 from src.classes.vector_2d import Vector2D
 
-#Constants for the game
-#Player values
-PLAYER_START = Vector2D(20,20) #pixles
-PLAYER_SPEED = 400 #pixles per second
-PLAYER_SCALE = Vector2D(48, 48) #pixles
-PLAYER_BULLET_SPEED = 600 #pixles per second
-PLAYER_BULLET_SIZE = 4 # pixels
-PLAYER_BULLET_COLOR = (0,255,0) #RGB
-PLAYER_TELEPORT_SPEED = 1800 #pixles per second
-PLAYER_SHOOT_COOLDOWN = 150 #ms
-MAX_HOLD_TIME = 5000 #ms - how long can the player hold the teleportation device.
-
 
 #Map values
 WINDOW_SIZE = (1400,700) #pixles
@@ -33,6 +21,18 @@ CENTRE_OF_MAP = END_OF_MAP/2
 #END_OF_MAP.x -= MAP_TILE_SIZE[0]
 #END_OF_MAP.y -= MAP_TILE_SIZE[1]
 
+
+#Constants for the game
+#Player values
+PLAYER_START = CENTRE_OF_MAP #pixles
+PLAYER_SPEED = 400 #pixles per second
+PLAYER_SCALE = Vector2D(48, 48) #pixles
+PLAYER_BULLET_SPEED = 600 #pixles per second
+PLAYER_BULLET_SIZE = 4 # pixels
+PLAYER_BULLET_COLOR = (0,255,0) #RGB
+PLAYER_TELEPORT_SPEED = 1800 #pixles per second
+PLAYER_SHOOT_COOLDOWN = 150 #ms
+MAX_HOLD_TIME = 5000 #ms - how long can the player hold the teleportation device.
 
 #Effects
 LIFETIME_OF_CIRCLE_EFFECT = 700 #ms
@@ -75,4 +75,6 @@ BOSS_ELIPSE_WIDTH = END_OF_MAP.x/2   #should scale with end of the map
 BUTTON_PLAY_SIZE = Vector2D(128, 64)
 BUTTON_PLAY_POSITION = END_OF_WINDOW/2 - BUTTON_PLAY_SIZE/2
 
-TITLE_POSITION = BUTTON_PLAY_POSITION + Vector2D(0, -200)
+TITLE_POSITION = END_OF_WINDOW/2 + Vector2D(0, -200)
+
+START_ANIMATION_TIME = 10000 #ms

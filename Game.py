@@ -1,4 +1,5 @@
 import pygame, sys
+import time
 from enum import Enum
 from pygame.locals import *
 from src.game_objects.player import Player
@@ -32,6 +33,7 @@ class GameState(Enum):
     Won = 3
     Lost = 4
     Paused = 5
+    Animation = 6
 
 class Game:
     """
@@ -384,25 +386,35 @@ class Game:
     def run(self):
         self.game_state = GameState.Menu
         while True:
-            self.get_key_presses()
             self._update()
-            self.clear_surface()
             clock.tick(120)
         self.load_level()
         self.game_state = GameState.Running
         self.start()
 
 
-    def render_surface(self):
+    def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
         Game.resizable_screen.blit(
                 pygame.transform.scale(self.screen,
                                        Game.resizable_screen.get_rect().size),
-                                       (0,0))
+                                       tuple(offset))
         pygame.display.flip()
 
     def clear_surface(self):
         #Black background
         self.screen.fill((0,0,0))
+
+    def level_enter_animation(self):
+        starting_offset = Vector2D(0,700)
+        current_time = START_ANIMATION_TIME
+        Game.resizable_screen.fill((0,0,0))
+        time.sleep(1)
+        while current_time>0:
+            current_time -= clock.get_time()
+            offset = current_time/START_ANIMATION_TIME*starting_offset
+            self.handle_objects_rendering()
+            self.render_surface(offset)
+            self.clear_surface()
 
     def start(self):
         clock.tick(120)
@@ -413,29 +425,34 @@ class Game:
             self.handle_objects_collisions()
             self.clear_surface()
             self.handle_objects_rendering()
-            self.render_surface()
-            clock.tick(120)
 
         while self.game_state == GameState.Lost:
             self.clear_surface()
             draw_text("Lost", (0, 255, 0), CENTRE_OF_MAP, self.screen)
             self.get_key_presses()
-            self.render_surface()
-            clock.tick(120)
 
     def in_menu(self):
         draw_text("CubeMatic",
                 (0, 255, 0),
-                CENTRE_OF_WINDOW - Vector2D(160,280),
+                TITLE_POSITION,
                 self.screen)
         clicked = play_button.main(self.screen, self.screen_scaling)
         self.render_surface()
         if clicked == True:
-            print(True)
+            self.game_state = GameState.Loading
 
     def _update(self):
+        self.get_key_presses()
         if self.game_state == GameState.Menu:
             self.in_menu()
+            self.render_surface()
+
+        if self.game_state == GameState.Loading:
+            self.load_level()
+            self.level_enter_animation()
+            
+
+        self.clear_surface()
 
 pygame.init()
 font = pygame.font.SysFont("arialblack", 40)
