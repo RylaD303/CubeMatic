@@ -16,7 +16,7 @@ from src.game_values import *
 #def collision_test(sprite: "pygame.Rect", objects: list["MapTile"]):
 #    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
 #    return hit_list
-
+GREEN = (0, 255, 0)
 def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame.Surface") -> None:
     img = font.render(text, True, text_color)
     offset = Vector2D(img.get_width(),img.get_height())/2
@@ -24,7 +24,8 @@ def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame
 
 play_button_image = pygame.image.load('src/sprites/Play_button.png')
 play_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
-
+starting_offset = Vector2D(0,700)
+time_left_for_animation = START_ANIMATION_TIME
 
 class GameState(Enum):
     Menu = 0
@@ -44,6 +45,7 @@ class Game:
         collsion handling;
     """
     resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
+    time_left_for_animation = START_ANIMATION_TIME
     def __init__(self):
         """
         Initialises the Game object.
@@ -387,11 +389,8 @@ class Game:
         self.game_state = GameState.Menu
         while True:
             self._update()
+            print(clock.get_fps())
             clock.tick(120)
-        self.load_level()
-        self.game_state = GameState.Running
-        self.start()
-
 
     def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
         Game.resizable_screen.blit(
@@ -404,55 +403,60 @@ class Game:
         #Black background
         self.screen.fill((0,0,0))
 
-    def level_enter_animation(self):
-        starting_offset = Vector2D(0,700)
-        current_time = START_ANIMATION_TIME
-        Game.resizable_screen.fill((0,0,0))
-        time.sleep(1)
-        while current_time>0:
-            current_time -= clock.get_time()
-            offset = current_time/START_ANIMATION_TIME*starting_offset
+    def run_level_enter_animation(self):
+        if Game.time_left_for_animation>0:
+            Game.time_left_for_animation -= clock.get_time()
+            offset = Game.time_left_for_animation\
+                     / START_ANIMATION_TIME*starting_offset
             self.handle_objects_rendering()
             self.render_surface(offset)
             self.clear_surface()
+        else:
+            self.game_state = GameState.Running
+            #self.boss.activate()
 
-    def start(self):
-        clock.tick(120)
-        while self.game_state in [GameState.Running, GameState.Paused]:
-            if self.game_state == GameState.Running:
-                self.handle_objects_main()
-            self.evaluate_key_presses_ingame()
-            self.handle_objects_collisions()
-            self.clear_surface()
-            self.handle_objects_rendering()
+    def run_level(self):
+        if self.game_state == GameState.Running:
+            self.handle_objects_main()
+        self.evaluate_key_presses_ingame()
+        self.handle_objects_collisions()
+        self.clear_surface()
+        self.handle_objects_rendering()
 
-        while self.game_state == GameState.Lost:
-            self.clear_surface()
-            draw_text("Lost", (0, 255, 0), CENTRE_OF_MAP, self.screen)
-            self.get_key_presses()
-
-    def in_menu(self):
+    def run_menu(self):
         draw_text("CubeMatic",
-                (0, 255, 0),
+                GREEN,
                 TITLE_POSITION,
                 self.screen)
         clicked = play_button.main(self.screen, self.screen_scaling)
         self.render_surface()
         if clicked == True:
+            self.clear_surface()
+            Game.resizable_screen.fill((0,0,0))
+            self.render_surface()
+            Game.time_left_for_animation = START_ANIMATION_TIME
+            time.sleep(1)
             self.game_state = GameState.Loading
 
     def _update(self):
         self.get_key_presses()
         if self.game_state == GameState.Menu:
-            self.in_menu()
-            self.render_surface()
+            self.run_menu()
 
-        if self.game_state == GameState.Loading:
+        elif self.game_state == GameState.Loading:
             self.load_level()
-            self.level_enter_animation()
-            
+            self.run_level_enter_animation()
+            return
 
-        self.clear_surface()
+        elif self.game_state in [GameState.Running, GameState.Paused]:
+            self.run_level()
+
+        elif self.game_state == GameState.Lost:
+            draw_text("Lost", GREEN, CENTRE_OF_MAP, self.screen)
+            time.sleep(4)
+            self.game_state = GameState.Menu
+
+        self.render_surface()
 
 pygame.init()
 font = pygame.font.SysFont("arialblack", 40)

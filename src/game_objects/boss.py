@@ -101,12 +101,13 @@ class Boss(BossAI, GameObject):
             if self.attack_sequence.empty():
                 self._choose_attack_sequence()
             self.current_attack_pattern = self.attack_sequence.get()
-            self.attack_cooldown = 500
+            self.attack_cooldown = 2000
             self.angle_for_attack = None
             self.can_attack = True
             self._pick_new_movement_pattern()
             self.time_to_execute_pattern =\
                 self.current_movement_pattern.get_time()
+            self.deactivate()
 
     def _move(self) -> None:
         """
@@ -141,13 +142,15 @@ class Boss(BossAI, GameObject):
             clock -
                 to get time from last call to subtract from cooldowns.
         """
+        self.time_to_execute_pattern -= clock.get_time()
+        self.attack_cooldown -= clock.get_time()
         if self.active:
-            self.time_to_execute_pattern -= clock.get_time()
-            self.attack_cooldown -= clock.get_time()
             self._evaluate_attack_pattern()
             self._move()
             if self.attack_cooldown <=0:
                 self._execute_attack_pattern(player, boss_bullets, boss_lasers)
+        elif self.attack_cooldown < 0:
+            self.activate()
 
     def render(self, display: "pygame.Surface") -> None:
         """
