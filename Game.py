@@ -23,13 +23,12 @@ clock.tick()
 
 
 class GameState(Enum):
-    Idle = 0
+    Menu = 0
     Loading = 1
     Running = 2
     Won = 3
     Lost = 4
-    Ended = 5
-    Paused = 6
+    Paused = 5
 
 
 font = pygame.font.SysFont("arialblack", 40)
@@ -58,13 +57,13 @@ class Game:
         self.boss_bullets: set["Bullet"] = None
         self.boss_lasers: set["Laser"] = None
         self.circle_effects: set["CircleEffect"] = None
-        self.map_tiles: set["MapTile"] = []
+        self.map_tiles: set["MapTile"] = None
         self.screen = Game.resizable_screen.copy()
         self.screen_scaling = 1
-        self.game_state = GameState.Idle
+        self.game_state = None
         self.keys_pressed = {}
 
-    def handle_main(self):
+    def handle_objects_main(self):
         """
         Handles the main functions of all the objects.
         The main functions activate the main behaviours of the
@@ -105,7 +104,7 @@ class Game:
         for effect in self.circle_effects:
             effect.main(clock)
 
-    def handle_rendering(self):
+    def handle_objects_rendering(self):
         """
         Renders all objects on screen.
         """
@@ -142,7 +141,7 @@ class Game:
                             Vector2D(END_OF_MAP.x/2, 100),
                             self.screen)
 
-    def handle_collisions(self):
+    def handle_objects_collisions(self):
         """
         Handles all collisions between objects.
         """
@@ -163,6 +162,7 @@ class Game:
         for bullet in players_bullets_to_remove:
             self.player_bullets.remove(bullet)
 
+
         #Collects the boss' bullets which need to be removed.
         boss_bullets_to_remove: set[Bullet]= set()
         for bullet in self.boss_bullets:
@@ -171,6 +171,8 @@ class Game:
                 boss_bullets_to_remove.add(bullet)
                 self.circle_effects.add(\
                     CircleEffect(bullet.position,BOSS_BULLET_SIZE*2))
+            elif bullet.is_colliding_with(self.player):
+                print("Lost")
 
         #Removes the boss' bullets who are not valid.
         for bullet in boss_bullets_to_remove:
@@ -214,7 +216,7 @@ class Game:
         map_tile_corner_sprite =\
             pygame.image.load('src\sprites\Tile_map_corner_sprite.png')
 
-
+        self.map_tiles = []
         start_pos_x = START_OF_WINDOW.x  #(END_OF_WINDOW.x%MAP_TILE_SIZE[0])/2
         start_pos_y = START_OF_WINDOW.y  #(END_OF_WINDOW.y%MAP_TILE_SIZE[1])/2
         end_pos_x = END_OF_WINDOW.x//MAP_TILE_SIZE[0]*MAP_TILE_SIZE[0]
@@ -346,6 +348,7 @@ class Game:
                 #Bullet firing
                 if event.button == 1:              #left mouse click
                     self.keys_pressed["fire"] = True
+                    print(self.keys_pressed["fire"])
 
                 #Teleporting
                 if event.button == 3:              #right mouse click
@@ -356,12 +359,12 @@ class Game:
                 if event.button == 1:
                     self.keys_pressed["fire"] = False
 
-    def evaluate_key_presses(self):
+    def evaluate_key_presses_ingame(self):
         if self.game_state == GameState.Running:
             if self.keys_pressed["teleport"]:
                 if not self.teleportation_device.active:
                     self.teleportation_device.activate(
-                        self.player.position + PLAYER_SCALE/2,
+                        self.player.centre_position(),
                         Vector2D(*pygame.mouse.get_pos())\
                         / self.screen_scaling)
                 else:
@@ -384,29 +387,57 @@ class Game:
         self.keys_pressed["teleport"] = False
 
     def run(self):
+        self.game_state = GameState.Menu
+        while True:
+            self.get_key_presses()
+            self._update()
+            self.clear_surface()
+            clock.tick(120)
         self.load_level()
         self.game_state = GameState.Running
         self.start()
 
-    def start(self):
-        clock.tick(120)
-        while self.game_state in [GameState.Running, GameState.Paused]:
-            #Black background
-            self.screen.fill((0,0,0))
-            self.get_key_presses()
-            if self.game_state == GameState.Running:
-                self.handle_main()
-            self.evaluate_key_presses()
-            self.handle_collisions()
-            self.handle_rendering()
-            Game.resizable_screen.blit(
+
+    def render_surface(self):
+        Game.resizable_screen.blit(
                 pygame.transform.scale(self.screen,
                                        Game.resizable_screen.get_rect().size),
                                        (0,0))
-            pygame.display.flip()
+        pygame.display.flip()
+
+    def clear_surface(self):
+        #Black background
+        self.screen.fill((0,0,0))
+
+    def start(self):
+        clock.tick(120)
+        while self.game_state in [GameState.Running, GameState.Paused]:
+            if self.game_state == GameState.Running:
+                self.handle_objects_main()
+            self.evaluate_key_presses_ingame()
+            self.handle_objects_collisions()
+            self.clear_surface()
+            self.handle_objects_rendering()
+            self.render_surface()
             clock.tick(120)
 
+        while self.game_state == GameState.Lost:
+            self.clear_surface()
+            draw_text("Lost", (0, 255, 0), CENTRE_OF_MAP, self.screen)
+            self.get_key_presses()
+            self.render_surface()
+            clock.tick(120)
+
+    def in_menu(self):
+        draw_text("CubeMatic",
+                (0, 255, 0),
+                CENTRE_OF_WINDOW - Vector2D(160,280),
+                self.screen)
+        self.render_surface()
+
+    def _update(self):
+        if self.game_state == GameState.Menu:
+            self.in_menu()
 
 game = Game()
-
 game.run()

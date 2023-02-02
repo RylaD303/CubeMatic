@@ -289,7 +289,7 @@ class BossAI():
         Evaluates the current movement of the boss depending on
         the time left to execute the movement pattern.
 
-        todo!
+        todo! documentation
         """
         blend = 1 - self.time_to_execute_pattern\
                     / self.current_movement_pattern.get_time()
@@ -331,7 +331,7 @@ class BossAI():
         Evaluates the current movement of the boss depending on
         the time left to execute the movement pattern.
 
-        todo!
+        todo! documentation
         """
         blend = self.time_to_execute_pattern\
                 / self.current_movement_pattern.get_time()
