@@ -150,6 +150,18 @@ class Laser(GameObject):
                             tuple(self.position+self.direction),
                             round(self.width))
 
+    def switch_state(self, state: "LaserState"):
+        """
+        Changes the state of the laser to the given state.
+        """
+        if state == LaserState.Attack:
+            self.state = LaserState.Attack
+            self.cooldown = self.time_to_execute-LASER_ANTICIPATION_TIME
+        elif state == LaserState.Recovery:
+            self.state = LaserState.Recovery
+            self.time_to_execute = LASER_ANTICIPATION_TIME
+            self.cooldown = LASER_ANTICIPATION_TIME
+
     def __evaluate_state(self):
         """
         Evaluates the current statec of the laser.
@@ -160,12 +172,9 @@ class Laser(GameObject):
         """
         if self.cooldown<=0:
             if self.state == LaserState.Anticipation:
-                self.state = LaserState.Attack
-                self.cooldown = self.time_to_execute-LASER_ANTICIPATION_TIME
+                self.switch_state(LaserState.Attack)
             elif self.state == LaserState.Attack:
-                self.state = LaserState.Recovery
-                self.time_to_execute = LASER_ANTICIPATION_TIME
-                self.cooldown = LASER_ANTICIPATION_TIME
+                self.switch_state(LaserState.Recovery)
             else:
                 self.invalidate()
 
@@ -301,25 +310,3 @@ class Laser(GameObject):
             return choose_intersection_point1(intersection_point1[0])
 
         return choose_intersection_point2(intersection_point2[0])
-
-
-
-        # if intersection_point1 and intersection_point2:
-        #     if intersection_point2.x < START_OF_MAP.x:
-        #         if intersection_point1.x < START_OF_MAP.x:
-        #             return Vector2D(START_OF_MAP.x, intersection_point1.y)
-        #         return Vector2D(END_OF_MAP.x, intersection_point1.y)
-
-        # if intersection_point2 and not intersection_point1:
-        #     if intersection_point2.y < START_OF_MAP.y:
-        #         return Vector2D(intersection_point2.x, START_OF_MAP.y)
-        #     return Vector2D(intersection_point2.x, END_OF_MAP.y)
-
-        # if intersection_point1 and not intersection_point2:
-        #     if intersection_point1.x < START_OF_MAP.x:
-        #         return Vector2D(START_OF_MAP.x, intersection_point1.y)
-        #     return Vector2D(END_OF_MAP.x, intersection_point1.y)
-
-        # if intersection_point2.y < START_OF_MAP.y:
-        #     return Vector2D(intersection_point2.x, START_OF_MAP.y)
-        # return Vector2D(intersection_point2.x, END_OF_MAP.y)
