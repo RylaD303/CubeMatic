@@ -24,8 +24,15 @@ def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame
 
 play_button_image = pygame.image.load('src/sprites/Play_button.png')
 play_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
+reset_button_image = pygame.image.load('src/sprites/Reset_button.png')
+reset_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
 starting_offset = Vector2D(0,700)
 
+
+def reset_values(user_values: dict):
+    user_values["lost_playthroughs"] = 0
+    user_values["won_playthroughs"] = 0
+    user_values["best_time"] = None
 
 def rewrite_player_values(user_values: dict):
     with open("player_values.json", 'w', encoding = "UTF-16") as outfile:
@@ -37,12 +44,8 @@ if os.path.exists("player_values.json"):
         user_values = json.load(openfile)
 
 else:
-    user_values = {
-    "lost_playthroughs": 0,
-    "won_playthroughs": 0,
-    "best_time": None
-    }
-
+    user_values = {}
+    reset_values(user_values)
     rewrite_player_values(user_values)
 
 class GameState(Enum):
@@ -419,6 +422,7 @@ class Game:
         self.game_state = GameState.Menu
         while True:
             self._update()
+            print(clock.get_fps())
             clock.tick(120)
 
     def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
@@ -457,10 +461,10 @@ class Game:
                 GREEN,
                 TITLE_POSITION,
                 self.screen)
-        clicked = play_button.main(self.screen, self.screen_scaling)
+        clicked_play = play_button.main(self.screen, self.screen_scaling)
         self.render_surface()
-
-        if clicked == True:
+        clecked_reset = reset_button.main(self.screen, self.screen_scaling)
+        if clicked_play == True:
             self.clear_surface()
             self.render_surface()
             Game.time_left_for_animation = START_ANIMATION_TIME
