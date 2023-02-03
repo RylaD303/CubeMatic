@@ -185,6 +185,17 @@ class Game:
             "teleport": False
             }
 
+    def execute_teleport(self):
+        self.circle_effects.add(CircleEffect(
+            self.player.centre_position(),
+            self.player.radius*1.4
+        ))
+        self.teleportation_device.teleport_player(self.player)
+        self.circle_effects.add(CircleEffect(
+            self.player.centre_position(),
+            self.player.radius*1.4
+        ))
+
     def handle_objects_main(self):
         """
         Handles the main functions of all the objects.
@@ -206,8 +217,7 @@ class Game:
         #Check if device is active and cooldown is expired
         if self.teleportation_device.time_remaining == 0\
             and self.teleportation_device.active:
-            self.teleportation_device.teleport_player(self.player)
-
+            self.execute_teleport()
         #Bullet movement
         for bullet in self.boss_bullets:
             bullet.main(clock)
@@ -415,7 +425,7 @@ class Game:
                         Vector2D(*pygame.mouse.get_pos())\
                         / self.screen_scaling)
                 else:
-                    self.teleportation_device.teleport_player(self.player)
+                    self.execute_teleport()
 
             #Check if mouse button is held down
             if self.keys_pressed["fire"]:
