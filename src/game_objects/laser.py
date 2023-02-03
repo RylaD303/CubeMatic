@@ -343,10 +343,10 @@ class Laser(GameObject):
         # getting the Euclidic result from the vector -
         # object to the start of laser, and from the laser start.
         vector = self.position - other.centre_position()
-        result = vector*self.position
+        result = vector*self.direction
 
         # Checking if the object is not behind the laser
-        if result < 0:
+        if result > 0:
             return False
 
         # in any other case there might be actual collision

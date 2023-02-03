@@ -49,6 +49,7 @@ class Game:
     """
     resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
     time_left_for_animation = START_ANIMATION_TIME
+    lose_num = 0
     def __init__(self):
         """
         Initialises the Game object.
@@ -270,6 +271,24 @@ class Game:
         for bullet in boss_bullets_to_remove:
             self.boss_bullets.remove(bullet)
 
+        #Handles laser collision
+        lasers_to_remove: set["Laser"] = set()
+        for laser in self.boss_lasers:
+            if not laser.is_valid():
+                lasers_to_remove.add(laser)
+            elif laser.state == LaserState.Attack:
+                point = laser.get_end_point_in_map()
+                if point:
+                    self.circle_effects.add(\
+                        CircleEffect(point,LASER_EFFECT_RADIUS))
+                if laser.is_colliding_with(self.player):
+                    print("Lost" + str(Game.lose_num))
+
+
+        #Handles laser removal
+        for laser in lasers_to_remove:
+            self.boss_lasers.remove(laser)
+
         #Handles deflection of the teleportation device
         if self.teleportation_device.active:
             self.teleportation_device.check_boundaries()
@@ -283,19 +302,6 @@ class Game:
         for effect in effects_to_remove:
             self.circle_effects.remove(effect)
 
-        #Handles laser removal
-        lasers_to_remove: set["Laser"] = set()
-        for laser in self.boss_lasers:
-            if not laser.is_valid():
-                lasers_to_remove.add(laser)
-            elif laser.state == LaserState.Attack:
-                point = laser.get_end_point_in_map()
-                if point:
-                    self.circle_effects.add(\
-                        CircleEffect(point,LASER_EFFECT_RADIUS))
-
-        for laser in lasers_to_remove:
-            self.boss_lasers.remove(laser)
 
     def get_key_presses(self):
         """
@@ -444,6 +450,7 @@ class Game:
             clock.tick(120)
 
     def _update(self):
+        Game.lose_num+=1
         self.get_key_presses()
         if self.game_state == GameState.Menu:
             self.run_menu()
