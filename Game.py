@@ -28,6 +28,13 @@ reset_button_image = pygame.image.load('src/sprites/Reset_button.png')
 reset_button = Button(reset_button_image, RESET_PLAY_POSITION, BUTTON_PLAY_SIZE)
 starting_offset = Vector2D(0,700)
 
+def time_to_str(time_in_seconds):
+    time_in_seconds = round(time_in_seconds)
+    seconds = time_in_seconds%60
+    minutes = str(time_in_seconds//60)
+    seconds = "0"+str(seconds) if seconds<10 else str(seconds)
+    return minutes + ":" + seconds
+
 user_values = {}
 def reset_user_values():
     user_values["lost_playthroughs"] = 0
@@ -87,6 +94,7 @@ class Game:
         self.game_state = None
         self.keys_pressed = {}
         self.boss_health_bar = None
+        self.start_time = None
 
     def load_level(self):
         """
@@ -154,7 +162,8 @@ class Game:
                         PLAYER_SPEED,
                         pygame.image.load('src/sprites/Player1.png'),
                         *tuple(PLAYER_SCALE))
-        self.teleportation_device: "Teleport" = Teleport(PLAYER_TELEPORT_SPEED)
+        self.teleportation_device: "Teleport" =\
+            Teleport(PLAYER_TELEPORT_SPEED, PLAYER_TELEPORT_SIZE_RADIUS)
 
         #Boss creation
         self.boss = Boss(pygame.image.load('src/sprites/Player1.png'),\
@@ -496,9 +505,10 @@ class Game:
             draw_text("Loading...", GREEN, CENTRE_OF_WINDOW, self.screen)
             self.clear_surface()
             self.render_surface()
+            self.load_level()
             Game.time_left_for_animation = START_ANIMATION_TIME
             self.game_state = GameState.Animation
-            self.load_level()
+            self.start_time = time.time()
             clock.tick(120)
 
         elif self.game_state == GameState.Animation:
@@ -512,6 +522,11 @@ class Game:
             user_values["lost_playthroughs"] += 1
             self.handle_objects_rendering()
             draw_text("Game Over", GREEN, CENTRE_OF_MAP, self.screen)
+            time_survived = round(time.time() - self.start_time)
+            draw_text("Time survived: " + time_to_str(time_survived),
+                      GREEN,
+                      CENTRE_OF_MAP + Vector2D(0, 100),
+                      self.screen)
             self.render_surface()
             time.sleep(4)
             self.clear_surface()
