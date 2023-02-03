@@ -82,8 +82,9 @@ class Teleport(GameObject):
             player -
                 to change location on teleport.
         """
-        player.position = self.position\
-                          - Vector2D(player.width/2, player.height/2)
+        player.position =\
+            self.position - Vector2D(player.sprite.get_width()/2,\
+                                                   player.sprite.get_height()/2)
         self.deactivate()
 
     def render(self, display):

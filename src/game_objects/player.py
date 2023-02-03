@@ -34,10 +34,8 @@ class Player(GameObject):
 
         super().__init__(position)
         self.speed = speed
-        self.width = width
-        self.height = height
         self.sprite =\
-            pygame.transform.scale(player_sprite, (self.width, self.height))
+            pygame.transform.scale(player_sprite, (width, height))
         self.movement = Vector2D(0,0)
         self.rotation = 0
         self.fire_cooldown = 0

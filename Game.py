@@ -49,7 +49,6 @@ class Game:
     """
     resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
     time_left_for_animation = START_ANIMATION_TIME
-    lose_num = 0
     def __init__(self):
         """
         Initialises the Game object.
@@ -265,7 +264,7 @@ class Game:
                 self.circle_effects.add(\
                     CircleEffect(bullet.position,BOSS_BULLET_SIZE*2))
             elif bullet.is_colliding_with(self.player):
-                print("Lost")
+                self.game_state = GameState.Lost
 
         #Removes the boss' bullets who are not valid.
         for bullet in boss_bullets_to_remove:
@@ -282,7 +281,7 @@ class Game:
                     self.circle_effects.add(\
                         CircleEffect(point,LASER_EFFECT_RADIUS))
                 if laser.is_colliding_with(self.player):
-                    print("Lost" + str(Game.lose_num))
+                    self.game_state = GameState.Lost
 
 
         #Handles laser removal
@@ -302,7 +301,6 @@ class Game:
         for effect in effects_to_remove:
             self.circle_effects.remove(effect)
 
-
     def get_key_presses(self):
         """
         Gets the key presses from the user and evaluates the events.
@@ -310,7 +308,7 @@ class Game:
         for event in pygame.event.get():
             #Existing game
             if event.type == QUIT:
-                self.game_state = GameState.Ended
+                self.game_state = GameState.Lost
                 pygame.quit()
                 sys.exit()
 
@@ -422,7 +420,6 @@ class Game:
         else:
             self.game_state = GameState.Running
             self.boss.activate()
-            #self.boss.activate()
 
     def run_level(self):
         if self.game_state == GameState.Running:
@@ -450,7 +447,6 @@ class Game:
             clock.tick(120)
 
     def _update(self):
-        Game.lose_num+=1
         self.get_key_presses()
         if self.game_state == GameState.Menu:
             self.run_menu()
@@ -465,6 +461,7 @@ class Game:
         elif self.game_state == GameState.Lost:
             draw_text("Lost", GREEN, CENTRE_OF_MAP, self.screen)
             time.sleep(4)
+            self.clear_surface()
             self.game_state = GameState.Menu
 
         self.render_surface()

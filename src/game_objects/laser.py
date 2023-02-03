@@ -59,7 +59,7 @@ def distance_to_line_segment(point: "Vector2D",
     line_vector = end_point - begin_point
     point_to_begin = begin_point - point
     top = abs(line_vector.x*point_to_begin.y - point_to_begin.x*line_vector.y)
-    bottom = abs(point_to_begin)
+    bottom = abs(line_vector)
 
     return top/bottom
 
@@ -355,6 +355,8 @@ class Laser(GameObject):
         distance = distance_to_line_segment(other.centre_position(),
                                             self.position,
                                             self.position + self.direction)
-        if distance <= other.radius + self.width:
+        if distance <= other.radius + self.width*0.5:
+            print(distance)
+            print(other.radius + self.width*0.5)
             return True
         return False
