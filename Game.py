@@ -518,6 +518,9 @@ class Game:
             self.game_state = GameState.AfterBoss
 
         elif self.game_state == GameState.AfterBoss:
+            draw_text("press Esc to get back to menu",GREEN, Vector2D(END_OF_MAP.x/2, 100),self.screen)
+            if self.keys_pressed["pause"] == True:
+                self.game_state == GameState.Menu
             self.run_level()
 
         self.render_surface()
