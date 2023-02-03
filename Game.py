@@ -485,7 +485,16 @@ class Game:
                     GREEN,
                     BUTTON_PLAY_POSITION + Vector2D(70, 200),
                     self.screen)
+        if user_values["best_time"]:
+            draw_text("Best time:  " + time_to_str(user_values["best_time"]),
+                    GREEN,
+                    BUTTON_PLAY_POSITION + Vector2D(70, 250),
+                    self.screen)
 
+        draw_text("Total wins:  " + str(user_values["won_playthroughs"]),
+                    GREEN,
+                    BUTTON_PLAY_POSITION + Vector2D(70, 300),
+                    self.screen)
         if clicked_play == True:
             self.clear_surface()
             self.render_surface()
@@ -534,6 +543,12 @@ class Game:
 
         elif self.game_state == GameState.Won:
             user_values["won_playthroughs"] += 1
+
+            self.time_survived = round(time.time() - self.start_time)
+            if not user_values["best_time"]\
+               or user_values["best_time"] < self.time_survived:
+                user_values["best_time"] = self.time_survived
+
             self.boss.deactivate()
             self.circle_effects.add(CircleEffect(self.boss.centre_position(),\
                                                 self.boss.radius*3))
@@ -544,8 +559,22 @@ class Game:
             self.game_state = GameState.AfterBoss
 
         elif self.game_state == GameState.AfterBoss:
-            draw_text("press Esc to get back to menu",GREEN, Vector2D(END_OF_MAP.x/2, 100),self.screen)
+            draw_text("press Esc to get back to menu",
+                        GREEN,
+                        Vector2D(END_OF_MAP.x/2, 100),
+                        self.screen)
             draw_text("Won!", GREEN, CENTRE_OF_MAP, self.screen)
+            draw_text("Total time: " + time_to_str(self.time_survived),
+                        GREEN,
+                        CENTRE_OF_MAP + Vector2D(0, 100),
+                        self.screen)
+
+            if user_values["best_time"] == self.time_survived:
+                draw_text("New best Time!",
+                        GREEN,
+                        CENTRE_OF_MAP + Vector2D(0, 150),
+                        self.screen)
+
             self.run_level()
 
         self.render_surface()
