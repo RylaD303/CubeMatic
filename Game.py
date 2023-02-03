@@ -1,5 +1,4 @@
-import pygame, sys
-import time
+import pygame, sys, time, json, os.path
 from enum import Enum
 from pygame.locals import *
 from src.game_objects.player import Player
@@ -26,10 +25,25 @@ def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame
 play_button_image = pygame.image.load('src/sprites/Play_button.png')
 play_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
 starting_offset = Vector2D(0,700)
-time_left_for_animation = START_ANIMATION_TIME
 
 
+def rewrite_player_values(user_values: dict):
+    with open("player_values.json", 'w', encoding = "UTF-16") as outfile:
+        outfile.write(json.dumps(user_values, indent = 4))
 
+
+if os.path.exists("player_values.json"):
+    with open('player_values.json', 'r', encoding = "UTF-16") as openfile:
+        user_values = json.load(openfile)
+
+else:
+    user_values = {
+    "lost_playthroughs": 0,
+    "won_playthroughs": 0,
+    "best_time": None
+    }
+
+    rewrite_player_values(user_values)
 
 class GameState(Enum):
     Menu = 0
@@ -314,6 +328,9 @@ class Game:
         for event in pygame.event.get():
             #Existing game
             if event.type == QUIT:
+                if self.game_state in [GameState.Running, GameState.Paused]:
+                    user_values["lost_playthroughs"] +=1
+                rewrite_player_values(user_values)
                 self.game_state = GameState.Lost
                 pygame.quit()
                 sys.exit()
