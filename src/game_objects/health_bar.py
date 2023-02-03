@@ -17,7 +17,7 @@ class HealthBar(pygame.sprite.Sprite, GameObject):
         self.max_health = BOSS_HEALTH
         self.health_bar_length = 800
         self.health_ratio = self.max_health / self.health_bar_length
-        self.health_change_speed = 1
+        self.health_change_speed = 0.1
 
     def set_health(self, amount):
         self.target_health = amount

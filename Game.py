@@ -25,11 +25,11 @@ def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame
 play_button_image = pygame.image.load('src/sprites/Play_button.png')
 play_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
 reset_button_image = pygame.image.load('src/sprites/Reset_button.png')
-reset_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
+reset_button = Button(reset_button_image, RESET_PLAY_POSITION, BUTTON_PLAY_SIZE)
 starting_offset = Vector2D(0,700)
 
-
-def reset_values(user_values: dict):
+user_values = {}
+def reset_user_values():
     user_values["lost_playthroughs"] = 0
     user_values["won_playthroughs"] = 0
     user_values["best_time"] = None
@@ -45,7 +45,7 @@ if os.path.exists("player_values.json"):
 
 else:
     user_values = {}
-    reset_values(user_values)
+    reset_user_values()
     rewrite_player_values(user_values)
 
 class GameState(Enum):
@@ -56,6 +56,7 @@ class GameState(Enum):
     Lost = 4
     Paused = 5
     Animation = 6
+    AfterBoss = 7
 
 class Game:
     """
@@ -67,6 +68,7 @@ class Game:
     """
     resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
     time_left_for_animation = START_ANIMATION_TIME
+    time_for_text_main = 0
     def __init__(self):
         """
         Initialises the Game object.
@@ -453,7 +455,6 @@ class Game:
             self.handle_objects_main()
         self.evaluate_key_presses_ingame()
         self.handle_objects_collisions()
-        self.clear_surface()
         self.handle_objects_rendering()
 
     def run_menu(self):
@@ -462,8 +463,15 @@ class Game:
                 TITLE_POSITION,
                 self.screen)
         clicked_play = play_button.main(self.screen, self.screen_scaling)
-        self.render_surface()
-        clecked_reset = reset_button.main(self.screen, self.screen_scaling)
+        clicked_reset = reset_button.main(self.screen, self.screen_scaling)
+
+        if Game.time_for_text_main > 0:
+            Game.time_for_text_main -= clock.get_time()
+            draw_text("Reset game values",
+                    GREEN,
+                    BUTTON_PLAY_POSITION + Vector2D(70, 200),
+                    self.screen)
+
         if clicked_play == True:
             self.clear_surface()
             self.render_surface()
@@ -473,12 +481,16 @@ class Game:
             self.load_level()
             clock.tick(120)
 
+        if clicked_reset:
+            reset_user_values()
+            Game.time_for_text_main = 2000
+
     def _update(self):
         self.get_key_presses()
         if self.game_state == GameState.Menu:
             self.run_menu()
 
-        elif self.game_state == GameState.Loading:
+        elif self.game_state == GameState.Animation:
             self.run_level_enter_animation()
             return
 
@@ -486,13 +498,30 @@ class Game:
             self.run_level()
 
         elif self.game_state == GameState.Lost:
+            user_values["lost_playthroughs"] += 1
+            self.handle_objects_rendering()
             draw_text("Lost", GREEN, CENTRE_OF_MAP, self.screen)
             self.render_surface()
             time.sleep(4)
             self.clear_surface()
             self.game_state = GameState.Menu
 
+        elif self.game_state == GameState.Won:
+            user_values["won_playthroughs"] += 1
+            self.boss.deactivate()
+            self.circle_effects.add(CircleEffect(self.boss.position,\
+                                                self.boss.radius*3))
+            self.boss_bullets = set()
+            for laser in self.boss_lasers:
+                laser.switch_state(LaserState.Recovery)
+            self.boss.position = Vector2D(-100,-100)
+            self.game_state = GameState.AfterBoss
+
+        elif self.game_state == GameState.AfterBoss:
+            self.run_level()
+
         self.render_surface()
+        self.clear_surface()
 
 pygame.init()
 font = pygame.font.SysFont("arialblack", 40)
