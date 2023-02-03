@@ -10,6 +10,7 @@ from src.game_objects.teleport import Teleport
 from src.game_objects.tiles import MapTile
 from src.game_objects.effects import CircleEffect
 from src.game_objects.button import Button
+from src.game_objects.health_bar import HealthBar
 from src.classes.vector_2d import Vector2D
 from src.game_values import *
 
@@ -66,6 +67,7 @@ class Game:
         self.screen_scaling = 1
         self.game_state = None
         self.keys_pressed = {}
+        self.boss_health_bar = HealthBar(Vector2D(0, 0))
 
     def load_level(self):
         """
@@ -225,6 +227,8 @@ class Game:
         #Renderiing effects
         for effect in self.circle_effects:
             effect.render(self.screen)
+
+        self.boss_health_bar.render(self.screen)
 
         #Rendering tex if game paused:
         if self.game_state == GameState.Paused:
@@ -460,6 +464,7 @@ class Game:
 
         elif self.game_state == GameState.Lost:
             draw_text("Lost", GREEN, CENTRE_OF_MAP, self.screen)
+            self.render_surface()
             time.sleep(4)
             self.clear_surface()
             self.game_state = GameState.Menu

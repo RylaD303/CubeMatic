@@ -28,6 +28,7 @@ class Boss(BossAI, GameObject):
         self.radius = width/2
         self.active = False
         self.sleep_time = 2000
+        self.health = BOSS_HEALTH
 
     def activate(self):
         """
@@ -175,3 +176,6 @@ class Boss(BossAI, GameObject):
             display.blit(\
                 rotated_sprite,
                 position_to_print_on)
+
+    def take_damage(self):
+        self.health -= PLAYER_DAMAGE

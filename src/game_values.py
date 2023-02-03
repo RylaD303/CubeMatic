@@ -32,6 +32,7 @@ PLAYER_BULLET_SIZE = 4 # pixels
 PLAYER_BULLET_COLOR = (0,255,0) #RGB
 PLAYER_TELEPORT_SPEED = 1800 #pixles per second
 PLAYER_SHOOT_COOLDOWN = 150 #ms
+PLAYER_DAMAGE = 1
 MAX_HOLD_TIME = 5000 #ms - how long can the player hold the teleportation device.
 
 #Effects
@@ -45,7 +46,7 @@ BOSS_BULLET_SPEED = 400 #pixels per second
 BOSS_LASER_WIDTH = 10 #pixels
 BOSS_BULLET_SIZE = 7 #pixels
 BOSS_ATTACK_COLOR = (255, 0, 0) # RGB
-
+BOSS_HEALTH = 150
 LASER_LENGTH = abs(END_OF_WINDOW) #pixels
 LASER_ANTICIPATION_TIME = 1000
 
