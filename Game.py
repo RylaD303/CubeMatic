@@ -1,4 +1,4 @@
-import pygame, sys, time, json, os.path
+import pygame, sys, time, json, os.path, time
 from enum import Enum
 from pygame.locals import *
 from src.game_objects.player import Player
@@ -86,7 +86,7 @@ class Game:
         self.screen_scaling = 1
         self.game_state = None
         self.keys_pressed = {}
-        self.boss_health_bar = HealthBar(HEALTH_BAR_POSITION)
+        self.boss_health_bar = None
 
     def load_level(self):
         """
@@ -161,7 +161,7 @@ class Game:
                     *tuple(BOSS_SCALE))
         self.boss_bullets = set()
         self.boss_lasers = set()
-
+        self.boss_health_bar = HealthBar(HEALTH_BAR_POSITION)
 
         #Other
         self.player_bullets: set[Bullet] = set()
@@ -205,7 +205,10 @@ class Game:
 
         #Laser movement and cooldowns
         for laser in self.boss_lasers:
-            laser.main(clock, self.boss.centre_position())
+            if self.boss.active:
+                laser.main(clock, self.boss.centre_position())
+            else:
+                laser.main(clock)
 
         #Boss movement, cooldowns and attack patterns
         self.boss.main( self.player,\
@@ -269,7 +272,8 @@ class Game:
                 bullet.invalidate()
                 self.boss.take_damage()
                 self.boss_health_bar.set_health(self.boss.health)
-                print(self.boss.health)
+                if self.boss.health <= 0:
+                    self.game_state = GameState.Won
             bullet.check_boundaries()
             if not bullet.is_valid():
                 players_bullets_to_remove.add(bullet)
@@ -394,7 +398,7 @@ class Game:
                     self.keys_pressed["fire"] = False
 
     def evaluate_key_presses_ingame(self):
-        if self.game_state == GameState.Running:
+        if self.game_state != GameState.Paused:
             if self.keys_pressed["teleport"]:
                 if not self.teleportation_device.active:
                     self.teleportation_device.activate(
@@ -414,6 +418,8 @@ class Game:
         if self.keys_pressed["pause"]:
             if self.game_state == GameState.Running:
                 self.game_state = GameState.Paused
+            elif self.game_state == GameState.AfterBoss:
+                self.game_state = GameState.Menu
             else:
                 self.game_state = GameState.Running
 
@@ -424,7 +430,6 @@ class Game:
         self.game_state = GameState.Menu
         while True:
             self._update()
-            print(clock.get_fps())
             clock.tick(120)
 
     def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
@@ -451,7 +456,7 @@ class Game:
             self.boss.activate()
 
     def run_level(self):
-        if self.game_state == GameState.Running:
+        if self.game_state != GameState.Paused:
             self.handle_objects_main()
         self.evaluate_key_presses_ingame()
         self.handle_objects_collisions()
@@ -475,11 +480,8 @@ class Game:
         if clicked_play == True:
             self.clear_surface()
             self.render_surface()
-            Game.time_left_for_animation = START_ANIMATION_TIME
-            time.sleep(1)
             self.game_state = GameState.Loading
-            self.load_level()
-            clock.tick(120)
+            time.sleep(1)
 
         if clicked_reset:
             reset_user_values()
@@ -489,6 +491,15 @@ class Game:
         self.get_key_presses()
         if self.game_state == GameState.Menu:
             self.run_menu()
+
+        elif self.game_state == GameState.Loading:
+            draw_text("Loading...", GREEN, CENTRE_OF_WINDOW, self.screen)
+            self.clear_surface()
+            self.render_surface()
+            Game.time_left_for_animation = START_ANIMATION_TIME
+            self.game_state = GameState.Animation
+            self.load_level()
+            clock.tick(120)
 
         elif self.game_state == GameState.Animation:
             self.run_level_enter_animation()
@@ -500,7 +511,7 @@ class Game:
         elif self.game_state == GameState.Lost:
             user_values["lost_playthroughs"] += 1
             self.handle_objects_rendering()
-            draw_text("Lost", GREEN, CENTRE_OF_MAP, self.screen)
+            draw_text("Game Over", GREEN, CENTRE_OF_MAP, self.screen)
             self.render_surface()
             time.sleep(4)
             self.clear_surface()
@@ -509,7 +520,7 @@ class Game:
         elif self.game_state == GameState.Won:
             user_values["won_playthroughs"] += 1
             self.boss.deactivate()
-            self.circle_effects.add(CircleEffect(self.boss.position,\
+            self.circle_effects.add(CircleEffect(self.boss.centre_position(),\
                                                 self.boss.radius*3))
             self.boss_bullets = set()
             for laser in self.boss_lasers:
@@ -519,8 +530,7 @@ class Game:
 
         elif self.game_state == GameState.AfterBoss:
             draw_text("press Esc to get back to menu",GREEN, Vector2D(END_OF_MAP.x/2, 100),self.screen)
-            if self.keys_pressed["pause"] == True:
-                self.game_state == GameState.Menu
+            draw_text("Won!", GREEN, CENTRE_OF_MAP, self.screen)
             self.run_level()
 
         self.render_surface()
