@@ -27,6 +27,9 @@ play_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
 starting_offset = Vector2D(0,700)
 time_left_for_animation = START_ANIMATION_TIME
 
+
+
+
 class GameState(Enum):
     Menu = 0
     Loading = 1
@@ -430,13 +433,15 @@ class Game:
                 self.screen)
         clicked = play_button.main(self.screen, self.screen_scaling)
         self.render_surface()
+
         if clicked == True:
             self.clear_surface()
-            Game.resizable_screen.fill((0,0,0))
             self.render_surface()
             Game.time_left_for_animation = START_ANIMATION_TIME
             time.sleep(1)
             self.game_state = GameState.Loading
+            self.load_level()
+            clock.tick(120)
 
     def _update(self):
         self.get_key_presses()
@@ -444,7 +449,6 @@ class Game:
             self.run_menu()
 
         elif self.game_state == GameState.Loading:
-            self.load_level()
             self.run_level_enter_animation()
             return
 

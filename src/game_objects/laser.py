@@ -44,6 +44,26 @@ def get_segment_intersection(beginpoint1: "Vector2D",
     return (beginpoint1 + scalar*vector1, scalar)
 
 
+
+def distance_to_line_segment(point: "Vector2D",
+                            begin_point: "Vector2D",
+                            end_point: "Vector2D"):
+    """
+    Returns the distance between a point and segment
+    defined by two points.
+
+    formula from here:
+    https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+    Under: "Line defined by two points"
+    """
+    line_vector = end_point - begin_point
+    point_to_begin = begin_point - point
+    top = abs(line_vector.x*point_to_begin.y - point_to_begin.x*line_vector.y)
+    bottom = abs(point_to_begin)
+
+    return top/bottom
+
+
 class Laser(GameObject):
     """
     Laser object for the boss attacks.
@@ -245,6 +265,8 @@ class Laser(GameObject):
         Returns the point at which the laser ends on the map
         Possible misscalculations may result in No point at all.
         (I blame the float for that)
+
+        todo! documantation
         """
 
         def choose_intersection_point1(point: "Vector2D") -> "Vector2D":
@@ -287,12 +309,6 @@ class Laser(GameObject):
                     START_OF_MAP,
                     RIGHT_UPPER_CORNER)
 
-        # if intersection_point1 and intersection_point2\
-        #     and isclose(intersection_point1.x, intersection_point2.x)\
-        #     and isclose(intersection_point1.y, intersection_point2.y):
-        #     return None
-
-
         if not intersection_point1:
             return choose_intersection_point2(intersection_point2[0])
 
@@ -310,3 +326,35 @@ class Laser(GameObject):
             return choose_intersection_point1(intersection_point1[0])
 
         return choose_intersection_point2(intersection_point2[0])
+
+
+    def is_colliding_with(self, other: "GameObject") -> bool:
+        """
+        Since this is a Laser object. This has a different collision
+        type than the other objects.
+
+        Definition: a game object colliding with the laser, when its
+        radius of collision + the widhth of the laser is smaller
+        than the distance between the centre of the object and the
+        line segment. This also makes sure the object is are not behind
+        the laser with.
+        """
+
+        # getting the Euclidic result from the vector -
+        # object to the start of laser, and from the laser start.
+        vector = self.position - other.centre_position()
+        result = vector*self.position
+
+        # Checking if the object is not behind the laser
+        if result < 0:
+            return False
+
+        # in any other case there might be actual collision
+        # so we check for the distance between the line and
+        # the object
+        distance = distance_to_line_segment(other.centre_position(),
+                                            self.position,
+                                            self.position + self.direction)
+        if distance <= other.radius + self.width:
+            return True
+        return False
