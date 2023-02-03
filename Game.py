@@ -67,7 +67,7 @@ class Game:
         self.screen_scaling = 1
         self.game_state = None
         self.keys_pressed = {}
-        self.boss_health_bar = HealthBar(Vector2D(0, 0))
+        self.boss_health_bar = HealthBar(HEALTH_BAR_POSITION)
 
     def load_level(self):
         """
@@ -248,7 +248,9 @@ class Game:
         for bullet in self.player_bullets:
             if bullet.is_colliding_with(self.boss):
                 bullet.invalidate()
-                #todo!
+                self.boss.take_damage()
+                self.boss_health_bar.set_health(self.boss.health)
+                print(self.boss.health)
             bullet.check_boundaries()
             if not bullet.is_valid():
                 players_bullets_to_remove.add(bullet)
