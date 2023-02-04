@@ -42,7 +42,7 @@ class Bullet(GameObject):
 
         self.movement = speed*(self.direction - self.position)\
                         / abs(self.direction - self.position)
-        self.slow_down = 0
+        self.slowdown_speed = 0
 
     def check_boundaries(self):
         """
@@ -80,8 +80,7 @@ class Bullet(GameObject):
         self.position += self.movement*(clock.get_time()/1000)
         if self.slowdown_speed > 0:
             self.speed -= self.slowdown_speed*clock.get_time()/1000
-            self.movement = self.speed*(self.direction - self.position)\
-                            / abs(self.direction - self.position)
+            self.movement = self.speed*self.movement/abs(self.movement)
             if self.speed <=0:
                 self.invalidate()
 
