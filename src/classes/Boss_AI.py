@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, sample, choice
 from queue import Queue
 from enum import Enum
 from math import pi, sqrt
@@ -54,7 +54,6 @@ class MovePattern():
                             "time_for_one_laser_attack":6800,
                             "cooldown_for_wave_shoot":
                             BOSS_WAVE_SHOOT_COOLDOWN}}
-    #StandInMiddle = 2
 
     def __init__(self, move_pattern_type: "MovePatternType"):
         """
@@ -158,10 +157,17 @@ class BossAI():
         self.hardmode = True
 
     def _pick_new_movement_pattern(self)  -> None:
-        """todo!"""
+        """
+        Sets new movement pattern and movement variant for the boss.
+        """
+        new_movement_pattern = choice(BossAI.movement_pattern_types)
         self.current_movement_pattern =\
-            MovePattern(MovePatternType.StandInMiddle)
-        self.movement_variant = randint(1,2)
+            MovePattern(new_movement_pattern)
+        if new_movement_pattern == MovePatternType.ParabolicMovement:
+            self.movement_variant = randint(1,2)
+        if new_movement_pattern == MovePatternType.StandInMiddle:
+            self.movement_variant = randint(1,4)
+
 
     def _shoot_bullet_wave(self, player: "Player",
                            boss_bullets: set["Bullet"])  -> None:
@@ -523,18 +529,12 @@ class BossAI():
         Creates new attack pattern sequence and adds it to the queue.
         todo!
         """
-        #for attack in sample(following_attacks, 3):
-        #    self.attack_sequence.put(attack)
         if not self.hardmode:
-            self.attack_sequence.put(EasyAttackPattern.CircleShoot)
-            self.attack_sequence.put(EasyAttackPattern.SpiralShoot)
-            self.attack_sequence.put(EasyAttackPattern.EdgeLaser)
-            self.attack_sequence.put(EasyAttackPattern.PlusLaser)
-            self.attack_sequence.put(EasyAttackPattern.WaveShots)
+            for attack in sample(BossAI.easy_attacks, 3):
+                self.attack_sequence.put(attack)
         if self.hardmode:
-            self.attack_sequence.put(HardAttackPattern.DoublePlusLaser)
-            self.attack_sequence.put(HardAttackPattern.CircleShotsWithEdgeLaser)
-            self.attack_sequence.put(HardAttackPattern.CircleShotsWithPlusLaser)
+            for attack in sample(BossAI.hard_attacks, 3):
+                self.attack_sequence.put(attack)
 
     def _evaluate_attack_pattern(self) -> None:
         """
