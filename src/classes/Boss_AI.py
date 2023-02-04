@@ -204,7 +204,7 @@ class BossAI():
                 player.position,
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE,
-                BOSS_BULLET_SPEED)
+                BOSS_WAVE_SHOOT_BULLET_SPEED)
             bullet2.movement.angle_rotate(-i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet2)
 
@@ -286,8 +286,8 @@ class BossAI():
             boss_lasers.add(laser2)
 
     def _shoot_spiral_bullets(self,
-                              boss_bullets: list["Bullet"],
-                              player: "Player")  -> None:
+                              player: "Player",
+                              boss_bullets: list["Bullet"])  -> None:
         """
         Executes the edge laser attack pattern.
         Adds one laser pointing away from the player.
@@ -451,7 +451,7 @@ class BossAI():
 
         elif self.current_attack_pattern\
             == EasyAttackPattern.SpiralShoot:
-            self._shoot_spiral_bullets(boss_bullets, player)
+            self._shoot_spiral_bullets(player, boss_bullets)
 
         elif self.current_attack_pattern\
             == EasyAttackPattern.CircleShoot:
@@ -504,25 +504,25 @@ class BossAI():
         elif self.current_attack_pattern\
             == HardAttackPattern.DoubleEdgeLaser:
             if not self.hard_attack_executed:
-                self._add_edge_laser(boss_lasers)
+                self._add_edge_laser(player, boss_lasers)
                 self.hard_attack_executed = True
                 self.attack_cooldown = 400
             else:
-                self._add_edge_laser(boss_lasers)
+                self._add_edge_laser(player, boss_lasers)
 
         elif self.current_attack_pattern\
             == HardAttackPattern.SpiralShotsWithPlusLaser:
             if not self.hard_attack_executed:
                 self._add_plus_laser(boss_lasers)
                 self.hard_attack_executed = True
-            self._shoot_spiral_bullets(boss_bullets)
+            self._shoot_spiral_bullets(player, boss_bullets)
 
         elif self.current_attack_pattern\
             == HardAttackPattern.SpiralShotsWithEdgeLaser:
             if not self.hard_attack_executed:
-                self._add_edge_laser(boss_lasers)
+                self._add_edge_laser(player, boss_lasers)
                 self.hard_attack_executed = True
-            self._shoot_spiral_bullets(boss_bullets)
+            self._shoot_spiral_bullets(player, boss_bullets)
 
     def _choose_attack_sequence(self)-> None:
         """

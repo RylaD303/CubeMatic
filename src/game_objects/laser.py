@@ -356,7 +356,5 @@ class Laser(GameObject):
                                             self.position,
                                             self.position + self.direction)
         if distance <= other.radius + self.width*0.5:
-            print(distance)
-            print(other.radius + self.width*0.5)
             return True
         return False
