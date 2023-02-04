@@ -260,7 +260,7 @@ class BossAI():
         set of lasers:
             to add them to the set os they can be handled.
         """
-        self.attack_cooldown = self.time_to_execute_pattern+1000
+        self.attack_cooldown = self.time_to_execute_pattern+SECOND
         self.angle_for_attack = Vector2D(-1,0)\
                                 if player.position.x > self.position.x\
                                 else Vector2D(1,0)

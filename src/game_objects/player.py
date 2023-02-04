@@ -110,7 +110,7 @@ class Player(GameObject):
             self.rotation%=90
             self.position += self.speed\
                              * self.movement/movement_scaling\
-                             * clock.get_time()/1000
+                             * clock.get_time()/SECOND
 
         self.movement.x = 0
         self.movement.y = 0

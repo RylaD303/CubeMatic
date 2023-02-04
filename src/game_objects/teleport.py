@@ -71,7 +71,7 @@ class Teleport(GameObject):
                             / MAX_HOLD_TIME
             self.position += self.movement\
                              * (speed_scaling)\
-                             * clock.get_time()/1000
+                             * clock.get_time()/SECOND
 
     def teleport_player(self, player: "Player"):
         """

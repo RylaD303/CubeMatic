@@ -5,6 +5,11 @@ Module for the game's constant values.
 from math import pi
 from src.classes.vector_2d import Vector2D
 
+#used to slow up or speed up the entire game.
+#normal speed = 1000 ms
+#bigger number = slower game speed.
+#lesser number = faster game speed.
+SECOND = 1000
 
 #Map values
 WINDOW_SIZE = (1400,700) #pixles

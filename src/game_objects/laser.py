@@ -121,7 +121,7 @@ class Laser(GameObject):
         """
         self.cooldown -= clock.get_time()
         self.time_to_execute -= clock.get_time()
-        self.direction.angle_rotate(self.rotation_speed*clock.get_time()/1000)
+        self.direction.angle_rotate(self.rotation_speed*clock.get_time()/SECOND)
         if new_position:
             self.position = new_position
 
@@ -216,7 +216,7 @@ class Laser(GameObject):
 
             if self.rotation_speed < self.max_rotation_speed:
                 self.rotation_speed +=\
-                    (clock.get_time()/1000)*self.control_rotation_speed
+                    (clock.get_time()/SECOND)*self.control_rotation_speed
             else:
                 self.movement_types.pop(0)
 
@@ -226,7 +226,7 @@ class Laser(GameObject):
 
             if self.rotation_speed > self.min_rotation_speed:
                 self.rotation_speed -=\
-                    (clock.get_time()/1000)*self.control_rotation_speed
+                    (clock.get_time()/SECOND)*self.control_rotation_speed
             else:
                 self.movement_types.pop(0)
 

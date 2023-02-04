@@ -77,9 +77,9 @@ class Bullet(GameObject):
         Moves the bullet by it's movement vector,
         which is scaled by its speed and time passed.
         """
-        self.position += self.movement*(clock.get_time()/1000)
+        self.position += self.movement*(clock.get_time()/SECOND)
         if self.slowdown_speed != 0:
-            self.speed -= self.slowdown_speed*clock.get_time()/1000
+            self.speed -= self.slowdown_speed*clock.get_time()/SECOND
             self.movement = self.speed*self.movement/abs(self.movement)
             if self.speed <=0:
                 self.invalidate()
