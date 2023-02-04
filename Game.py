@@ -163,7 +163,7 @@ class Game:
             Teleport(PLAYER_TELEPORT_SPEED, PLAYER_TELEPORT_SIZE_RADIUS)
 
         #Boss creation
-        self.boss = Boss(pygame.image.load('src/sprites/Player1.png'),\
+        self.boss = Boss(pygame.image.load('src/sprites/Boss.png'),\
                     *tuple(BOSS_SCALE))
         self.boss_bullets = set()
         self.boss_lasers = set()
