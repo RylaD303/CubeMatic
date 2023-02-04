@@ -183,12 +183,13 @@ class BossAI():
         self.attack_cooldown =\
             self.current_movement_pattern.cooldown_for_wave_shoot()
         #central bullet
-        boss_bullets.add(
-            Bullet(self.centre_position(),
-            player.position,
-            BOSS_ATTACK_COLOR,
-            BOSS_BULLET_SIZE,
-            BOSS_WAVE_SHOOT_BULLET_SPEED))
+        bullet0 =Bullet(self.centre_position(),
+                        player.position,
+                        BOSS_ATTACK_COLOR,
+                        BOSS_BULLET_SIZE,
+                        BOSS_WAVE_SHOOT_BULLET_STARTING_SPEED)
+        bullet0.set_slowdown_speed(-BOSS_WAVE_SHOOT_BULLET_INCREASING_SPEED)
+        boss_bullets.add(bullet0)
         #side nnullets
         for i in range(1,3):
             bullet1 = Bullet(
@@ -196,7 +197,8 @@ class BossAI():
                 player.position,
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE,
-                BOSS_WAVE_SHOOT_BULLET_SPEED)
+                BOSS_WAVE_SHOOT_BULLET_STARTING_SPEED)
+            bullet1.set_slowdown_speed(-BOSS_WAVE_SHOOT_BULLET_INCREASING_SPEED)
             bullet1.movement.angle_rotate(i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet1)
             bullet2 = Bullet(
@@ -204,7 +206,8 @@ class BossAI():
                 player.position,
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE,
-                BOSS_WAVE_SHOOT_BULLET_SPEED)
+                BOSS_WAVE_SHOOT_BULLET_STARTING_SPEED)
+            bullet2.set_slowdown_speed(-BOSS_WAVE_SHOOT_BULLET_INCREASING_SPEED)
             bullet2.movement.angle_rotate(-i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet2)
 
