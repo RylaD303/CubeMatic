@@ -27,6 +27,7 @@ class HardAttackPattern(Enum):
     CircleShotsWithEdgeLaser = 1
     CircleShotsWithPlusLaser = 2
     DoublePlusLaser = 3
+    DoubleEdgeLaser = 4
 
 class MovePatternType(Enum):
     """
@@ -43,7 +44,7 @@ class MovePattern():
     evaluations = {
     MovePatternType.StandInMiddle: {
                         "time_to_execute": 10000,
-                        "time_for_one_laser_attack":8000,
+                        "time_for_one_laser_attack":7500,
                         "cooldown_for_wave_shoot":
                         BOSS_WAVE_SHOOT_COOLDOWN},
     MovePatternType.ParabolicMovement: {
@@ -86,7 +87,8 @@ class BossAI():
     the Boss. Value of enums is ID.
     """
 
-    following_attacks = list(EasyAttackPattern)
+    easy_attacks = list(EasyAttackPattern)
+    hard_attacks = list(HardAttackPattern)
     movement_pattern_types = list(MovePatternType)
 
     def __init__(self) -> None:
@@ -178,7 +180,7 @@ class BossAI():
             player.position,
             BOSS_ATTACK_COLOR,
             BOSS_BULLET_SIZE,
-            BOSS_BULLET_SPEED))
+            BOSS_WAVE_SHOOT_BULLET_SPEED))
         #side nnullets
         for i in range(1,3):
             bullet1 = Bullet(
@@ -186,7 +188,7 @@ class BossAI():
                 player.position,
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE,
-                BOSS_BULLET_SPEED)
+                BOSS_WAVE_SHOOT_BULLET_SPEED)
             bullet1.movement.angle_rotate(i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet1)
             bullet2 = Bullet(
@@ -198,7 +200,7 @@ class BossAI():
             bullet2.movement.angle_rotate(-i*BOSS_WAVE_SHOOT_ANGLE)
             boss_bullets.add(bullet2)
 
-    def _add_plus_lasers(self, boss_lasers: set["Laser"])  -> None:
+    def _add_plus_laser(self, boss_lasers: set["Laser"])  -> None:
         """
         Executes the plus laser attack pattern.
         Adds four lasers pointing to the main diagonals
@@ -221,7 +223,10 @@ class BossAI():
         plus_laser_behaviour = [LaserMovement.AcceleratingStart,
                                 LaserMovement.DeceleratingEnd]
         for laser in lasers:
-            laser.set_type( plus_laser_behaviour, pi/4, pi/2, pi/9)
+            laser.set_type(plus_laser_behaviour,
+                            BOSS_PLUS_LASER_ROTATION_SPEED,
+                            BOSS_PLUS_LASER_MAXIMUM_SPEED,
+                            BOSS_PLUS_LASER_MINIMUM_SPEED)
             boss_lasers.add(laser)
 
     def _add_edge_laser(self, player: "Player",
@@ -253,17 +258,22 @@ class BossAI():
                       self.current_movement_pattern.time_laser_attack())
         edge_laser_behaviour =[LaserMovement.AcceleratingStart,
                                LaserMovement.DeceleratingEnd]
-        laser.set_type(edge_laser_behaviour, pi/2,  pi, pi/9)
+        laser.set_type(edge_laser_behaviour,
+                        BOSS_EDGE_LASER_ROTATION_SPEED,
+                        BOSS_EDGE_LASER_MAXIMUM_SPEED,
+                        BOSS_EDGE_LASER_MINIMUM_SPEED)
+
         boss_lasers.add(laser)
-        if self.current_movement_pattern.type == MovePatternType.StandInMiddle:
+        if self.current_movement_pattern.type == MovePatternType.StandInMiddle\
+            and not self.hardmode:
             laser2 = Laser(self.centre_position(),
                            self.angle_for_attack,
                            self.current_movement_pattern.time_laser_attack())
             laser2.set_type(
                 edge_laser_behaviour,
-                pi/2,
-                pi,
-                pi/9)
+                BOSS_EDGE_LASER_ROTATION_SPEED,
+                BOSS_EDGE_LASER_MAXIMUM_SPEED,
+                BOSS_EDGE_LASER_MINIMUM_SPEED)
             laser2.direction.angle_rotate(pi)
             boss_lasers.add(laser2)
 
@@ -293,7 +303,7 @@ class BossAI():
             self.centre_position() + self.angle_for_attack,
             BOSS_ATTACK_COLOR,
             BOSS_BULLET_SIZE,
-            BOSS_BULLET_SPEED))
+            BOSS_SPIRAL_SHOOT_BULLET_SPEED))
         if self.current_movement_pattern.type == MovePatternType.StandInMiddle:
             boss_bullets.add(
                 Bullet(self.centre_position(),
@@ -301,7 +311,7 @@ class BossAI():
                 + self.angle_for_attack.angle_rotated(pi),
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE,
-                BOSS_BULLET_SPEED))
+                BOSS_SPIRAL_SHOOT_BULLET_SPEED))
         self.angle_for_attack.angle_rotate(BOSS_SPIRAL_SHOOT_ROTATION)
         self.attack_cooldown = BOSS_SPIRAL_COOLDOWN
 
@@ -322,7 +332,7 @@ class BossAI():
                 + self.angle_for_attack.angle_rotated(index*BOSS_CIRCLE_SHOOT_ROTATION),
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE,
-                BOSS_BULLET_SPEED))
+                BOSS_CIRCLE_SHOOT_BULLET_SPEED))
         self.attack_cooldown = BOSS_CIRCLE_SHOOT_COOLDOWN
         self.angle_for_attack.angle_rotate(pi/0.2)
 
@@ -424,7 +434,7 @@ class BossAI():
 
         elif self.current_attack_pattern\
             == EasyAttackPattern.PlusLaser:
-            self._add_plus_lasers(boss_lasers)
+            self._add_plus_laser(boss_lasers)
 
 
         elif self.current_attack_pattern\
@@ -470,9 +480,27 @@ class BossAI():
         elif self.current_attack_pattern\
             == HardAttackPattern.CircleShotsWithPlusLaser:
             if not self.hard_attack_executed:
-                self._add_plus_lasers(boss_lasers)
+                self._add_plus_laser(boss_lasers)
                 self.hard_attack_executed = True
             self._shoot_circle_bullets(boss_bullets)
+
+        elif self.current_attack_pattern\
+            == HardAttackPattern.DoublePlusLaser:
+            if not self.hard_attack_executed:
+                self._add_plus_laser(boss_lasers)
+                self.hard_attack_executed = True
+                self.attack_cooldown = 500
+            else:
+                self._add_plus_laser(boss_lasers)
+
+        elif self.current_attack_pattern\
+            == HardAttackPattern.DoubleEdgeLaser:
+            if not self.hard_attack_executed:
+                self._add_edge_laser(boss_lasers)
+                self.hard_attack_executed = True
+                self.attack_cooldown = 400
+            else:
+                self._add_edge_laser(boss_lasers)
 
     def _choose_attack_sequence(self)-> None:
         """
@@ -488,6 +516,7 @@ class BossAI():
             self.attack_sequence.put(EasyAttackPattern.PlusLaser)
             self.attack_sequence.put(EasyAttackPattern.WaveShots)
         if self.hardmode:
+            self.attack_sequence.put(HardAttackPattern.DoublePlusLaser)
             self.attack_sequence.put(HardAttackPattern.CircleShotsWithEdgeLaser)
             self.attack_sequence.put(HardAttackPattern.CircleShotsWithPlusLaser)
 

@@ -1,3 +1,7 @@
+"""
+Module for the game's constant values.
+"""
+
 from math import pi
 from src.classes.vector_2d import Vector2D
 
@@ -43,7 +47,6 @@ LASER_EFFECT_RADIUS = 10
 
 #Boss values
 BOSS_SCALE = Vector2D(48, 48)
-BOSS_BULLET_SPEED = 400 #pixels per second
 BOSS_LASER_WIDTH = 10 #pixels
 BOSS_BULLET_SIZE = 7 #pixels
 BOSS_ATTACK_COLOR = (255, 0, 0) # RGB
@@ -56,16 +59,23 @@ HEALTH_BAR_POSITION = Vector2D(300, 20)
 #Boss attack vars
 BOSS_WAVE_SHOOT_COOLDOWN = 1700 #ms
 BOSS_WAVE_SHOOT_ANGLE = pi/9 #degrees in pi
+BOSS_WAVE_SHOOT_BULLET_SPEED = 400 #pixels per second
 
-BOSS_PLUS_LASER_ROTATION_SPEED = 1 #degrees per frame
+BOSS_PLUS_LASER_ROTATION_SPEED = pi/4 #pi degrees per second
+BOSS_PLUS_LASER_MAXIMUM_SPEED = pi/2 #pi degrees per second
+BOSS_PLUS_LASER_MINIMUM_SPEED = pi/9 #pi degrees per second
+
+BOSS_EDGE_LASER_ROTATION_SPEED = pi/2 #pi degrees per second
+BOSS_EDGE_LASER_MAXIMUM_SPEED = pi #pi degrees per second
+BOSS_EDGE_LASER_MINIMUM_SPEED = pi/9 #pi degrees per second
 
 BOSS_SPIRAL_COOLDOWN = 70 #ms
 BOSS_SPIRAL_SHOOT_ROTATION = pi/13.5 #degrees in pi
+BOSS_SPIRAL_SHOOT_BULLET_SPEED = 300 #pixels per second
 
 BOSS_CIRCLE_SHOOT_COOLDOWN = 1000 #ms
 BOSS_CIRCLE_SHOOT_ROTATION = pi/13 #degrees in pi
-
-
+BOSS_CIRCLE_SHOOT_BULLET_SPEED = 300
 
 ##Boss movement values
 #Boss parabolic/elipse movement
