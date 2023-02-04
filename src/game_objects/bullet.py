@@ -78,7 +78,7 @@ class Bullet(GameObject):
         which is scaled by its speed and time passed.
         """
         self.position += self.movement*(clock.get_time()/1000)
-        if self.slowdown_speed > 0:
+        if self.slowdown_speed != 0:
             self.speed -= self.slowdown_speed*clock.get_time()/1000
             self.movement = self.speed*self.movement/abs(self.movement)
             if self.speed <=0:
