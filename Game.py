@@ -293,6 +293,8 @@ class Game:
             bullet.check_boundaries()
             if not bullet.is_valid():
                 players_bullets_to_remove.add(bullet)
+                self.circle_effects.add(\
+                    CircleEffect(bullet.position, bullet.radius*2))
 
 
         #Removes the player's bullets who are not valid.
@@ -307,7 +309,7 @@ class Game:
             if not bullet.is_valid():
                 boss_bullets_to_remove.add(bullet)
                 self.circle_effects.add(\
-                    CircleEffect(bullet.position,BOSS_BULLET_SIZE*2))
+                    CircleEffect(bullet.position, bullet.radius*2))
             elif bullet.is_colliding_with(self.player):
                     self.game_state = GameState.Lost
 
@@ -324,7 +326,7 @@ class Game:
                 point = laser.get_end_point_in_map()
                 if point:
                     self.circle_effects.add(\
-                        CircleEffect(point,LASER_EFFECT_RADIUS))
+                        CircleEffect(point, LASER_EFFECT_RADIUS))
                 if laser.is_colliding_with(self.player):
                     self.game_state = GameState.Lost
 
