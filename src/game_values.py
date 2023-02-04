@@ -32,6 +32,7 @@ PLAYER_START = CENTRE_OF_MAP #pixles
 PLAYER_SPEED = 400 #pixles per second
 PLAYER_SCALE = Vector2D(48, 48) #pixles
 PLAYER_BULLET_SPEED = 600 #pixles per second
+PLAYER_BULLET_SLOWDOWN_SPEED = 400 #pixles per second
 PLAYER_BULLET_SIZE = 4 # pixels
 PLAYER_BULLET_COLOR = (0,255,0) #RGB
 PLAYER_TELEPORT_SPEED = 2100 #pixles per second

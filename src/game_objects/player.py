@@ -134,6 +134,7 @@ class Player(GameObject):
                                     PLAYER_BULLET_COLOR,
                                     PLAYER_BULLET_SIZE,
                                     PLAYER_BULLET_SPEED)
+            bullet_to_fire.set_slowdown_speed(PLAYER_BULLET_SLOWDOWN_SPEED)
             player_bullets.add(bullet_to_fire)
             self.fire_cooldown = PLAYER_SHOOT_COOLDOWN
 

@@ -87,11 +87,11 @@ class Game:
         self.circle_effects: set["CircleEffect"] = None
         self.map_tiles: set["MapTile"] = None
         self.screen = Game.resizable_screen.copy()
-        self.screen_scaling = 1
-        self.game_state = None
-        self.keys_pressed = {}
-        self.boss_health_bar = None
-        self.start_time = None
+        self.screen_scaling: float= 1
+        self.game_state: "GameState" = None
+        self.keys_pressed: dict = {}
+        self.boss_health_bar: "HealthBar" = None
+        self.start_time: float = None
 
     def load_level(self):
         """

@@ -42,6 +42,7 @@ class Bullet(GameObject):
 
         self.movement = speed*(self.direction - self.position)\
                         / abs(self.direction - self.position)
+        self.slow_down = 0
 
     def check_boundaries(self):
         """
@@ -77,6 +78,12 @@ class Bullet(GameObject):
         which is scaled by its speed and time passed.
         """
         self.position += self.movement*(clock.get_time()/1000)
+        if self.slowdown_speed > 0:
+            self.speed -= self.slowdown_speed*clock.get_time()/1000
+            self.movement = self.speed*(self.direction - self.position)\
+                            / abs(self.direction - self.position)
+            if self.speed <=0:
+                self.invalidate()
 
     def render(self, display : "pygame.Surface") -> None:
         """Displays bullet on screen"""
@@ -84,3 +91,13 @@ class Bullet(GameObject):
                             self.color,
                             tuple(self.position),
                             self.radius)
+
+
+    def set_slowdown_speed(self, amount: float):
+        """
+        Makes the bullet slow down with the given speed.
+
+        amount -
+            pixels per second speed slowdown
+        """
+        self.slowdown_speed = amount
