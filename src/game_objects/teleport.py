@@ -1,8 +1,8 @@
+import pygame
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
 from src.game_objects.player import Player
 from src.game_values import *
-import pygame
 
 class Teleport(GameObject):
     """
@@ -11,8 +11,9 @@ class Teleport(GameObject):
     """
     def __init__(
         self,
-        speed : number_types,
-        radius: number_types = 4) -> "None":
+        speed: float,
+        sprite : "pygame.Surface",
+        scale: "Vector2D") -> "None":
         """
         Initialises teleportation device.
 
@@ -20,12 +21,16 @@ class Teleport(GameObject):
             speed -
                 speed at which the object should be moving.
                 (loses speed over time)
-            radius -
-                Radius of the rendered circle for the object.
+            sprite -
+                sprite to render for teleport.
+            scale -
+                scale of sprite
         """
         super().__init__(None)
+        self.sprite =\
+            pygame.transform.scale(sprite, (scale.x, scale.y))
+        self.rotation = 0
         self.speed = speed
-        self.radius = radius
         self.time_remaining = 0
         self.direction = None
         self.active = False
@@ -42,6 +47,7 @@ class Teleport(GameObject):
                 to change remaining cooldowns.
         """
         if self.active:
+            self.rotation = player.rotation
             if self.time_remaining>MAX_HOLD_TIME/3*2:
                 self.__move(clock)
             self.time_remaining -= clock.get_time()
@@ -52,13 +58,13 @@ class Teleport(GameObject):
         if self.position.x < START_OF_MAP.x:
             self.movement.x = abs(self.movement.x)
 
-        if self.position.x > END_OF_MAP.x:
+        if self.position.x > END_OF_MAP.x - self.sprite.get_width():
             self.movement.x = -abs(self.movement.x)
 
         if self.position.y < START_OF_MAP.y:
             self.movement.y = abs(self.movement.y)
 
-        if self.position.y > END_OF_MAP.y:
+        if self.position.y > END_OF_MAP.y - self.sprite.get_height():
             self.movement.y = -abs(self.movement.y)
 
     def __move(self, clock: "pygame.time.Clock"):
@@ -82,9 +88,7 @@ class Teleport(GameObject):
             player -
                 to change location on teleport.
         """
-        player.position =\
-            self.position - Vector2D(player.sprite.get_width()/2,\
-                                                   player.sprite.get_height()/2)
+        player.position = self.position
         self.deactivate()
 
     def render(self, display):
@@ -96,14 +100,14 @@ class Teleport(GameObject):
                 Surface on which to print the device.
         """
         if self.active:
-            color = (255 - self.time_remaining*255/MAX_HOLD_TIME,
-                    255,
-                    self.time_remaining*255/MAX_HOLD_TIME)
-            pygame.draw.circle(display,
-                               color,
-                               (self.position.x, self.position.y),
-                               self.radius\
-                               + 2*((MAX_HOLD_TIME/self.time_remaining)/100))
+            rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
+            position_to_print_on =Vector2D(\
+                self.position.x\
+                - (rotated_sprite.get_width() - self.sprite.get_width())/2,
+                self.position.y\
+                - (rotated_sprite.get_height() - self.sprite.get_height())/2)
+
+            display.blit(rotated_sprite, tuple(position_to_print_on))
 
 
     def activate(self, starting_position: "Vector2D", direction: "Vector2D"):

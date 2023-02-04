@@ -159,8 +159,13 @@ class Game:
                         PLAYER_SPEED,
                         pygame.image.load('src/sprites/Player1.png'),
                         *tuple(PLAYER_SCALE))
+
+        #Teleport creation
+
         self.teleportation_device: "Teleport" =\
-            Teleport(PLAYER_TELEPORT_SPEED, PLAYER_TELEPORT_SIZE_RADIUS)
+            Teleport(PLAYER_TELEPORT_SPEED,
+                     pygame.image.load('src/sprites/Teleport.png'),
+                     PLAYER_SCALE)
 
         #Boss creation
         self.boss = Boss(pygame.image.load('src/sprites/Boss.png'),\
@@ -420,8 +425,10 @@ class Game:
             if self.keys_pressed["teleport"]:
                 if not self.teleportation_device.active:
                     self.teleportation_device.activate(
-                        self.player.centre_position(),
-                        Vector2D(*pygame.mouse.get_pos())\
+                        self.player.position,
+                        (Vector2D(*pygame.mouse.get_pos())\
+                        - Vector2D(self.player.sprite.get_width()/2,
+                                   self.player.sprite.get_height()/2))\
                         / self.screen_scaling)
                 else:
                     self.execute_teleport()

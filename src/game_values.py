@@ -41,7 +41,6 @@ PLAYER_BULLET_SLOWDOWN_SPEED = 900 #pixles per second
 PLAYER_BULLET_SIZE = 4 # pixels
 PLAYER_BULLET_COLOR = (0,255,0) #RGB
 PLAYER_TELEPORT_SPEED = 2100 #pixles per second
-PLAYER_TELEPORT_SIZE_RADIUS = 6
 PLAYER_SHOOT_COOLDOWN = 150 #ms
 PLAYER_DAMAGE = 1
 MAX_HOLD_TIME = 5000 #ms - how long can the player hold the teleportation device.
@@ -105,4 +104,4 @@ START_ANIMATION_TIME = 2000 #ms
 
 
 #Cheats
-CAN_LOSE =  True
+CAN_LOSE =  False
