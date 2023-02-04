@@ -13,9 +13,6 @@ from src.game_objects.health_bar import HealthBar
 from src.classes.vector_2d import Vector2D
 from src.game_values import *
 
-#def collision_test(sprite: "pygame.Rect", objects: list["MapTile"]):
-#    hit_list =  [object for object in objects if sprite.colliderect(object.sprite.get_rect())]
-#    return hit_list
 GREEN = (0, 255, 0)
 def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame.Surface") -> None:
     img = font.render(text, True, text_color)
@@ -32,7 +29,7 @@ def time_to_str(time_in_seconds):
     time_in_seconds = round(time_in_seconds)
     seconds = time_in_seconds%60
     minutes = str(time_in_seconds//60)
-    seconds = "0"+str(seconds) if seconds<10 else str(seconds)
+    seconds = "0" + str(seconds) if seconds<10 else str(seconds)
     return minutes + ":" + seconds
 
 user_values = {}
@@ -289,7 +286,7 @@ class Game:
         for bullet in self.player_bullets:
             if bullet.is_colliding_with(self.boss):
                 bullet.invalidate()
-                self.boss.take_damage()
+                self.boss.take_damage(PLAYER_DAMAGE)
                 self.boss_health_bar.set_health(self.boss.health)
                 if self.boss.health <= 0:
                     self.game_state = GameState.Won
@@ -312,7 +309,7 @@ class Game:
                 self.circle_effects.add(\
                     CircleEffect(bullet.position,BOSS_BULLET_SIZE*2))
             elif bullet.is_colliding_with(self.player):
-                self.game_state = GameState.Lost
+                    self.game_state = GameState.Lost
 
         #Removes the boss' bullets who are not valid.
         for bullet in boss_bullets_to_remove:
@@ -538,6 +535,10 @@ class Game:
             self.run_level()
 
         elif self.game_state == GameState.Lost:
+            if not CAN_LOSE:
+                self.game_state = GameState.Running
+                self._update()
+                return
             user_values["lost_playthroughs"] += 1
             self.handle_objects_rendering()
             draw_text("Game Over", GREEN, CENTRE_OF_MAP, self.screen)

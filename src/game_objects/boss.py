@@ -1,7 +1,7 @@
 import pygame
 from src.classes.game_object import GameObject
 from src.classes.vector_2d import number_types
-from src.classes.boss_ai import BossAI, MovePatternType, FollowingAttackPattern
+from src.classes.boss_ai import BossAI, MovePatternType, EasyAttackPattern
 from src.game_objects.player import Player
 from src.game_objects.bullet import Bullet
 from src.game_values import *
@@ -42,77 +42,6 @@ class Boss(BossAI, GameObject):
         """
         self.active = False
 
-    def _execute_attack_pattern(self,
-    player: "Player",
-    boss_bullets: set["Bullet"],
-    boss_lasers: set["Laser"]) -> None:
-        """
-        Calls to the corresponding function to execute the attack pattern.
-        Calls only if able to attack at the given moment.
-
-        Paramateres:
-            player -
-                to know players position
-            boss_bullets -
-                set of bullets to stack in for handling later.
-            boss_lasers -
-                set of lasers to stack in for handling later.
-        """
-        if not self.can_attack:
-            return
-        if self.current_attack_pattern\
-                == FollowingAttackPattern.WaveShots\
-            and self.time_to_execute_pattern\
-                > self.current_movement_pattern.cooldown_for_wave_shoot():
-            self._shoot_bullet_wave(player, boss_bullets)
-
-        elif self.current_attack_pattern\
-            == FollowingAttackPattern.PlusLaser:
-            self._add_plus_lasers(boss_lasers)
-
-
-        elif self.current_attack_pattern\
-            == FollowingAttackPattern.EdgeLaser:
-            self._add_edge_laser(player, boss_lasers)
-
-        elif self.current_attack_pattern\
-            == FollowingAttackPattern.SpiralShoot:
-            self._shoot_spiral_bullets(boss_bullets, player)
-
-    def _choose_attack_sequence(self)-> None:
-        """
-        Creates new attack pattern sequence and adds it to the queue.
-        todo!
-        """
-        #for attack in sample(following_attacks, 3):
-        #    self.attack_sequence.put(attack)
-        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
-        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
-        #self.attack_sequence.put(FollowingAttackPattern.SpiralShoot)
-        #self.attack_sequence.put(FollowingAttackPattern.SpiralShoot)
-        self.attack_sequence.put(FollowingAttackPattern.EdgeLaser)
-        self.attack_sequence.put(FollowingAttackPattern.EdgeLaser)
-        self.attack_sequence.put(FollowingAttackPattern.EdgeLaser)
-        self.attack_sequence.put(FollowingAttackPattern.PlusLaser)
-        self.attack_sequence.put(FollowingAttackPattern.WaveShots)
-
-    def _evaluate_attack_pattern(self) -> None:
-        """
-        Sets new atatck pattern if the old one is finished.
-        Takes care of cooldowns.
-        """
-        if self.time_to_execute_pattern <= 0:
-            if self.attack_sequence.empty():
-                self._choose_attack_sequence()
-            self.current_attack_pattern = self.attack_sequence.get()
-            self.attack_cooldown = 0
-            self.angle_for_attack = None
-            self.can_attack = True
-            self._pick_new_movement_pattern()
-            self.time_to_execute_pattern =\
-                self.current_movement_pattern.get_time()
-            self.sleep_time = 1500
-
     def _move(self) -> None:
         """
         Moves the boss object with the correspoinding move pattern.
@@ -124,7 +53,17 @@ class Boss(BossAI, GameObject):
             == MovePatternType.StandInMiddle:
             self._evaluate_stand_in_middle_movement()
 
-
+    def _execute_attack_pattern(self,
+            player: "Player",
+            boss_bullets: list["Bullet"],
+            boss_lasers: list["Laser"]) -> None:
+        """
+        Calls the right attack pattern depending on if hardmode is on or off.
+        """
+        if self.hardmode:
+            self._execute_hard_attack_pattern(player, boss_bullets, boss_lasers)
+        else:
+            self._execute_easy_attack_pattern(player, boss_bullets, boss_lasers)
     def main(self,
             player: "Player",
             boss_bullets: list["Bullet"],
@@ -177,5 +116,5 @@ class Boss(BossAI, GameObject):
                 rotated_sprite,
                 position_to_print_on)
 
-    def take_damage(self):
-        self.health -= PLAYER_DAMAGE
+    def take_damage(self, amount):
+        self.health -= amount

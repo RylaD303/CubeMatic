@@ -2,7 +2,7 @@ from random import randint
 from queue import Queue
 from enum import Enum
 from math import pi, sqrt
-
+from typing import Union
 from src.classes.vector_2d import Vector2D, number_types
 from src.game_objects.player import Player
 from src.game_objects.bullet import Bullet
@@ -10,15 +10,23 @@ from src.game_values import *
 from src.game_objects.laser import Laser, LaserMovement
 
 
-class FollowingAttackPattern(Enum):
+class EasyAttackPattern(Enum):
     """
-    Attack patterns for boss.
+    Easy Attack patterns for boss.
     """
     WaveShots = 1
     PlusLaser = 2
     EdgeLaser = 3
     SpiralShoot = 4
+    CircleShoot = 5
 
+class HardAttackPattern(Enum):
+    """
+    Hard Attack patterns for boss.
+    """
+    CircleShotsWithEdgeLaser = 1
+    CircleShotsWithPlusLaser = 2
+    DoublePlusLaser = 3
 
 class MovePatternType(Enum):
     """
@@ -78,7 +86,7 @@ class BossAI():
     the Boss. Value of enums is ID.
     """
 
-    following_attacks = list(FollowingAttackPattern)
+    following_attacks = list(EasyAttackPattern)
     movement_pattern_types = list(MovePatternType)
 
     def __init__(self) -> None:
@@ -113,14 +121,17 @@ class BossAI():
         #self.speed = speed
         #self.width = width
         #self.height = height
-        self.current_movement_pattern = None
-        self.movement_variant = 0
-        self.attack_sequence = Queue()
-        self.current_attack_pattern = None
-        self.attack_cooldown = 0
-        self.angle_for_attack = None
-        self.can_attack = False
-        self.time_to_execute_pattern = 0
+        self.current_movement_pattern: MovePattern = None
+        self.movement_variant: int = 0
+        self.attack_sequence: "Queue" = Queue()
+        self.current_attack_pattern:\
+            Union["EasyAttackPattern", "HardAttackPattern"] = None
+        self.attack_cooldown: float = 0
+        self.hard_attack_executed: bool = False
+        self.angle_for_attack: float = None
+        self.can_attack: bool = False
+        self.time_to_execute_pattern: float = 0
+        self.hardmode: bool = False
 
     def centre_position(self) -> "Vector2D":
         """
@@ -131,10 +142,21 @@ class BossAI():
         """
         return self.position + BOSS_SCALE/2
 
+    def _start_hardmode(self):
+        """
+        Starts the hard attack of the boss.
+        Clears the easy attack in the queue, so the next attacks
+        in the sequence can be hard.
+        """
+        #self.attack_sequence.clear()
+        self.attack_sequence = Queue()
+        #didn't find how to empty a queue on the internet LOL
+        self.hardmode = True
+
     def _pick_new_movement_pattern(self)  -> None:
         """todo!"""
         self.current_movement_pattern =\
-            MovePattern(MovePatternType.ParabolicMovement)
+            MovePattern(MovePatternType.StandInMiddle)
         self.movement_variant = randint(1,2)
 
     def _shoot_bullet_wave(self, player: "Player",
@@ -280,9 +302,29 @@ class BossAI():
                 BOSS_ATTACK_COLOR,
                 BOSS_BULLET_SIZE,
                 BOSS_BULLET_SPEED))
-        self.angle_for_attack.angle_rotate(BOSS_SPIRAL_SHOOT_ATTACK_ROTATION)
-        self.attack_cooldown = BOSS_SPIRAL_ATTACK_COOLDOWN
+        self.angle_for_attack.angle_rotate(BOSS_SPIRAL_SHOOT_ROTATION)
+        self.attack_cooldown = BOSS_SPIRAL_COOLDOWN
 
+    def _shoot_circle_bullets(self, boss_bullets: set["Bullet"]):
+        """
+        Executes the shoot circle attack patter.
+
+        set of bullets:
+            to add the bullets so they can be handled
+        """
+        if self.angle_for_attack is None:
+            self.angle_for_attack = Vector2D(-1,0)
+        number_of_bullets  = round(pi/BOSS_CIRCLE_SHOOT_ROTATION)
+        for index in range(number_of_bullets*2):
+            boss_bullets.add(
+                Bullet(self.centre_position(),
+                self.centre_position()\
+                + self.angle_for_attack.angle_rotated(index*BOSS_CIRCLE_SHOOT_ROTATION),
+                BOSS_ATTACK_COLOR,
+                BOSS_BULLET_SIZE,
+                BOSS_BULLET_SPEED))
+        self.attack_cooldown = BOSS_CIRCLE_SHOOT_COOLDOWN
+        self.angle_for_attack.angle_rotate(pi/0.2)
 
     def _evaluate_parabolic_movement(self) -> None:
         """
@@ -354,3 +396,118 @@ class BossAI():
         else:
             self.can_attack = True
             self.position = CENTRE_OF_MAP
+
+    def _execute_easy_attack_pattern(self,
+        player: "Player",
+        boss_bullets: set["Bullet"],
+        boss_lasers: set["Laser"]) -> None:
+        """
+        Calls to the corresponding function to execute the easy
+        attack pattern. Executes only if able to attack at the given
+        moment.
+
+        Paramateres:
+            player -
+                to know players position
+            boss_bullets -
+                set of bullets to stack in for handling later.
+            boss_lasers -
+                set of lasers to stack in for handling later.
+        """
+        if not self.can_attack:
+            return
+        if self.current_attack_pattern\
+                == EasyAttackPattern.WaveShots\
+            and self.time_to_execute_pattern\
+                > self.current_movement_pattern.cooldown_for_wave_shoot():
+            self._shoot_bullet_wave(player, boss_bullets)
+
+        elif self.current_attack_pattern\
+            == EasyAttackPattern.PlusLaser:
+            self._add_plus_lasers(boss_lasers)
+
+
+        elif self.current_attack_pattern\
+            == EasyAttackPattern.EdgeLaser:
+            self._add_edge_laser(player, boss_lasers)
+
+        elif self.current_attack_pattern\
+            == EasyAttackPattern.SpiralShoot:
+            self._shoot_spiral_bullets(boss_bullets, player)
+
+        elif self.current_attack_pattern\
+            == EasyAttackPattern.CircleShoot:
+            self._shoot_circle_bullets(boss_bullets)
+
+    def _execute_hard_attack_pattern(self,
+        player: "Player",
+        boss_bullets: set["Bullet"],
+        boss_lasers: set["Laser"]) -> None:
+        """
+        Calls to the corresponding function to execute the hard
+        attack pattern. Executes only if able to attack at the given
+        moment.
+
+        Paramateres:
+            player -
+                to know players position
+            boss_bullets -
+                set of bullets to stack in for handling later.
+            boss_lasers -
+                set of lasers to stack in for handling later.
+        """
+        if not self.can_attack:
+            return
+
+        if self.current_attack_pattern\
+            == HardAttackPattern.CircleShotsWithEdgeLaser:
+            if not self.hard_attack_executed:
+                self._add_edge_laser(player, boss_lasers)
+                self.hard_attack_executed = True
+            self._shoot_circle_bullets(boss_bullets)
+
+
+        elif self.current_attack_pattern\
+            == HardAttackPattern.CircleShotsWithPlusLaser:
+            if not self.hard_attack_executed:
+                self._add_plus_lasers(boss_lasers)
+                self.hard_attack_executed = True
+            self._shoot_circle_bullets(boss_bullets)
+
+    def _choose_attack_sequence(self)-> None:
+        """
+        Creates new attack pattern sequence and adds it to the queue.
+        todo!
+        """
+        #for attack in sample(following_attacks, 3):
+        #    self.attack_sequence.put(attack)
+        if not self.hardmode:
+            self.attack_sequence.put(EasyAttackPattern.CircleShoot)
+            self.attack_sequence.put(EasyAttackPattern.SpiralShoot)
+            self.attack_sequence.put(EasyAttackPattern.EdgeLaser)
+            self.attack_sequence.put(EasyAttackPattern.PlusLaser)
+            self.attack_sequence.put(EasyAttackPattern.WaveShots)
+        if self.hardmode:
+            self.attack_sequence.put(HardAttackPattern.CircleShotsWithEdgeLaser)
+            self.attack_sequence.put(HardAttackPattern.CircleShotsWithPlusLaser)
+
+    def _evaluate_attack_pattern(self) -> None:
+        """
+        Sets new atatck pattern if the old one is finished.
+        Takes care of cooldowns.
+        """
+        if self.time_to_execute_pattern <= 0:
+            if  not self.hardmode and self.health <= BOSS_HEALTH/2:
+                self._start_hardmode()
+            if self.attack_sequence.empty():
+                self._choose_attack_sequence()
+            self.current_attack_pattern = self.attack_sequence.get()
+            self.attack_cooldown = 0
+            self.hard_attack_executed = False
+            self.angle_for_attack = None
+            self.can_attack = True
+            self._pick_new_movement_pattern()
+            self.time_to_execute_pattern =\
+                self.current_movement_pattern.get_time()
+            self.sleep_time = 1500
+
