@@ -28,6 +28,8 @@ class HardAttackPattern(Enum):
     CircleShotsWithPlusLaser = 2
     DoublePlusLaser = 3
     DoubleEdgeLaser = 4
+    SpiralShotsWithPlusLaser = 5
+    SpiralShotsWithEdgeLaser = 6
 
 class MovePatternType(Enum):
     """
@@ -502,6 +504,20 @@ class BossAI():
             else:
                 self._add_edge_laser(boss_lasers)
 
+        elif self.current_attack_pattern\
+            == HardAttackPattern.SpiralShotsWithPlusLaser:
+            if not self.hard_attack_executed:
+                self._add_plus_laser(boss_lasers)
+                self.hard_attack_executed = True
+            self._shoot_spiral_bullets(boss_bullets)
+
+        elif self.current_attack_pattern\
+            == HardAttackPattern.SpiralShotsWithEdgeLaser:
+            if not self.hard_attack_executed:
+                self._add_edge_laser(boss_lasers)
+                self.hard_attack_executed = True
+            self._shoot_spiral_bullets(boss_bullets)
+
     def _choose_attack_sequence(self)-> None:
         """
         Creates new attack pattern sequence and adds it to the queue.
@@ -526,7 +542,8 @@ class BossAI():
         Takes care of cooldowns.
         """
         if self.time_to_execute_pattern <= 0:
-            if  not self.hardmode and self.health <= BOSS_HEALTH/2:
+            if  not self.hardmode\
+                 and self.health <= BOSS_HARDMODE_HEALTH_THRESHOLD:
                 self._start_hardmode()
             if self.attack_sequence.empty():
                 self._choose_attack_sequence()
