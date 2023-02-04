@@ -559,7 +559,7 @@ class Game:
 
             self.time_survived = round(time.time() - self.start_time)
             if not user_values["best_time"]\
-               or user_values["best_time"] < self.time_survived:
+               or user_values["best_time"] > self.time_survived:
                 user_values["best_time"] = self.time_survived
 
             self.boss.deactivate()
