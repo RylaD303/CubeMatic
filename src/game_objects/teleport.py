@@ -3,14 +3,16 @@ from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
 from src.game_objects.player import Player
 from src.game_objects.effects import CircleEffect
+from src.game_objects.effects import CircleEffect
 from src.game_values import *
+
+pygame.mixer.init()
+sound = pygame.mixer.Sound("src/sounds/teleport_player.wav")
+sound.set_volume(0.4)
 
 pygame.mixer.init()
 teleportation_sound = pygame.mixer.Sound("src/sounds/teleport_player.wav")
 teleportation_sound.set_volume(0.4)
-
-
-shoot_teleport_sound = pygame.mixer.Sound("src/sounds/teleport_player.wav")
 class Teleport(GameObject):
     """
     Teleporation device which the player fires
@@ -108,7 +110,6 @@ class Teleport(GameObject):
             player.centre_position(),
             player.radius*1.4
         ))
-
     def render(self, display):
         """
         Renders the teleportation device on the screen if it is active.

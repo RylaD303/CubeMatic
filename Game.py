@@ -410,6 +410,9 @@ class Game:
                     self.keys_pressed["fire"] = False
 
     def evaluate_key_presses_ingame(self):
+        """
+        Evaluates events based on pressed keys from user.
+        """
         if self.game_state != GameState.Paused:
             if self.keys_pressed["teleport"]:
                 if not self.teleportation_device.active:
@@ -417,7 +420,7 @@ class Game:
                         self.player.position,
                         (Vector2D(*pygame.mouse.get_pos())\
                         - Vector2D(self.player.sprite.get_width()/2,
-                                   self.player.sprite.get_height()/2))\
+                                    self.player.sprite.get_height()/2))\
                         / self.screen_scaling)
                 else:
                     self.teleportation_device.teleport_player(
@@ -428,7 +431,7 @@ class Game:
             if self.keys_pressed["fire"]:
                 self.player.fire(self.player_bullets,
                                 Vector2D(*pygame.mouse.get_pos())\
-                                         / self.screen_scaling)
+                                            / self.screen_scaling)
 
         #Pauses game:
         if self.keys_pressed["pause"]:
@@ -449,7 +452,6 @@ class Game:
         self.game_state = GameState.Menu
         while True:
             self._update()
-            print(clock.get_fps())
             clock.tick(120)
 
     def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
