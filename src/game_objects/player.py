@@ -4,6 +4,9 @@ from src.game_objects.bullet import Bullet
 from src.game_values import *
 import pygame
 
+pygame.mixer.init()
+shoot_sound = pygame.mixer.Sound("src/sounds/player_fire.wav")
+shoot_sound.set_volume(0.4)
 
 class Player(GameObject):
     """The Player Game object"""
@@ -129,6 +132,7 @@ class Player(GameObject):
 
         """
         if self.fire_cooldown <=0:
+            pygame.mixer.Sound.play(shoot_sound)
             bullet_to_fire = Bullet(self.centre_position(),
                                     fire_to_position,
                                     PLAYER_BULLET_COLOR,

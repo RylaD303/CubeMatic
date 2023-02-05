@@ -6,6 +6,11 @@ from src.game_values import *
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
 
+
+pygame.mixer.init()
+shoot_sound = pygame.mixer.Sound("src/sounds/laser_shoot.wav")
+shoot_sound.set_volume(0.4)
+
 WHITE = (255, 255 ,255)
 class LaserState(Enum):
     """Enum for laser state"""
@@ -175,6 +180,7 @@ class Laser(GameObject):
         Changes the state of the laser to the given state.
         """
         if state == LaserState.Attack:
+            pygame.mixer.Sound.play(shoot_sound)
             self.state = LaserState.Attack
             self.cooldown = self.time_to_execute-LASER_ANTICIPATION_TIME
         elif state == LaserState.Recovery:

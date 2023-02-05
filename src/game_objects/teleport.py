@@ -6,9 +6,11 @@ from src.game_objects.effects import CircleEffect
 from src.game_values import *
 
 pygame.mixer.init()
-sound = pygame.mixer.Sound("src/sounds/teleport_player.wav")
-sound.set_volume(0.4)
+teleportation_sound = pygame.mixer.Sound("src/sounds/teleport_player.wav")
+teleportation_sound.set_volume(0.4)
 
+
+shoot_teleport_sound = pygame.mixer.Sound("src/sounds/teleport_player.wav")
 class Teleport(GameObject):
     """
     Teleporation device which the player fires
@@ -99,7 +101,7 @@ class Teleport(GameObject):
             player.centre_position(),
             player.radius*1.4
         ))
-        pygame.mixer.Sound.play(sound)
+        pygame.mixer.Sound.play(teleportation_sound)
         player.position = self.position
         self.deactivate()
         circle_effects.add(CircleEffect(

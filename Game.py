@@ -13,6 +13,10 @@ from src.game_objects.health_bar import HealthBar
 from src.classes.vector_2d import Vector2D
 from src.game_values import *
 
+pygame.mixer.init()
+lose_sound = pygame.mixer.Sound("src/sounds/lose_sound.wav")
+lose_sound.set_volume(0.4)
+
 GREEN = (0, 255, 0)
 def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame.Surface") -> None:
     img = font.render(text, True, text_color)
@@ -416,7 +420,9 @@ class Game:
                                    self.player.sprite.get_height()/2))\
                         / self.screen_scaling)
                 else:
-                    self.teleportation_device.teleport_player()
+                    self.teleportation_device.teleport_player(
+                        self.player,
+                        self.circle_effects)
 
             #Check if mouse button is held down
             if self.keys_pressed["fire"]:
@@ -558,6 +564,7 @@ class Game:
                 return
             user_values["lost_playthroughs"] += 1
             self.handle_objects_rendering()
+            pygame.mixer.Sound.play(lose_sound)
             draw_text("Game Over", GREEN, CENTRE_OF_MAP, self.screen)
             time_survived = round(time.time() - self.start_time)
             draw_text("Time survived: " + time_to_str(time_survived),
