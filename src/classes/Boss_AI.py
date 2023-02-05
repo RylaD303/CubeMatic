@@ -345,7 +345,7 @@ class BossAI():
                 BOSS_BULLET_SIZE,
                 BOSS_CIRCLE_SHOOT_BULLET_SPEED))
         self.attack_cooldown = BOSS_CIRCLE_SHOOT_COOLDOWN
-        self.angle_for_attack.angle_rotate(pi/0.2)
+        self.angle_for_attack.angle_rotate(pi/(BOSS_CIRCLE_SHOOT_ROTATION+0.5))
 
     def _evaluate_parabolic_movement(self) -> None:
         """
