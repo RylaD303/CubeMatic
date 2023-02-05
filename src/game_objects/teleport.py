@@ -2,7 +2,12 @@ import pygame
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
 from src.game_objects.player import Player
+from src.game_objects.effects import CircleEffect
 from src.game_values import *
+
+pygame.mixer.init()
+sound = pygame.mixer.Sound("src/sounds/teleport_player.wav")
+sound.set_volume(0.4)
 
 class Teleport(GameObject):
     """
@@ -79,7 +84,9 @@ class Teleport(GameObject):
                              * (speed_scaling)\
                              * clock.get_time()/SECOND
 
-    def teleport_player(self, player: "Player"):
+    def teleport_player(self,
+                        player: "Player",
+                        circle_effects: set["CircleEffect"]):
         """
         Deactivates the device and teleports the player to the
         target location.
@@ -88,8 +95,17 @@ class Teleport(GameObject):
             player -
                 to change location on teleport.
         """
+        circle_effects.add(CircleEffect(
+            player.centre_position(),
+            player.radius*1.4
+        ))
+        pygame.mixer.Sound.play(sound)
         player.position = self.position
         self.deactivate()
+        circle_effects.add(CircleEffect(
+            player.centre_position(),
+            player.radius*1.4
+        ))
 
     def render(self, display):
         """

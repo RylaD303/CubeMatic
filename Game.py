@@ -187,17 +187,6 @@ class Game:
             "teleport": False
             }
 
-    def execute_teleport(self):
-        self.circle_effects.add(CircleEffect(
-            self.player.centre_position(),
-            self.player.radius*1.4
-        ))
-        self.teleportation_device.teleport_player(self.player)
-        self.circle_effects.add(CircleEffect(
-            self.player.centre_position(),
-            self.player.radius*1.4
-        ))
-
     def handle_objects_main(self):
         """
         Handles the main functions of all the objects.
@@ -216,10 +205,6 @@ class Game:
         #Teleportation device movement and cooldowns
         self.teleportation_device.main(self.player, clock)
 
-        #Check if device is active and cooldown is expired
-        if self.teleportation_device.time_remaining == 0\
-            and self.teleportation_device.active:
-            self.execute_teleport()
         #Bullet movement
         for bullet in self.boss_bullets:
             bullet.main(clock)
@@ -431,7 +416,7 @@ class Game:
                                    self.player.sprite.get_height()/2))\
                         / self.screen_scaling)
                 else:
-                    self.execute_teleport()
+                    self.teleportation_device.teleport_player()
 
             #Check if mouse button is held down
             if self.keys_pressed["fire"]:
@@ -452,12 +437,20 @@ class Game:
         self.keys_pressed["teleport"] = False
 
     def run(self):
+        """
+        Starts the game.
+        """
         self.game_state = GameState.Menu
         while True:
             self._update()
+            print(clock.get_fps())
             clock.tick(120)
 
     def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
+        """
+        Renders everything on the screen of the user, scaling with
+        the user's resized window.
+        """
         Game.resizable_screen.blit(
                 pygame.transform.scale(self.screen,
                                        Game.resizable_screen.get_rect().size),
@@ -465,10 +458,16 @@ class Game:
         pygame.display.flip()
 
     def clear_surface(self):
+        """
+        Clears the game's surface (screen)
+        """
         #Black background
         self.screen.fill((0,0,0))
 
     def run_level_enter_animation(self):
+        """
+        Runs the animation for the start of the game.
+        """
         if Game.time_left_for_animation>0:
             Game.time_left_for_animation -= clock.get_time()
             offset = Game.time_left_for_animation\
@@ -481,6 +480,10 @@ class Game:
             self.boss.activate()
 
     def run_level(self):
+        """
+        Runs everything connected with the level.
+        Movement, collision, rendering on the user's screen.
+        """
         if self.game_state != GameState.Paused:
             self.handle_objects_main()
         self.evaluate_key_presses_ingame()
@@ -488,6 +491,11 @@ class Game:
         self.handle_objects_rendering()
 
     def run_menu(self):
+        """
+        Runs the menu of the game.
+        Prints the buttons and checks for clicks on them.
+        Also shows best Time to beat the game and total wins.
+        """
         draw_text("CubeMatic",
                 GREEN,
                 TITLE_POSITION,
