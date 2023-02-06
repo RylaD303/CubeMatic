@@ -18,7 +18,7 @@ lose_sound = pygame.mixer.Sound("src/sounds/lose_sound.wav")
 lose_sound.set_volume(0.4)
 
 GREEN = (0, 255, 0)
-def draw_text(text: str, text_color: tuple, position:"Vector2D", screen: "pygame.Surface") -> None:
+def draw_text(text: str, text_color: tuple, position: "Vector2D", screen: "pygame.Surface") -> None:
     img = font.render(text, True, text_color)
     offset = Vector2D(img.get_width(),img.get_height())/2
     screen.blit(img, tuple(position - offset))
@@ -41,6 +41,10 @@ def reset_user_values():
     user_values["lost_playthroughs"] = 0
     user_values["won_playthroughs"] = 0
     user_values["best_time"] = None
+    user_values["won_last_game"] = False
+    user_values["lost_last_game"] = False
+    user_values["won_last_game_good_time"] = False
+    user_values["last_game_survived_less_than_30_seconds"] = False
 
 def rewrite_player_values(user_values: dict):
     with open("player_values.json", 'w', encoding = "UTF-16") as outfile:
@@ -537,7 +541,43 @@ class Game:
             reset_user_values()
             Game.time_for_text_main = 2000
 
+    def reset_user_last_game(self):
+        """
+        Clears the last game's values.
+        """
+        user_values["won_last_game"] = False
+        user_values["lost_last_game"] = False
+        user_values["won_last_game_good_time"] = False
+        user_values["last_game_survived_less_than_30_seconds"] = False
+
+    def update_user_values(self):
+        """
+        Updates the user's values according to the games end.
+        """
+        self.reset_user_last_game()
+        if self.game_state == GameState.Lost:
+            user_values["lost_playthroughs"] += 1
+
+            if self.time_survived < 30000:
+                user_values["last_game_survived_less_than_30_seconds"] = True
+            else:
+                user_values["lost_last_game"] = True
+
+        if self.game_state == GameState.Won:
+            user_values["won_playthroughs"] += 1
+
+            if not user_values["best_time"]\
+               or user_values["best_time"] > self.time_survived:
+                user_values["best_time"] = self.time_survived
+            if self.time_survived < 70000:
+                user_values["won_last_game_good_time"] == True
+            else:
+                user_values["won_last_game"] = True
+
     def _update(self):
+        """
+        Checks the game's state and acts accordingly.
+        """
         self.get_key_presses()
         if self.game_state == GameState.Menu:
             self.run_menu()
@@ -564,7 +604,8 @@ class Game:
                 self.game_state = GameState.Running
                 self._update()
                 return
-            user_values["lost_playthroughs"] += 1
+            self.time_survived = round(time.time() - self.start_time)
+            self.update_user_values()
             self.handle_objects_rendering()
             pygame.mixer.Sound.play(lose_sound)
             draw_text("Game Over", GREEN, CENTRE_OF_MAP, self.screen)
@@ -579,13 +620,8 @@ class Game:
             self.game_state = GameState.Menu
 
         elif self.game_state == GameState.Won:
-            user_values["won_playthroughs"] += 1
-
             self.time_survived = round(time.time() - self.start_time)
-            if not user_values["best_time"]\
-               or user_values["best_time"] > self.time_survived:
-                user_values["best_time"] = self.time_survived
-
+            self.update_user_values()
             self.boss.deactivate()
             self.circle_effects.add(CircleEffect(self.boss.centre_position(),\
                                                 self.boss.radius*3))
@@ -622,6 +658,10 @@ font = pygame.font.SysFont("arialblack", 40)
 #Clock
 clock = pygame.time.Clock()
 clock.tick()
+
+pygame_icon = pygame.image.load('src/sprites/Player1.png')
+pygame.display.set_icon(pygame_icon)
+pygame.display.set_caption('CubeMatic')
 
 
 game = Game()
