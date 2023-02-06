@@ -27,7 +27,7 @@ class Boss(BossAI, GameObject):
         self.rotation = 0
         self.radius = width/2
         self.active = False
-        self.sleep_time = 2000
+        self.sleep_time = 0
         self.health = BOSS_HEALTH
 
     def activate(self):

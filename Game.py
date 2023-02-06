@@ -143,6 +143,7 @@ class Game:
         self.keys_pressed: dict = {}
         self.boss_health_bar: "HealthBar" = None
         self.start_time: float = None
+        self.quote = None
 
     def load_level(self):
         """
@@ -396,10 +397,13 @@ class Game:
         for event in pygame.event.get():
             #Existing game
             if event.type == QUIT:
-                if self.game_state in [GameState.Running, GameState.Paused]:
-                    user_values["lost_playthroughs"] +=1
+                if self.game_state in [GameState.Running,
+                                       GameState.Paused,
+                                       GameState.ShowText]:
+                    self.game_state = GameState.Lost
+                    self.time_survived = round(time.time() - self.start_time)
+                    self.update_user_values()
                 rewrite_player_values(user_values)
-                self.game_state = GameState.Lost
                 pygame.quit()
                 sys.exit()
 
@@ -532,7 +536,8 @@ class Game:
             self.clear_surface()
         else:
             self.game_state = GameState.ShowText
-            time_for_text_after_start = 3000
+            Game.time_for_text_after_start = 3000
+            self.quote = choose_quote()
 
     def run_level(self):
         """
@@ -578,7 +583,7 @@ class Game:
             self.clear_surface()
             self.render_surface()
             self.game_state = GameState.Loading
-            time.sleep(1)
+            Game.time_for_text_after_start = 3000
 
         if clicked_reset:
             reset_user_values()
@@ -606,13 +611,14 @@ class Game:
             else:
                 user_values["lost_last_game"] = True
 
-        if self.game_state == GameState.Won:
+        if self.game_state == GameState.Won\
+            or self.game_state == GameState.AfterBoss:
             user_values["won_playthroughs"] += 1
 
             if not user_values["best_time"]\
                or user_values["best_time"] > self.time_survived:
                 user_values["best_time"] = self.time_survived
-            if self.time_survived < 70:
+            if self.time_survived < 60:
                 user_values["won_last_game_good_time"] == True
             else:
                 user_values["won_last_game"] = True
@@ -641,11 +647,12 @@ class Game:
 
         elif self.game_state == GameState.ShowText:
             if Game.time_for_text_after_start > 0:
-                draw_text(choose_quote(),
+                draw_text(self.quote,
                             GREEN,
                             CENTRE_OF_MAP + Vector2D(0, 200),
                             self.screen)
                 self.run_level()
+                Game.time_for_text_after_start -= clock.get_time()
             else:
                 self.game_state = GameState.Running
                 self.boss.activate()
