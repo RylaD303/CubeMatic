@@ -1,4 +1,5 @@
 import pygame, sys, time, json, os.path, time
+from random import choice
 from enum import Enum
 from pygame.locals import *
 from src.game_objects.player import Player
@@ -30,6 +31,9 @@ reset_button = Button(reset_button_image, RESET_PLAY_POSITION, BUTTON_PLAY_SIZE)
 starting_offset = Vector2D(0,700)
 
 def time_to_str(time_in_seconds):
+    """
+    turns seconds into a string 'MM:SS'
+    """
     time_in_seconds = round(time_in_seconds)
     seconds = time_in_seconds%60
     minutes = str(time_in_seconds//60)
@@ -38,20 +42,28 @@ def time_to_str(time_in_seconds):
 
 user_values = {}
 def reset_user_values():
+    """
+    Resets the user values to default
+    """
     user_values["lost_playthroughs"] = 0
     user_values["won_playthroughs"] = 0
     user_values["best_time"] = None
     user_values["won_last_game"] = False
     user_values["lost_last_game"] = False
     user_values["won_last_game_good_time"] = False
-    user_values["last_game_survived_less_than_30_seconds"] = False
+    user_values["lost_game_less_than_30_seconds"] = False
 
 def rewrite_player_values(user_values: dict):
+    """
+    Saves the user values to the file.
+    """
     with open("player_values.json", 'w', encoding = "UTF-16") as outfile:
         outfile.write(json.dumps(user_values, indent = 4))
 
 
 if os.path.exists("player_values.json"):
+    # GeTs the user values at the start of the program
+    # or creates the file if it doesnt't exist.
     with open('player_values.json', 'r', encoding = "UTF-16") as openfile:
         user_values = json.load(openfile)
 
@@ -59,6 +71,36 @@ else:
     user_values = {}
     reset_user_values()
     rewrite_player_values(user_values)
+
+text_quotes = None
+with open('src/text_lines.json', 'r', encoding = "UTF-16") as openfile:
+    text_quotes = json.load(openfile)
+
+def choose_quote():
+    if text_quotes == None:
+        return ""
+
+    if user_values["lost_playthroughs"] == 0\
+        and user_values["won_playthroughs"] == 0:
+        return choice(text_quotes["first_game"])
+
+    if user_values["won_playthroughs"] == 1\
+        and user_values["won_last_game"]:
+        return choice(text_quotes["won_first_game"])
+
+    if user_values["won_last_game"]\
+        and user_values["won_last_game_good_time"]:
+        return choice(text_quotes["won_last_game_good_time"])
+
+    if user_values["won_last_game"]:
+        return choice(text_quotes["won_last_game"])
+
+    if user_values["lost_game_less_than_30_seconds"]:
+        return choice(text_quotes["lost_game_less_than_30_seconds"])
+
+    return choice(text_quotes["lost_last_game"])
+
+
 
 class GameState(Enum):
     Menu = 0
@@ -69,7 +111,7 @@ class GameState(Enum):
     Paused = 5
     Animation = 6
     AfterBoss = 7
-
+    ShowText = 8
 class Game:
     """
     class to handle the game's responsibilites like:
@@ -81,6 +123,7 @@ class Game:
     resizable_screen = pygame.display.set_mode(WINDOW_SIZE, RESIZABLE)
     time_left_for_animation = START_ANIMATION_TIME
     time_for_text_main = 0
+    time_for_text_after_start = 0
     def __init__(self):
         """
         Initialises the Game object.
@@ -488,8 +531,8 @@ class Game:
             self.render_surface(offset)
             self.clear_surface()
         else:
-            self.game_state = GameState.Running
-            self.boss.activate()
+            self.game_state = GameState.ShowText
+            time_for_text_after_start = 3000
 
     def run_level(self):
         """
@@ -548,7 +591,7 @@ class Game:
         user_values["won_last_game"] = False
         user_values["lost_last_game"] = False
         user_values["won_last_game_good_time"] = False
-        user_values["last_game_survived_less_than_30_seconds"] = False
+        user_values["lost_game_less_than_30_seconds"] = False
 
     def update_user_values(self):
         """
@@ -558,8 +601,8 @@ class Game:
         if self.game_state == GameState.Lost:
             user_values["lost_playthroughs"] += 1
 
-            if self.time_survived < 30000:
-                user_values["last_game_survived_less_than_30_seconds"] = True
+            if self.time_survived < 30:
+                user_values["lost_game_less_than_30_seconds"] = True
             else:
                 user_values["lost_last_game"] = True
 
@@ -569,7 +612,7 @@ class Game:
             if not user_values["best_time"]\
                or user_values["best_time"] > self.time_survived:
                 user_values["best_time"] = self.time_survived
-            if self.time_survived < 70000:
+            if self.time_survived < 70:
                 user_values["won_last_game_good_time"] == True
             else:
                 user_values["won_last_game"] = True
@@ -595,6 +638,17 @@ class Game:
         elif self.game_state == GameState.Animation:
             self.run_level_enter_animation()
             return
+
+        elif self.game_state == GameState.ShowText:
+            if Game.time_for_text_after_start > 0:
+                draw_text(choose_quote(),
+                            GREEN,
+                            CENTRE_OF_MAP + Vector2D(0, 200),
+                            self.screen)
+                self.run_level()
+            else:
+                self.game_state = GameState.Running
+                self.boss.activate()
 
         elif self.game_state in [GameState.Running, GameState.Paused]:
             self.run_level()
