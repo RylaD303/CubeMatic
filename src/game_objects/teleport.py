@@ -45,7 +45,10 @@ class Teleport(GameObject):
         self.active = False
 
 
-    def main(self, player: "Player", clock: "pygame.time.Clock") -> None:
+    def main(self,
+            player: "Player",
+            clock: "pygame.time.Clock",
+            circle_effects: set["CircleEffect"]) -> None:
         """
         Handles teleportation device remaining time and teleportation.
 
@@ -61,7 +64,7 @@ class Teleport(GameObject):
                 self.__move(clock)
             self.time_remaining -= clock.get_time()
             if self.time_remaining<=0:
-                self.teleport_player(player)
+                self.teleport_player(player, circle_effects)
 
     def check_boundaries(self):
         if self.position.x < START_OF_MAP.x:

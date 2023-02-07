@@ -1,3 +1,4 @@
+import asyncio
 import pygame, sys, time, json, os.path, time
 from random import choice
 from enum import Enum
@@ -41,6 +42,8 @@ def time_to_str(time_in_seconds):
     return minutes + ":" + seconds
 
 user_values = {}
+
+
 def reset_user_values():
     """
     Resets the user values to default
@@ -124,6 +127,7 @@ class Game:
     time_left_for_animation = START_ANIMATION_TIME
     time_for_text_main = 0
     time_for_text_after_start = 0
+
     def __init__(self):
         """
         Initialises the Game object.
@@ -255,7 +259,9 @@ class Game:
             bullet.main(clock)
 
         #Teleportation device movement and cooldowns
-        self.teleportation_device.main(self.player, clock)
+        self.teleportation_device.main(self.player,
+                                        clock,
+                                        self.circle_effects)
 
         #Bullet movement
         for bullet in self.boss_bullets:
@@ -496,13 +502,14 @@ class Game:
         self.keys_pressed["pause"] = False
         self.keys_pressed["teleport"] = False
 
-    def run(self):
+    async def run(self):
         """
         Starts the game.
         """
         self.game_state = GameState.Menu
         while True:
             self._update()
+            await asyncio.sleep(0)
             clock.tick(120)
 
     def render_surface(self, offset: "Vector2D" = Vector2D(0,0)):
@@ -726,4 +733,5 @@ pygame.display.set_caption('CubeMatic')
 
 
 game = Game()
-game.run()
+
+asyncio.run(game.run())
