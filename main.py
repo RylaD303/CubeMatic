@@ -16,20 +16,25 @@ from src.classes.vector_2d import Vector2D
 from src.game_values import *
 
 pygame.mixer.init()
-lose_sound = pygame.mixer.Sound("src/sounds/lose_sound.wav")
+lose_sound = pygame.mixer.Sound(os.path.join("src", "sounds", "lose_sound.wav"))
 lose_sound.set_volume(0.4)
 
 GREEN = (0, 255, 0)
-def draw_text(text: str, text_color: tuple, position: "Vector2D", screen: "pygame.Surface") -> None:
+def draw_text(text: str,
+              text_color: tuple,
+              position: "Vector2D",
+              screen: "pygame.Surface") -> None:
+
     img = font.render(text, True, text_color)
     offset = Vector2D(img.get_width(),img.get_height())/2
     screen.blit(img, tuple(position - offset))
 
-play_button_image = pygame.image.load('src/sprites/Play_button.png')
+play_button_image = pygame.image.load(os.path.join('src', 'sprites', 'Play_button.png'))
 play_button = Button(play_button_image, BUTTON_PLAY_POSITION, BUTTON_PLAY_SIZE)
-reset_button_image = pygame.image.load('src/sprites/Reset_button.png')
+reset_button_image = pygame.image.load(os.path.join('src', 'sprites', 'Reset_button.png'))
 reset_button = Button(reset_button_image, RESET_PLAY_POSITION, BUTTON_PLAY_SIZE)
 starting_offset = Vector2D(0,700)
+
 
 def time_to_str(time_in_seconds):
     """
@@ -153,11 +158,22 @@ class Game:
         """
         Loads the objects into the game class.
         """
+        #sprite loading
+        map_tile_sprite = pygame.image.load(
+            os.path.join('src', 'sprites', 'Tile_map_wall_sprite.png'))
+        map_tile_corner_sprite = pygame.image.load(
+            os.path.join('src', 'sprites', 'Tile_map_corner_sprite.png'))
+        player_sprite = pygame.image.load(
+            os.path.join('src', 'sprites', 'Player1.png'))
+        teleport_sprite = pygame.image.load(
+            os.path.join('src', 'sprites', 'Teleport.png'))
+        boss_sprite = pygame.image.load(
+            os.path.join('src', 'sprites', 'Boss.png'))
+
         #Tile map creation
-        map_tile_sprite =\
-            pygame.image.load('src\sprites\Tile_map_wall_sprite.png')
-        map_tile_corner_sprite =\
-            pygame.image.load('src\sprites\Tile_map_corner_sprite.png')
+        self.render_surface()
+
+        self.render_surface()
 
         self.map_tiles = []
         start_pos_x = START_OF_WINDOW.x  #(END_OF_WINDOW.x%MAP_TILE_SIZE[0])/2
@@ -213,18 +229,18 @@ class Game:
         #Player creation
         self.player = Player(PLAYER_START,
                         PLAYER_SPEED,
-                        pygame.image.load('src/sprites/Player1.png'),
+                        player_sprite,
                         *tuple(PLAYER_SCALE))
 
         #Teleport creation
 
         self.teleportation_device: "Teleport" =\
             Teleport(PLAYER_TELEPORT_SPEED,
-                     pygame.image.load('src/sprites/Teleport.png'),
+                     teleport_sprite,
                      PLAYER_SCALE)
 
         #Boss creation
-        self.boss = Boss(pygame.image.load('src/sprites/Boss.png'),\
+        self.boss = Boss(boss_sprite,\
                     *tuple(BOSS_SCALE))
         self.boss_bullets = set()
         self.boss_lasers = set()
@@ -569,7 +585,6 @@ class Game:
                 self.screen)
         clicked_play = play_button.main(self.screen, self.screen_scaling)
         clicked_reset = reset_button.main(self.screen, self.screen_scaling)
-
         if Game.time_for_text_main > 0:
             Game.time_for_text_main -= clock.get_time()
             draw_text("Reset game values",
@@ -639,9 +654,8 @@ class Game:
             self.run_menu()
 
         elif self.game_state == GameState.Loading:
-            draw_text("Loading...", GREEN, CENTRE_OF_WINDOW, self.screen)
             self.clear_surface()
-            self.render_surface()
+            draw_text("Loading...", GREEN, CENTRE_OF_WINDOW, self.screen)
             self.load_level()
             Game.time_left_for_animation = START_ANIMATION_TIME
             self.game_state = GameState.Animation

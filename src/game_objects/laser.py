@@ -1,3 +1,4 @@
+import os
 from typing import Union
 from enum import Enum
 import pygame
@@ -8,7 +9,7 @@ from src.classes.game_object import GameObject
 
 
 pygame.mixer.init()
-shoot_sound = pygame.mixer.Sound("src/sounds/laser_shoot.wav")
+shoot_sound = pygame.mixer.Sound(os.path.join("src", "sounds", "laser_shoot.wav"))
 shoot_sound.set_volume(0.4)
 
 WHITE = (255, 255 ,255)

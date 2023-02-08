@@ -1,11 +1,12 @@
+import os
+import pygame
 from src.classes.vector_2d import Vector2D, number_types
 from src.classes.game_object import GameObject
 from src.game_objects.bullet import Bullet
 from src.game_values import *
-import pygame
 
 pygame.mixer.init()
-shoot_sound = pygame.mixer.Sound("src/sounds/player_fire.wav")
+shoot_sound = pygame.mixer.Sound(os.path.join("src", "sounds", "player_fire.wav"))
 shoot_sound.set_volume(0.4)
 
 class Player(GameObject):

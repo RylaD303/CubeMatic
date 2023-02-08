@@ -20,13 +20,23 @@ class HealthBar(pygame.sprite.Sprite, GameObject):
         self.health_change_speed = 0.5
 
     def set_health(self, amount):
+        """
+        Sets the new amount of health the entity has.
+        """
         self.target_health = amount
 
     def main(self):
+        """
+        Does nothing for now.
+        """
         pass
 
 
     def render(self, screen: "pygame.Surface"):
+        """
+        Renders the health bar with the corresponding value.
+        Slowly decreases over time. If current value is bigger than the actual value.
+        """
         transition_width = 0
         transition_color = (255,0,0)
 
