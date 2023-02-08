@@ -153,6 +153,13 @@ class Game:
         self.boss_health_bar: "HealthBar" = None
         self.start_time: float = None
         self.quote = None
+        self.keys_pressed =\
+            {
+            "player_movement": [False, False, False, False],
+            "fire": False,
+            "pause": False,
+            "teleport": False
+            }
 
     def load_level(self):
         """
@@ -250,14 +257,6 @@ class Game:
         self.player_bullets: set[Bullet] = set()
 
         self.circle_effects: set["CircleEffect"] = set()
-
-        self.keys_pressed =\
-            {
-            "player_movement": [False, False, False, False],
-            "fire": False,
-            "pause": False,
-            "teleport": False
-            }
 
     def handle_objects_main(self):
         """
