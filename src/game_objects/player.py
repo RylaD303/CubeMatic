@@ -110,7 +110,7 @@ class Player(GameObject):
 
         movement_scaling = abs(self.movement)
         if movement_scaling > 0:
-            self.rotation+=7
+            self.rotation+=700*clock.get_time()/SECOND
             self.rotation%=90
             self.position += self.speed\
                              * self.movement/movement_scaling\

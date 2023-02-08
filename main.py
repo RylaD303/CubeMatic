@@ -132,7 +132,7 @@ class Game:
     time_left_for_animation = START_ANIMATION_TIME
     time_for_text_main = 0
     time_for_text_after_start = 0
-
+    await_time_after_death = 0
     def __init__(self):
         """
         Initialises the Game object.
@@ -651,7 +651,12 @@ class Game:
         """
         self.get_key_presses()
         if self.game_state == GameState.Menu:
-            self.run_menu()
+            if Game.await_time_after_death > 0:
+                Game.await_time_after_death -= clock.get_time()
+                self.handle_objects_rendering()
+                self.render_surface()
+            else:
+                self.run_menu()
 
         elif self.game_state == GameState.Loading:
             self.clear_surface()
@@ -689,6 +694,7 @@ class Game:
             self.time_survived = round(time.time() - self.start_time)
             self.update_user_values()
             self.handle_objects_rendering()
+            pygame.mixer.stop()
             pygame.mixer.Sound.play(lose_sound)
             draw_text("Game Over", GREEN, CENTRE_OF_MAP, self.screen)
             time_survived = round(time.time() - self.start_time)
@@ -697,9 +703,9 @@ class Game:
                       CENTRE_OF_MAP + Vector2D(0, 100),
                       self.screen)
             self.render_surface()
-            time.sleep(4)
             self.clear_surface()
             self.game_state = GameState.Menu
+            Game.await_time_after_death = 4000
 
         elif self.game_state == GameState.Won:
             self.time_survived = round(time.time() - self.start_time)
