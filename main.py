@@ -1,8 +1,8 @@
 import asyncio
 import pygame, sys, time, json, os.path, time
+from pygame.locals import *
 from random import choice
 from enum import Enum
-from pygame.locals import *
 from src.game_objects.player import Player
 from src.game_objects.boss import Boss
 from src.game_objects.bullet import Bullet
@@ -165,6 +165,7 @@ class Game:
         """
         Loads the objects into the game class.
         """
+        self.render_surface()
         #sprite loading
         map_tile_sprite = pygame.image.load(
             os.path.join('src', 'sprites', 'Tile_map_wall_sprite.png'))
@@ -178,10 +179,6 @@ class Game:
             os.path.join('src', 'sprites', 'Boss.png'))
 
         #Tile map creation
-        self.render_surface()
-
-        self.render_surface()
-
         self.map_tiles = []
         start_pos_x = START_OF_WINDOW.x  #(END_OF_WINDOW.x%MAP_TILE_SIZE[0])/2
         start_pos_y = START_OF_WINDOW.y  #(END_OF_WINDOW.y%MAP_TILE_SIZE[1])/2

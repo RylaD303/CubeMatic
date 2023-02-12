@@ -69,14 +69,14 @@ class Player(GameObject):
             self.position.y = END_OF_MAP.y-self.radius*2
 
     def main(self,
-            player_movement : list[bool],
+            playermovement : list[bool],
             clock: "pygame.time.Clock") -> None:
         """
         Handles player frame by frame
         Parameters:
-            player_movement -
+            playermovement -
                 list of 4 Bool for the 4 directions
-                to call on _move function.
+                to call on move function.
             clock -
                 to evaluate last call of main so it can
                 subtract from cooldown fire and scale player
@@ -84,28 +84,28 @@ class Player(GameObject):
         """
         if self.fire_cooldown > 0:
             self.fire_cooldown -= clock.get_time()
-        self._move(player_movement, clock)
+        self.move(playermovement, clock)
 
-    def _move(self,
-              player_movement : list[bool],
+    def move(self,
+              playermovement : list[bool],
               clock: "pygame.time.Clock")-> None:
         """
-        Changes the Players position based on the player_movement
+        Changes the Players position based on the playermovement
         vector.  Vector scales with self.speed so palyer doesn't
         move faster diagonally
 
         Parameters:
-            player_movement -
+            playermovement -
                 list of 4 Bool for the 4 directions
         """
 
-        if player_movement[0] :
+        if playermovement[0] :
             self.movement.x = -1
-        if player_movement[1] :
+        if playermovement[1] :
             self.movement.x = 1
-        if player_movement[2] :
+        if playermovement[2] :
             self.movement.y = -1
-        if player_movement[3] :
+        if playermovement[3] :
             self.movement.y = 1
 
         movement_scaling = abs(self.movement)

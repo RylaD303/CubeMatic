@@ -1,4 +1,4 @@
-from src.classes.Vector2D import Vector2D
+from src.classes.vector_2d import Vector2D
 import unittest
 
 

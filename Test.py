@@ -1,4 +1,5 @@
-from tests.Vector2D_test import *
+from tests.vector_2d_test import *
+from tests.player_test import *
 import unittest
 
 
