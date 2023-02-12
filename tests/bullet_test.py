@@ -1,7 +1,7 @@
+import unittest
+import pygame
 from src.classes.vector_2d import Vector2D
 from src.game_objects.bullet import Bullet
-import unittest
-
 
 class FakeClock():
     def __init__(self, time):
@@ -10,11 +10,11 @@ class FakeClock():
     def get_time(self):
         return self.time
 
-class TestingVector(unittest.TestCase):
+class TestingBullet(unittest.TestCase):
 
     def test_moving_bullet(self):
         bullet = Bullet(Vector2D(0,0), Vector2D(0,1), None, None, 1)
-        fake_clock = FakeClock()
+        fake_clock = FakeClock(1000)
 
         bullet.move(fake_clock)
         self.assertEqual(bullet.position,  Vector2D(0,1))

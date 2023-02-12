@@ -68,6 +68,9 @@ class Teleport(GameObject):
                 self.teleport_player(player, circle_effects)
 
     def check_boundaries(self):
+        """
+        Checks if the teleportation device is out of bounds and reflects it
+        """
         if self.position.x < START_OF_MAP.x:
             self.movement.x = abs(self.movement.x)
 
