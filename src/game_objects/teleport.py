@@ -62,7 +62,7 @@ class Teleport(GameObject):
         if self.active:
             self.rotation = player.rotation
             if self.time_remaining>MAX_HOLD_TIME/3*2:
-                self.__move(clock)
+                self.move(clock)
             self.time_remaining -= clock.get_time()
             if self.time_remaining<=0:
                 self.teleport_player(player, circle_effects)
@@ -80,7 +80,7 @@ class Teleport(GameObject):
         if self.position.y > END_OF_MAP.y - self.sprite.get_height():
             self.movement.y = -abs(self.movement.y)
 
-    def __move(self, clock: "pygame.time.Clock"):
+    def move(self, clock: "pygame.time.Clock"):
         """
         Moves the teleportation device by it's movement vector.
         Depending on the remaining time the movement will decrease
@@ -123,7 +123,8 @@ class Teleport(GameObject):
                 Surface on which to print the device.
         """
         if self.active:
-            rotated_sprite = pygame.transform.rotate(self.sprite, self.rotation)
+            rotated_sprite = pygame.transform.rotate(self.sprite,
+                                                     self.rotation)
             position_to_print_on =Vector2D(\
                 self.position.x\
                 - (rotated_sprite.get_width() - self.sprite.get_width())/2,
@@ -150,7 +151,8 @@ class Teleport(GameObject):
         self.time_remaining = MAX_HOLD_TIME
         if self.position == self.direction :
             self.direction+=1
-        self.movement =  self.speed*(self.direction - self.position)/abs(self.direction - self.position)
+        self.movement =  self.speed*(self.direction - self.position)\
+                         / abs(self.direction - self.position)
         self.active = True
 
     def deactivate(self):
