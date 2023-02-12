@@ -70,9 +70,9 @@ class Bullet(GameObject):
 
     def main(self, clock: "pygame.time.Clock") -> None:
         """ Handles the bullets movement"""
-        self.__move(clock)
+        self.move(clock)
 
-    def __move(self, clock: "pygame.time.Clock") -> None:
+    def move(self, clock: "pygame.time.Clock") -> None:
         """
         Moves the bullet by it's movement vector,
         which is scaled by its speed and time passed.

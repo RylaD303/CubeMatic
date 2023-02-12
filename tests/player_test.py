@@ -54,3 +54,8 @@ class TestingVector(unittest.TestCase):
         for bullet in bullet_set:
             self.assertEqual(isinstance(bullet, Bullet), True)
 
+
+    def test_player_out_of_bounds(self):
+        player = Player(Vector2D(-1,-1), 1, None)
+        player.check_out_of_bounds()
+        self.assertNotEqual(player.position, Vector2D(-1,-1))
